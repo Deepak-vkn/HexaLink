@@ -1,0 +1,23 @@
+/* src/Login.css */
+
+body {
+    background-color: red; /* Change the background color to red */
+  }
+  
+  .header {
+    border-bottom: 2px solid #e2a84a;
+  }
+  
+  .button-custom {
+    background-color: #e24a4a;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .button-custom:hover {
+    background-color: #357ABD;
+  }
+  
