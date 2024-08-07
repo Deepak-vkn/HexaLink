@@ -60,19 +60,19 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
               <label className="block text-gray-700 text-xs font-bold mb-2">Mobile No</label>
               <input
                 className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-1 px-4 block w-full appearance-none"
-                type="number"
+                type="text" // Changed from number to text to handle non-numeric input
                 value={number}
                 onChange={(e) => setNumber(Number(e.target.value))}
               />
             </div>
-            {isCompany && address && setAddress && (
+            {isCompany && (
               <div className="mt-4">
                 <label className="block text-gray-700 text-xs font-bold mb-2">Address</label>
                 <input
                   className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-1 px-4 block w-full appearance-none"
                   type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  value={address || ''} // Ensures address is displayed as an empty string if undefined
+                  onChange={(e) => setAddress?.(e.target.value)} // Optional chaining in case setAddress is undefined
                 />
               </div>
             )}

@@ -1,16 +1,17 @@
-import { useState, ChangeEvent, FormEvent, useId } from 'react';
-import { otpverify,resend } from '../api/user/post';
-import { useLocation,useNavigate } from 'react-router-dom';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { otpverify, resend } from '../api/user/post';
+import { otpverifycompany, companyresend } from '../api/company/post';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
-const Otp = () => {
 
+const Otp = () => {
   const [otp, setOtp] = useState<string[]>(['', '', '', '']);
   const location = useLocation();
-  const userId = location.state?.userid;
-  console.log('statae is ',location.state)
-  const navigate=useNavigate()
-
+  const navigate = useNavigate();
+  
+  // Retrieve the context information from location state
+  const { userid: userId, isCompany } = location.state || {};
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const { value } = e.target;
@@ -18,7 +19,6 @@ const Otp = () => {
     newOtp[index] = value;
     setOtp(newOtp);
 
-  
     if (value.length === 1 && index < 3) {
       const nextInput = document.getElementById(`otp-input-${index + 1}`) as HTMLInputElement | null;
       if (nextInput) {
@@ -29,37 +29,46 @@ const Otp = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
- 
     const otpValue = parseInt(otp.join(''), 10);
 
     try {
-      const response = await otpverify(otpValue,userId)
-      
-      if(response.success){
-        toastr.success('OTP Verified Successfully!');
-          navigate('/')
+      let response;
+      if (isCompany) {
+        response = await otpverifycompany(otpValue, userId);
+      } else {
+        response = await otpverify(otpValue, userId);
       }
-      else{
-        toastr.error(response.message);
 
+      if (response.success) {
+        toastr.success('OTP Verified Successfully!');
+        if (isCompany) {
+          navigate('/company');
+        } else {
+          navigate('/');
+        }
+      } else {
+        toastr.error(response.message);
       }
-  
-   
-   
     } catch (error) {
       console.error('Error verifying OTP:', error);
-     
+      toastr.error('An error occurred during OTP verification');
     }
   };
 
   const handleResend = async () => {
+    setOtp(['', '', '', '']);
     try {
+      let response;
+      if (isCompany) {
+        response = await companyresend(userId);
+      } else {
+        response = await resend(userId);
+      }
 
-      const response = await resend(userId);
-  
       if (response.success) {
         toastr.success('OTP resent successfully!');
+        // Clear the OTP input fields
+        setOtp(['', '', '', '']);
       } else {
         toastr.error(response.message || 'Failed to resend OTP');
       }
@@ -101,11 +110,11 @@ const Otp = () => {
           </div>
         </form>
         <div className="text-sm text-slate-500 mt-4">
-        Didn't receive code? <button onClick={handleResend} className="font-medium text-gray-800 hover:text-gray-600">Resend</button>
+          Didn't receive code? <button onClick={handleResend} className="font-medium text-gray-800 hover:text-gray-600">Resend</button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Otp;

@@ -4,8 +4,14 @@ import axiosInstance from '../../api/axiosInstance';
 
 export const registerCompany = async (name: string, number: number, email: string, password: string,address:string) => {
   try {
+    console.log('reached comapny front end')
+    console.log( name,
+        number,
+        email,
+        password,
+        address)
 
-      const response = await axiosInstance.post('/register-company', {
+      const response = await axiosInstance.post('/company/register-company', {
         name,
         number,
         email,
@@ -26,13 +32,13 @@ export const registerCompany = async (name: string, number: number, email: strin
 
 
 
-export const otpverify=async(otpValue:number,userId:number)=>{
+export const otpverifycompany=async(otpValue:number,userId:number)=>{
 
   try {
-    console.log('Reached frontend for OTP verification');
+    console.log('Reached frontend for OTP verification for company');
     console.log('OTP:', otpValue,userId);
     
-    const response = await axiosInstance.post('/verifyotp', {
+    const response = await axiosInstance.post('/company/verifyotp', {
       otp: otpValue,
       userId
     }, {
@@ -50,9 +56,10 @@ export const otpverify=async(otpValue:number,userId:number)=>{
 
 }
 
-export const loginUser=async(email:string,password:string)=>{
+export const loginCompany=async(email:string,password:string)=>{
   try {
-    const response=await axiosInstance.post('/login',{
+    console.log('raeched company login ')
+    const response=await axiosInstance.post('/company/login',{
       email,
       password
     }, {
@@ -70,9 +77,9 @@ export const loginUser=async(email:string,password:string)=>{
 }
 
 
-export const resend=async(userId:string)=>{
+export const companyresend=async(userId:string)=>{
   try {
-    const response= await axiosInstance.post('/resendOtP',{
+    const response= await axiosInstance.post('/company/resendOtP',{
       userId
     }, {
       headers: {

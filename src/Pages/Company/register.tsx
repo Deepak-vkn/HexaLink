@@ -19,7 +19,8 @@ const CompanyRegister = () => {
       const data = await registerCompany(name, number, email, password, address); 
       if (data.success) {
         const id = data.data._id;
-        navigate('/otp', { state: { userid: id } });
+        console.log('id is ',id)
+        navigate('/otp', { state: { userid: id ,isCompany:true} });
       } else {
         toastr.error(data.message);
       }
