@@ -1,40 +1,28 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
-// Import your company login API function here
-import { loginCompany } from '../../api/company/post'; // Replace with actual API call
+import { loginAdmin } from '../../api/admin/post'; // Replace with actual API call
 import LoginForm from '../../Components/login';
-import { setCompanyCredentials } from '../../Store/companySlice';
+import { useDispatch } from 'react-redux';
+import { setAdminCredentials } from '../../Store/adminSlice';
 
-const CompanyLogin = () => {
+const AdminLogin = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const navigate = useNavigate();
     const dispatch = useDispatch(); // Correct usage
-
-
-
-  
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+  
       try {
-        const response = await loginCompany(email, password);
+        const response = await loginAdmin(email, password);
         if (response.success) {
           toastr.success(response.message);
-          dispatch(setCompanyCredentials(response.company));
-          navigate('/company-home')
+          dispatch(setAdminCredentials(response.admin))
+          navigate('/admin-home')
         } else {
-          if (response.message === 'User not verified. OTP has been sent.') {
-            toastr.error(response.message);
-            if (response.user && response.user._id) {
-              navigate('/otp', { state: { userid: response.user._id ,isCompany:true} });
-              return;
-            }
-          } else {
-            toastr.error(response.message);
-          }
+          toastr.error(response.message);
         }
       } catch (error) {
         toastr.error('Error logging in');
@@ -49,9 +37,9 @@ const CompanyLogin = () => {
         password={password}
         setPassword={setPassword}
         onSubmit={handleSubmit}
-        isCompany={true} 
+        isAdmin={true} // For admin login
       />
     );
-  };
-  
-  export default CompanyLogin;
+};
+
+export default AdminLogin;

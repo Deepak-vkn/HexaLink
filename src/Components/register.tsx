@@ -10,10 +10,12 @@ interface RegistrationFormProps {
   setNumber: React.Dispatch<React.SetStateAction<number>>;
   password: string;
   setPassword: React.Dispatch<React.SetStateAction<string>>;
-  address?: string; // Optional for company registration
-  setAddress?: React.Dispatch<React.SetStateAction<string>>; // Optional for company registration
+  confirmPassword: string;
+  setConfirmPassword: React.Dispatch<React.SetStateAction<string>>;
+  address?: string;
+  setAddress?: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  isCompany?: boolean; // Determines if it's a company registration
+  isCompany?: boolean;
 }
 
 const RegistrationForm: React.FC<RegistrationFormProps> = ({
@@ -25,6 +27,8 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
   setNumber,
   password,
   setPassword,
+  confirmPassword,
+  setConfirmPassword,
   address,
   setAddress,
   onSubmit,
@@ -60,7 +64,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
               <label className="block text-gray-700 text-xs font-bold mb-2">Mobile No</label>
               <input
                 className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-1 px-4 block w-full appearance-none"
-                type="text" // Changed from number to text to handle non-numeric input
+                type="text"
                 value={number}
                 onChange={(e) => setNumber(Number(e.target.value))}
               />
@@ -71,8 +75,8 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                 <input
                   className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-1 px-4 block w-full appearance-none"
                   type="text"
-                  value={address || ''} // Ensures address is displayed as an empty string if undefined
-                  onChange={(e) => setAddress?.(e.target.value)} // Optional chaining in case setAddress is undefined
+                  value={address || ''}
+                  onChange={(e) => setAddress?.(e.target.value)}
                 />
               </div>
             )}
@@ -83,6 +87,15 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block text-gray-700 text-xs font-bold mb-2">Confirm Password</label>
+              <input
+                className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-1 px-4 block w-full appearance-none"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
             <div className="mt-8">

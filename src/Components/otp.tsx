@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import  { useState, ChangeEvent, FormEvent } from 'react';
 import { otpverify, resend } from '../api/user/post';
 import { otpverifycompany, companyresend } from '../api/company/post';
 import { useLocation, useNavigate } from 'react-router-dom';

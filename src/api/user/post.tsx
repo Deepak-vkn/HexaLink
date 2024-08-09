@@ -88,3 +88,21 @@ export const resend=async(userId:string)=>{
     
   }
 }
+
+
+
+
+export const logoutcall = async (role: string) => {
+  console.log('Reached API');
+  try {
+    const response = await axiosInstance.post('/logout', { role }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in logout call:', error);
+    throw error;
+  }
+};

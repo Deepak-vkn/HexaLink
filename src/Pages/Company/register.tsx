@@ -11,10 +11,15 @@ const CompanyRegister = () => {
   const [number, setNumber] = useState<number>(0);
   const [password, setPassword] = useState<string>('');
   const [address, setAddress] = useState<string>(''); 
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const navigate = useNavigate();
 
   const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (password !== confirmPassword) {
+      toastr.error('Passwords do not match');
+      return;
+    }
     try {
       const data = await registerCompany(name, number, email, password, address); 
       if (data.success) {
@@ -40,6 +45,8 @@ const CompanyRegister = () => {
       setNumber={setNumber}
       password={password}
       setPassword={setPassword}
+      confirmPassword={confirmPassword}
+      setConfirmPassword={setConfirmPassword} 
       address={address}
       setAddress={setAddress}
       onSubmit={handleRegister}
@@ -49,3 +56,7 @@ const CompanyRegister = () => {
 };
 
 export default CompanyRegister;
+
+
+
+

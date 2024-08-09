@@ -8,16 +8,17 @@ interface LoginFormProps {
   setPassword: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   isCompany?: boolean; // Optional prop to determine if it's a company login
+  isAdmin?: boolean; // Optional prop to determine if it's an admin login
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPassword, onSubmit, isCompany = false }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPassword, onSubmit, isCompany = false, isAdmin = false }) => {
   return (
     <div className="py-18">
       <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
         <div className="hidden lg:block lg:w-1/2 bg-cover bg-gray-800"></div>
         <div className="w-full p-8 lg:w-1/2">
           <h2 className="text-2xl font-semibold text-gray-700 text-center">
-            {isCompany ? 'Company Login' : 'User Login'}
+            {isAdmin ? 'Admin Login' : isCompany ? 'Company Login' : 'User Login'}
           </h2>
 
           <form onSubmit={onSubmit}>
@@ -33,7 +34,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPas
             <div className="mt-4">
               <div className="flex justify-between">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                <a href="#" className="text-xs text-gray-500">Forget Password?</a>
+                {/* <a href="#" className="text-xs text-gray-500">Forget Password?</a> */}
               </div>
               <input
                 className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
@@ -50,21 +51,23 @@ const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPas
                 Login
               </button>
             </div>
-            <div className="mt-4 flex items-center justify-between">
-              <Link
-                to={isCompany ? "/" : "/company"}
-                className="text-xs text-gray-500 uppercase"
-              >
-                {isCompany ? 'Login As User' : 'Login As Company'}
-              </Link>
-              <span className="border-b w-1/5 md:w-1/4"></span>
-              <Link
-                to={isCompany ? "/company-register" : "/user-register"}
-                className="text-xs text-gray-500 uppercase"
-              >
-                {isCompany ? 'Register Your Company' : 'Register As User'}
-              </Link>
-            </div>
+            {!isAdmin && (
+              <div className="mt-4 flex items-center justify-between">
+                <Link
+                  to={isCompany ? "/" : "/company"}
+                  className="text-xs text-gray-500 uppercase"
+                >
+                  {isCompany ? 'Login As User' : 'Login As Company'}
+                </Link>
+                <span className="border-b w-1/5 md:w-1/4"></span>
+                <Link
+                  to={isCompany ? "/company-register" : "/user-register"}
+                  className="text-xs text-gray-500 uppercase"
+                >
+                  {isCompany ? 'Register Your Company' : 'Register As User'}
+                </Link>
+              </div>
+            )}
           </form>
         </div>
       </div>
