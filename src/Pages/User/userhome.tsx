@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store'
 const home = () => {
 
-
   const user = useSelector((state: RootState) => state.user.userInfo);
   return (
     <div>

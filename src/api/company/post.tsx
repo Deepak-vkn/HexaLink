@@ -92,3 +92,34 @@ export const companyresend=async(userId:string)=>{
     
   }
 }
+
+
+export const forgetPassword = async (email: string) => {
+  console.log('Reached API',email);
+  try {
+    const response = await axiosInstance.post('/company/forgetPassword', { email }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in logout call:', error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (password: string,token:string):Promise<any> => {
+  console.log('Reached API',password,token);
+  try {
+    const response = await axiosInstance.post('/company/resetPassword', { password ,token}, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in logout call:', error);
+    throw error;
+  }
+};

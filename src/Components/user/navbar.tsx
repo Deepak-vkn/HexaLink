@@ -1,41 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { logoutcall } from '../../api/user/post';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../Store/userSlice';
 
 interface NavbarProps {
-  user?: any | null; // user name can be a string or null
+  user?: any | null;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ user }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dispatch=useDispatch()
-  const navigate=useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const toggleDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDropdownOpen((prevState) => !prevState);
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen((prevState) => !prevState);
   };
 
   const handleLogout = async () => {
     try {
-      console.log('logout triggerd')
-      // Send a request to the backend to log out
+      console.log('Logout triggered');
       const result = await logoutcall('user');
       if (result.success) {
-        // Clear Redux store and localStorage
         dispatch(logout());
-        // Redirect to login page
-        navigate('/'); // Ensure this path matches your route configuration
+        navigate('/');
+        setIsDropdownOpen(false); 
+        setIsMenuOpen(false); 
       }
-      
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
 
+  useEffect(() => {
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <nav className="sticky mt-4 top-0 z-10 block w-full max-w-full px-4 py-2 text-gray-800 bg-white border rounded-none shadow-md h-max border-white/80 bg-opacity-80 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-2">
+    <nav className="sticky top-0 z-10 block w-full max-w-full px-4 py-2 text-gray-800 bg-white border rounded-none shadow-md lg:px-8 lg:py-2">
       <div className="flex items-center justify-between">
         <a
           href="#"
@@ -66,42 +86,39 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
                   PROFILE
                 </a>
               </li>
-              <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <a href="#" className="flex items-center"></a>
-              </li>
             </ul>
           </div>
           <div className="relative flex items-center gap-x-1">
             <button
               onClick={toggleDropdown}
-              
               className="select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
               type="button"
             >
-              <span>{user.name}</span>
+              <span>{user ? user.name : 'sample'}</span>
             </button>
             {/* Dropdown menu */}
             {isDropdownOpen && (
-            <div className="z-10 absolute right-0 mt-[90px] w-30 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600">
-              <ul className="py-1 text-sm text-gray-700 dark:text-gray-200 px-4" >
-                <li>
-                  <a
-                   onClick={handleLogout}
-                   
-                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                  >
-                    Logout
-                  </a>
-                </li>
-                
-                {/* Add more list items as needed */}
-              </ul>
-            </div>
-          )}
+              <div
+                ref={dropdownRef}
+                className="z-10 absolute right-0 mt-2 w-40 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+              >
+                <ul className="py-1 text-sm text-gray-700 dark:text-gray-200">
+                  <li>
+                    <a
+                      onClick={handleLogout}
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
+                    >
+                      Logout
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
           <button
             className="relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-inherit transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
             type="button"
+            onClick={toggleMenu}
           >
             <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
               <svg
@@ -121,6 +138,32 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
           </button>
         </div>
       </div>
+      {isMenuOpen && (
+        <div className="lg:hidden">
+          <ul className="flex flex-col gap-2 mt-2 mb-4">
+            <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+              <a href="#" className="flex items-center">
+                HOME
+              </a>
+            </li>
+            <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+              <a href="#" className="flex items-center">
+                JOBS
+              </a>
+            </li>
+            <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+              <a href="#" className="flex items-center">
+                MESSAGE
+              </a>
+            </li>
+            <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+              <a href="#" className="flex items-center">
+                PROFILE
+              </a>
+            </li>
+          </ul>
+        </div>
+      )}
     </nav>
   );
 };

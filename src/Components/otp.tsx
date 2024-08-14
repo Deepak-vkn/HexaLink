@@ -1,5 +1,5 @@
-import  { useState, ChangeEvent, FormEvent } from 'react';
-import { otpverify, resend } from '../api/user/post';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { otpverify, resend,fetchtimer } from '../api/user/post';
 import { otpverifycompany, companyresend } from '../api/company/post';
 import { useLocation, useNavigate } from 'react-router-dom';
 import toastr from 'toastr';
@@ -7,26 +7,53 @@ import 'toastr/build/toastr.min.css';
 
 const Otp = () => {
   const [otp, setOtp] = useState<string[]>(['', '', '', '']);
+  const [timeLeft, setTimeLeft] = useState<number>(0); // Time in seconds
+  const [isResendEnabled, setIsResendEnabled] = useState<boolean>(false);
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // Retrieve the context information from location state
+
+  // Retrieve context information from location state
   const { userid: userId, isCompany } = location.state || {};
 
+  // Fetch the OTP resend time from backend on component mount
+  useEffect(() => {
+    const fetchOtpTimer = async () => {
+      try {
+        const response = await fetchtimer(userId); // Adjust based on your API response
+        if (response.success) {
+          const { timeLeft } = response;
+          setTimeLeft(timeLeft);
+          setIsResendEnabled(timeLeft <= 0);
+        } else {
+          toastr.error(response.message);
+        }
+      } catch (error) {
+        console.error('Error fetching OTP resend time:', error);
+        toastr.error('An error occurred while fetching OTP resend time');
+      }
+    };
+
+    fetchOtpTimer();
+  }, [userId, isCompany]);
+
+  // Handle OTP input changes
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const { value } = e.target;
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
+    if (/^\d$/.test(value) || value === '') { // Allow only digits or empty
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
 
-    if (value.length === 1 && index < 3) {
-      const nextInput = document.getElementById(`otp-input-${index + 1}`) as HTMLInputElement | null;
-      if (nextInput) {
-        nextInput.focus();
+      if (value.length === 1 && index < 3) {
+        const nextInput = document.getElementById(`otp-input-${index + 1}`) as HTMLInputElement | null;
+        if (nextInput) {
+          nextInput.focus();
+        }
       }
     }
   };
 
+  // Handle OTP form submission
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const otpValue = parseInt(otp.join(''), 10);
@@ -41,11 +68,7 @@ const Otp = () => {
 
       if (response.success) {
         toastr.success('OTP Verified Successfully!');
-        if (isCompany) {
-          navigate('/company');
-        } else {
-          navigate('/');
-        }
+        navigate(isCompany ? '/company' : '/');
       } else {
         toastr.error(response.message);
       }
@@ -55,6 +78,7 @@ const Otp = () => {
     }
   };
 
+  // Handle Resend button click
   const handleResend = async () => {
     setOtp(['', '', '', '']);
     try {
@@ -67,8 +91,8 @@ const Otp = () => {
 
       if (response.success) {
         toastr.success('OTP resent successfully!');
-        // Clear the OTP input fields
-        setOtp(['', '', '', '']);
+        setTimeLeft(120); // Reset the timer
+        setIsResendEnabled(false); // Disable resend button
       } else {
         toastr.error(response.message || 'Failed to resend OTP');
       }
@@ -76,6 +100,31 @@ const Otp = () => {
       console.error('Error resending OTP:', error);
       toastr.error('An error occurred while resending OTP');
     }
+  };
+
+  // Timer effect
+  useEffect(() => {
+    if (timeLeft > 0 && !isResendEnabled) {
+      const timer = setInterval(() => {
+        setTimeLeft(prevTime => {
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            setIsResendEnabled(true);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft, isResendEnabled]);
+
+  // Format time left as MM:SS
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 120);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? `0${secs}` : secs}`;
   };
 
   return (
@@ -110,7 +159,14 @@ const Otp = () => {
           </div>
         </form>
         <div className="text-sm text-slate-500 mt-4">
-          Didn't receive code? <button onClick={handleResend} className="font-medium text-gray-800 hover:text-gray-600">Resend</button>
+          Didn’t receive code? 
+          <button 
+            onClick={handleResend} 
+            className={`font-medium text-gray-800 hover:text-gray-600 ${isResendEnabled ? '' : 'cursor-not-allowed opacity-50'}`}
+            disabled={!isResendEnabled}
+          >
+            {isResendEnabled ? 'Resend' : `Resend in ${formatTime(timeLeft)}`}
+          </button>
         </div>
       </div>
     </div>

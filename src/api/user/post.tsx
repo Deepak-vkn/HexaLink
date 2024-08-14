@@ -106,3 +106,47 @@ export const logoutcall = async (role: string) => {
     throw error;
   }
 };
+
+export const forgetPassword = async (email: string) => {
+  console.log('Reached API',email);
+  try {
+    const response = await axiosInstance.post('/forgetPassword', { email }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in logout call:', error);
+    throw error;
+  }
+};
+
+export const resetPassword = async (password: string,token:string):Promise<any> => {
+  console.log('Reached API',password,token);
+  try {
+    const response = await axiosInstance.post('/resetPassword', { password ,token}, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in logout call:', error);
+    throw error;
+  }
+};
+
+export const fetchtimer=async(userid:string):Promise<any>=>{
+  try {
+    const response = await axiosInstance.post('/fetchtimer', { userid}, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in logout call:', error);
+    throw error;
+  }
+}
