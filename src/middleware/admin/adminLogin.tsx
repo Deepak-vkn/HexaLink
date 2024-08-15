@@ -12,7 +12,7 @@ const UserLogged: React.FC = () => {
     
     // If userInfo exists, the user is logged in, so redirect to '/home'
     if (userInfo) {
-        return <Navigate to='/admin-home' />
+        return <Navigate to='/admin/home' />
     }
     // If not logged in, render the child routes
     return <Outlet />

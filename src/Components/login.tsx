@@ -39,7 +39,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPas
             <div className="mt-4">
               <div className="flex justify-between">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                <Link to={isCompany?'/company-forgetpassword':'/forgetpassword'} className="text-xs text-gray-500">Forget Password?</Link>
+                <Link to={isCompany?'/company/forgetpassword':'/forgetpassword'} className="text-xs text-gray-500">Forget Password?</Link>
               </div>
               <input
                 className="bg-gray-200 text-gray-700 focus:outline-none focus:shadow-outline border border-gray-300 rounded py-2 px-4 block w-full appearance-none"
@@ -69,7 +69,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPas
                 </Link>
                 <span className="border-b w-1/5 md:w-1/4"></span>
                 <Link
-                  to={isCompany ? "/company-register" : "/user-register"}
+                  to={isCompany ? "/company/register" : "/user/register"}
                   className="text-xs text-gray-500 uppercase"
                 >
                   {isCompany ? 'Register Your Company' : 'Register As User'}

@@ -24,7 +24,7 @@ const CompanyLogin = () => {
         if (response.success) {
           toastr.success(response.message);
           dispatch(setCompanyCredentials(response.company));
-          navigate('/company-home')
+          navigate('/company/home')
         } else {
           if (response.message === 'User not verified. OTP has been sent.') {
             toastr.error(response.message);

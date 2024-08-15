@@ -20,7 +20,8 @@ const AdminLogin = () => {
         if (response.success) {
           toastr.success(response.message);
           dispatch(setAdminCredentials(response.admin))
-          navigate('/admin-home')
+  
+          navigate('/admin/home')
         } else {
           toastr.error(response.message);
         }
