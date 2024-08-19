@@ -69,7 +69,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPas
                 </Link>
                 <span className="border-b w-1/5 md:w-1/4"></span>
                 <Link
-                  to={isCompany ? "/company/register" : "/user/register"}
+                  to={isCompany ? "/company/register" : "/register"}
                   className="text-xs text-gray-500 uppercase"
                 >
                   {isCompany ? 'Register Your Company' : 'Register As User'}

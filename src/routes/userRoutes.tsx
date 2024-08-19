@@ -9,8 +9,12 @@ import UserResetPaaword from '../Pages/User/resetPassword';
 import ForgetPassword from '../Pages/User/forgetPassword';
 import Navbar from '../Components/user/navbar';
 import Otp from '../Components/otp';
+import UserProfile from '../Pages/User/userProfile';
+
+
 
 const UserRoutes: React.FC = () => {
+
   return (
     <Routes>
       <Route element={<UserLogged />}>
@@ -26,8 +30,11 @@ const UserRoutes: React.FC = () => {
       <Route path="/resetPassword" element={<UserResetPaaword />} />
       <Route path="/forgetpassword" element={<ForgetPassword />} />
       <Route path="/otp" element={<Otp />} />
+      <Route path="/userProfile" element={<UserProfile />} />
     </Routes>
   );
-};
+}
+
+
 
 export default UserRoutes;

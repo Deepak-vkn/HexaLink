@@ -150,3 +150,41 @@ export const fetchtimer=async(userid:string):Promise<any>=>{
     throw error;
   }
 }
+
+
+
+export const updateUser = async (userId:string,user: any): Promise<any> => {
+  console.log('updte data ',user)
+  try {
+    const response = await axiosInstance.post('/update', {userId,user}, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in updateUser call:', error);
+    throw error;
+  }
+}
+
+
+export const userPost = async (formData: FormData): Promise<any> => {
+
+  try {
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+  
+    const response = await axiosInstance.post('/userpost', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data
+  } catch (error) {
+
+    console.error('Error creating post:', error);
+    alert('Failed to create post.');
+  }
+};

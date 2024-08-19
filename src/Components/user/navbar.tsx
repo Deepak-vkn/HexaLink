@@ -29,6 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
       console.log('Logout triggered');
       const result = await logoutcall('user');
       if (result.success) {
+        console.log('logut')
         dispatch(logout());
         navigate('/');
         setIsDropdownOpen(false); 

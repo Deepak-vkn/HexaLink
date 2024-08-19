@@ -3,12 +3,27 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define the User interface
 export interface User {
-    id: string;
+    _id: string; // Ensure this matches the field in your schema
     name: string;
     number: number;
     email: string;
     password: string;
     is_verified: boolean;
+    joinedAt: Date;
+    is_block: boolean;
+    jobs: string[]; // Assuming jobs are references to other documents
+    workStatus?: string;
+    about?: string;
+    role?: string;
+    skill?: string[];
+    git?: string;
+    education?: {
+        degree?: string;
+        institution?: string;
+        year?: number;
+    };
+    status?: boolean;
+    image?: string;
 }
 
 // Define the AuthState interface

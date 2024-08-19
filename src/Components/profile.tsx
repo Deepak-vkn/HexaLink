@@ -1,20 +1,79 @@
-import React, { useState } from 'react';
-import Modal from '../../Components/modal';
-const Profile = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+import React, { useState,useEffect } from 'react';
+import Modal from './modal';
+import { updateUser } from '../api/user/post';
+interface UserProfileProps {
+  user?: any
+}
+const Profile: React.FC<UserProfileProps> = ({ user }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [fieldsToShow, setFieldsToShow] = useState<string[]>([]);
+  const [userData, setUserData] = useState<any | null>(user);
 
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-      };
-      const handleCloseModal = () => {
-        setIsModalOpen(false);
-      };
-    
-    
+  const handleOpenModal = (fields: string[]) => {
+      setFieldsToShow(fields);
+      setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+      setIsModalOpen(false);
+  };
+
+  const handleSaveChanges = async (updatedUser: any) => {
+      try {
+          // Function to find changed fields
+          const getChangedFields = (originalUser: any, updatedUser: any) => {
+              if (!originalUser) return updatedUser;
+
+              const changedFields: any = {};
+              for (const key in updatedUser) {
+                  if (originalUser[key] !== updatedUser[key]) {
+                      changedFields[key] = updatedUser[key];
+                  }
+              }
+              return changedFields;
+          };
+
+          // Find the changed fields
+          const changedFields = getChangedFields(userData, updatedUser);
+
+          // If there are no changes, do nothing
+          if (Object.keys(changedFields).length === 0) {
+              console.log('No changes detected.');
+              handleCloseModal();
+              return;
+          }
+
+          // Send the changed fields along with the user ID to the backend
+          const response = await updateUser(userData?._id, changedFields);
+
+          if (response && response.success) {
+              console.log('User updated successfully:', response);
+              // Update local user state with the updated user object from the backend
+              setUserData((prevUserData) => ({
+                  ...prevUserData,
+                  ...response.user,
+              }));
+          } else {
+              console.error('Error updating user:', response?.message);
+          }
+      } catch (error) {
+          console.error('Error updating user:', error);
+      }
+
+      handleCloseModal();
+  };
+
+  useEffect(() => {
+      setUserData(user);
+  }, [user]);
+
 
   return (
     <div>
-     <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
+     <Modal isOpen={isModalOpen}
+      onClose={handleCloseModal} 
+       user={user}     fields={fieldsToShow}
+        onSaveChanges={handleSaveChanges}/>
       {/* COVER IMAGE SATRT */}
       <div className="relative h-screen w-full">
         <img
@@ -37,9 +96,9 @@ const Profile = () => {
         </div> */}
         <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-white px-4">
   <h5 className="text-xl mb-2">Hello, I'm</h5>
-  <h2 className="text-5xl font-bold mb-4">Jimmy Anderson</h2>
+  <h2 className="text-5xl font-bold mb-4">{user.name}</h2>
   <p className="text-center mb-6 max-w-lg">
-    Lorem ipsum dolor sit amet, consetetur sadipscing elitr sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam.
+    {user.role?user.role:'Add Your Role'}
   </p>
   <div className="flex space-x-6">
     <div className="flex flex-col items-center">
@@ -53,7 +112,7 @@ const Profile = () => {
   </div>
 </div>
 <div className="absolute bottom-4 right-4">
-    <button className=" text-white p-2 rounded-full shadow "   onClick={handleOpenModal}>
+    <button className=" text-white p-2 rounded-full shadow "   onClick={() => handleOpenModal(['name','role'])} >
       <img
         src="\src\Public\edit-editor-pen-pencil-write-icon--4.png"
         alt="Edit"
@@ -69,12 +128,12 @@ const Profile = () => {
       {/* ABOUT START */}
 
       <div id="about_us" className="relative min-h-screen flex items-center justify-center">
-  <div className="container mx-auto px-4 relative">
-    <div className="text-center mb-8">
+      <div className="container mx-auto px-4 relative">
+      <div className="text-center mb-8">
       <h2 className="text-3xl font-bold">About Me</h2>
       <p className="text-gray-600 mt-2">The new common language will be more simple and regular than.</p>
-    </div>
-    <div className="flex flex-col md:flex-row items-center">
+     </div>
+      <div className="flex flex-col md:flex-row items-center">
       <div className="md:w-3/12 w-full mb-6 md:mb-0">
         <img
           src="\src\Public\about.jpg"
@@ -84,7 +143,7 @@ const Profile = () => {
       </div>
       <div className="md:w-7/12 w-full md:pl-8">
         <p className="text-gray-700 mb-4 leading-relaxed">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sed faucibus mauris, sed porta tellus. Maecenas sit amet sapien mattis, mattis nisi facilisis, dapibus tortor. Morbi non tincidunt lorem. Mauris vehicula diam eu justo tincidunt auctor. Duis euismod non turpis quis varius. Aliquam pulvinar nulla tortor, vitae sollicitudin mauris aliquam sit amet. Vestibulum a dignissim ipsum. Nam egestas, tellus quis vestibulum porttitor, leo elit lacinia nisl, id imperdiet neque dui at mauris.
+          {user.about?user.about:"orem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sed faucibus mauris, sed porta tellus. Maecenas sit amet sapien mattis, mattis nisi facilisis, dapibus tortor. Morbi non tincidunt lorem. Mauris vehicula diam eu justo tincidunt auctor. Duis euismod non turpis quis varius. Aliquam pulvinar nulla tortor, vitae sollicitudin mauris aliquam sit amet. Vestibulum a dignissim ipsum. Nam egestas, tellus quis vestibulum porttitor, leo elit lacinia nisl, id imperdiet neque dui at mauris."}
         </p>
         {/* <div className="flex justify-center mt-6">
           <button className="bg-gray-800 text-white py-2 px-6 rounded-lg shadow hover:bg-gray-600">
@@ -95,7 +154,7 @@ const Profile = () => {
     </div>
 
     <div className="absolute bottom-4 right-4">
-      <a className=" p-2 rounded-full shadow">
+      <a className=" p-2 rounded-full shadow hover:cursor-pointer"  onClick={() => handleOpenModal(['about'])}>
         <img
           src="\src\Public\edit-editor-pen-pencil-write-icon--4.png"
           alt="Edit"
@@ -105,7 +164,6 @@ const Profile = () => {
     </div>
   </div>
 </div>
-
 
      {/* ABOUT END */}
 
@@ -158,7 +216,6 @@ const Profile = () => {
             </a>
            </div>
                 </div>
-
 
                 <div className="col-md-4 relative ">
                     <div className="feature-col bg-white p-8 text-center rounded-lg shadow-2xl transition duration-300 hover:shadow-2xl">
