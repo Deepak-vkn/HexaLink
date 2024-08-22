@@ -30,8 +30,6 @@ export const registerCompany = async (name: string, number: number, email: strin
   }
 };
 
-
-
 export const otpverifycompany=async(otpValue:number,userId:number)=>{
 
   try {
@@ -120,6 +118,37 @@ export const resetPassword = async (password: string,token:string):Promise<any> 
     return response.data;
   } catch (error) {
     console.error('Error in logout call:', error);
+    throw error;
+  }
+};
+
+
+export const saveJob = async (data: any): Promise<any> => {
+  console.log('Reached API with Job Data:', data);
+  try {
+    const response = await axiosInstance.post('/company/createJob', data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in saveJob call:', error);
+    throw error;
+  }
+};
+
+export const fetchJobs = async (companyId: string): Promise<any> => {
+  console.log('Reached fetch jobsss:', companyId);
+  try {
+    const response = await axiosInstance.post('/company/fetchJobs', { companyId }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in fetchJobs call:', error);
     throw error;
   }
 };

@@ -8,7 +8,7 @@ import Companymid from '../middleware/company/companyHome';
 import CompanyNav from '../Components/company/companyNav';
 import CompanyForgetPassword from '../Pages/Company/forgetPassword';
 import CompanyResetPassword from '../Pages/Company/resetPassword';
-
+import CompanyJobs from '../Pages/Company/companyJobs';
 const CompanyRoutes: React.FC = () => {
   return (
     <Routes>
@@ -22,6 +22,7 @@ const CompanyRoutes: React.FC = () => {
       <Route path="/nav" element={<CompanyNav />} />
       <Route path="/forgetpassword" element={<CompanyForgetPassword />} />
       <Route path="/passwordreset" element={<CompanyResetPassword />} />
+      <Route path="/jobs" element={<CompanyJobs />} />
     </Routes>
   );
 };

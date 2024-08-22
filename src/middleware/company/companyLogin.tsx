@@ -9,12 +9,12 @@ const UserLogged: React.FC = () => {
     
     // Accessing userInfo to check if the user is logged in
     const userInfo = useSelector((state: RootState) => state.company.companyInfo);
-    
+   
     // If userInfo exists, the user is logged in, so redirect to '/home'
     if (userInfo) {
-        return <Navigate to='/company-home' />
+        console.log(userInfo)
+        return <Navigate to='/company/home' />
     }
-    // If not logged in, render the child routes
     return <Outlet />
 }
 

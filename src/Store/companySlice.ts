@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define the Company interface
 export interface Company {
-    id: string;
+    _id: string;
     name: string;
     number: number;
     email: string;

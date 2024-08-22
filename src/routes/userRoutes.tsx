@@ -10,8 +10,7 @@ import ForgetPassword from '../Pages/User/forgetPassword';
 import Navbar from '../Components/user/navbar';
 import Otp from '../Components/otp';
 import UserProfile from '../Pages/User/userProfile';
-
-
+import UserPosts from '../Pages/User/userPosts';
 
 const UserRoutes: React.FC = () => {
 
@@ -31,10 +30,9 @@ const UserRoutes: React.FC = () => {
       <Route path="/forgetpassword" element={<ForgetPassword />} />
       <Route path="/otp" element={<Otp />} />
       <Route path="/userProfile" element={<UserProfile />} />
+      <Route path="/posts" element={< UserPosts />} />
     </Routes>
   );
 }
-
-
 
 export default UserRoutes;

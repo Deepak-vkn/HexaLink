@@ -12,7 +12,7 @@ const CompanyLogin = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const navigate = useNavigate();
-    const dispatch = useDispatch(); // Correct usage
+    const dispatch = useDispatch(); 
 
 
 

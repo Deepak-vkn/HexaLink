@@ -188,3 +188,24 @@ export const userPost = async (formData: FormData): Promise<any> => {
     alert('Failed to create post.');
   }
 };
+
+
+export const getUserPosts = async (formData: FormData): Promise<any> => {
+
+  try {
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+  
+    const response = await axiosInstance.post('/userpost', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data
+  } catch (error) {
+
+    console.error('Error creating post:', error);
+    alert('Failed to create post.');
+  }
+};
