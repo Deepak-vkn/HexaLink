@@ -10,3 +10,19 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       return { success: false, message: 'Failed to fetch user posts.' };
     }
   };
+
+
+  export const fetchJobs = async (): Promise<any> => {
+
+    try {
+      const response = await axiosInstance.get('/fetchJobs', {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data; 
+    } catch (error) {
+      console.error('Error in fetchJobs call:', error);
+      throw new Error('Failed to fetch jobs'); 
+    }
+  };

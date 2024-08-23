@@ -10,7 +10,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 const home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const user = useSelector((state: RootState) => state.user.userInfo);
+  const user:any = useSelector((state: RootState) => state.user.userInfo);
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);

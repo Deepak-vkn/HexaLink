@@ -3,27 +3,43 @@ import CompanyNav from '../../Components/company/companyNav';
 import Modal from '../../Components/company/modal';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import { saveJob, fetchJobs } from '../../api/company/post';
+import { saveJob, fetchJobs,updateJob } from '../../api/company/post';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 
 const CompanyJobs: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const company = useSelector((state: RootState) => state.company.companyInfo);
-  const [jobs, setJobs] = useState<any[]>([]); // Adjust the type based on your job data
+  const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedJob, setSelectedJob] = useState<any>(null); // Adjust the type based on your job data
+  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [viewMode, setViewMode] = useState(false);
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    setViewMode(true);
 
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
+  }
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditMode(false);
+    setSelectedJob(null); 
+    setViewMode(false);
+  };
 
   const handleViewJob = (job: any) => {
     setSelectedJob(job);
     setIsModalOpen(true);
   };
-  
+
+  const handleEditJob = (job: any) => {
+    setSelectedJob(job);
+    setEditMode(true);
+    setIsModalOpen(true);
+  };
+
   const fetchAvailableJobs = async () => {
     setLoading(true);
     try {
@@ -50,27 +66,41 @@ const CompanyJobs: FC = () => {
   const handleSaveJob = async (data: any) => {
     try {
       const companyId = company?._id;
-
+  
       if (!companyId) {
         throw new Error('Company ID is missing');
       }
-
+  
       const payload = { ...data, companyId };
-
-      const response = await saveJob(payload);
-
-      if (response.success) {
-        toastr.success(response.message);
-        fetchAvailableJobs(); // Refresh the jobs list after saving a new job
+  
+      let response;
+  
+      if (editMode && selectedJob?._id) {
+        // Handle job update
+        response = await updateJob(selectedJob._id, payload);
+        if (response.success) {
+          toastr.success('Job updated successfully!');
+          // Optionally send data to another route here if needed
+        } else {
+          toastr.error(response.message);
+        }
       } else {
-        toastr.error(response.message);
+        // Handle job creation
+        response = await saveJob(payload);
+        if (response.success) {
+          toastr.success('Job created successfully!');
+        } else {
+          toastr.error(response.message);
+        }
       }
-
+  
+      fetchAvailableJobs(); 
       handleCloseModal();
     } catch (error) {
       console.error('Error saving job:', error);
     }
   };
+  
 
   const getStatusClass = (status: string) => {
     switch (status) {
@@ -136,19 +166,19 @@ const CompanyJobs: FC = () => {
                     </span>
                   </div>
                   <div className="px-6 pt-4 pb-2 flex justify-between">
-  <button
-    className="bg-gray-800 text-white px-3 py-1 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300"
-     onClick={() => handleViewJob(job)}
-  >
-    View
-  </button>
-  <button
-    className="bg-gray-400 text-white px-3 py-1 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
-  >
-    Edit
-  </button>
-</div>
-
+                    <button
+                      className="bg-gray-800 text-white px-3 py-1 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      onClick={() => handleViewJob(job)}
+                    >
+                      View
+                    </button>
+                    <button
+                      className="bg-gray-400 text-white px-3 py-1 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      onClick={() => handleEditJob(job)}
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
               ))
             ) : (
@@ -163,7 +193,7 @@ const CompanyJobs: FC = () => {
         onClose={handleCloseModal}
         onSaveChanges={handleSaveJob}
         fields={[
-          'Title',
+          'title',
           'location',
           'description',
           'package',
@@ -172,9 +202,11 @@ const CompanyJobs: FC = () => {
           'status',
           'skill',
           'experience',
-          'level'
+          'level',
         ]}
         jobDetails={selectedJob}
+        editMode={editMode}
+        viewMode={viewMode}
       />
     </>
   );

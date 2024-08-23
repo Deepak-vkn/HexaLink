@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { logoutcall } from '../../api/user/post';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { logout } from '../../Store/userSlice';
 
 interface NavbarProps {
@@ -29,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
       console.log('Logout triggered');
       const result = await logoutcall('user');
       if (result.success) {
-        console.log('logut')
+        console.log('Logout successful');
         dispatch(logout());
         navigate('/');
         setIsDropdownOpen(false); 
@@ -41,7 +41,6 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
   };
 
   useEffect(() => {
-    
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
@@ -58,34 +57,34 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
   return (
     <nav className="sticky top-0 z-10 block w-full max-w-full px-4 py-2 text-gray-800 bg-white border rounded-none shadow-md lg:px-8 lg:py-2">
       <div className="flex items-center justify-between">
-        <a
-          href="#"
+        <Link
+          to="/"
           className="mr-4 block cursor-pointer py-1.5 font-sans text-base font-medium leading-relaxed text-inherit antialiased"
         >
           Hexa Link
-        </a>
+        </Link>
         <div className="flex items-center gap-4">
           <div className="hidden mr-4 lg:block">
             <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
               <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <a href="#" className="flex items-center">
+                <Link to="/" className="flex items-center">
                   HOME
-                </a>
+                </Link>
               </li>
               <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <a href="#" className="flex items-center">
+                <Link to="/jobs" className="flex items-center">
                   JOBS
-                </a>
+                </Link>
               </li>
               <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <a href="#" className="flex items-center">
-                  MESSAGE
-                </a>
+                <Link to="/messages" className="flex items-center">
+                  MESSAGES
+                </Link>
               </li>
               <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <a href="#" className="flex items-center">
+                <Link to="/profile" className="flex items-center">
                   PROFILE
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -95,7 +94,7 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
               className="select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
               type="button"
             >
-              <span>{user ? user.name : 'sample'}</span>
+              <span>{user ? user.name : 'Sample'}</span>
             </button>
             {/* Dropdown menu */}
             {isDropdownOpen && (
@@ -143,24 +142,24 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
         <div className="lg:hidden">
           <ul className="flex flex-col gap-2 mt-2 mb-4">
             <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              <a href="#" className="flex items-center">
+              <Link to="/" className="flex items-center">
                 HOME
-              </a>
+              </Link>
             </li>
             <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              <a href="#" className="flex items-center">
+              <Link to="/jobs" className="flex items-center">
                 JOBS
-              </a>
+              </Link>
             </li>
             <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              <a href="#" className="flex items-center">
-                MESSAGE
-              </a>
+              <Link to="/messages" className="flex items-center">
+                MESSAGES
+              </Link>
             </li>
             <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              <a href="#" className="flex items-center">
+              <Link to="/profile" className="flex items-center">
                 PROFILE
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

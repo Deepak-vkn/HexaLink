@@ -11,6 +11,7 @@ import Navbar from '../Components/user/navbar';
 import Otp from '../Components/otp';
 import UserProfile from '../Pages/User/userProfile';
 import UserPosts from '../Pages/User/userPosts';
+import UserJobs from '../Pages/User/jobs';
 
 const UserRoutes: React.FC = () => {
 
@@ -24,13 +25,13 @@ const UserRoutes: React.FC = () => {
       <Route element={<Usermid />}>
         <Route path="/home" element={<Userhome />} />
       </Route>
-
       <Route path="/nav" element={<Navbar />} />
       <Route path="/resetPassword" element={<UserResetPaaword />} />
       <Route path="/forgetpassword" element={<ForgetPassword />} />
       <Route path="/otp" element={<Otp />} />
-      <Route path="/userProfile" element={<UserProfile />} />
+      <Route path="/profile" element={<UserProfile />} />
       <Route path="/posts" element={< UserPosts />} />
+      <Route path="/jobs" element={< UserJobs />} />
     </Routes>
   );
 }

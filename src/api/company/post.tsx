@@ -152,3 +152,18 @@ export const fetchJobs = async (companyId: string): Promise<any> => {
     throw error;
   }
 };
+
+export const updateJob = async (jobId: string, data: any): Promise<any> => {
+  console.log('Reached API with update job Data:', data, jobId);
+  try {
+    const response = await axiosInstance.post(`/company/updateJob/${jobId}`, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in updateJob call:', error);
+    throw error;
+  }
+};
