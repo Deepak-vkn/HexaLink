@@ -161,7 +161,10 @@ export const updateUser = async (userId:string,user: any): Promise<any> => {
         'Content-Type': 'application/json',
       },
     });
+
+    console.log('after updteed  data ',response.data.user)
     return response.data;
+
   } catch (error) {
     console.error('Error in updateUser call:', error);
     throw error;
@@ -207,5 +210,50 @@ export const getUserPosts = async (formData: FormData): Promise<any> => {
 
     console.error('Error creating post:', error);
     alert('Failed to create post.');
+  }
+};
+
+
+export const applyJob = async (formData: FormData): Promise<any> => {
+
+  try {
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
+    
+    const response = await axiosInstance.post('/applyJob', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data
+  } catch (error) {
+
+    console.error('Error creating post:', error);
+    alert('Failed to create post.');
+  }
+};
+
+
+
+export const updateEducation = async (userId: string, index: number,field:string): Promise<any> => {
+  console.log('raeched apu')
+  try {
+    const response = await axiosInstance.post('/updateEducation', {
+      userId: userId,
+      index: index,
+      field:field
+    });
+
+  
+    return response.data;
+  } catch (error) {
+ 
+    console.error('Error updating education:', error);
+
+    alert('Failed to update education.');
+
+
+    throw error;
   }
 };

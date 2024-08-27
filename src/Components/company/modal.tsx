@@ -227,7 +227,6 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
                 />
               </div>
             )}
-
             {fields.includes('level') && (
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Level</label>
@@ -245,7 +244,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
         <div className="flex justify-end p-4 border-t border-gray-200 dark:border-gray-700">
           <button
             type="button"
-            className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+            className="px-4 py-2 text-white bg-gray-800 hover:bg-gray-600 rounded-md"
             onClick={handleSaveChanges}
              disabled={!editMode && !viewMode}  // Disable button when not in edit mode
           >

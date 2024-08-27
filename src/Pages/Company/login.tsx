@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
-// Import your company login API function here
-import { loginCompany } from '../../api/company/post'; // Replace with actual API call
+
+import { loginCompany } from '../../api/company/post'; 
 import LoginForm from '../../Components/login';
 import { setCompanyCredentials } from '../../Store/companySlice';
 

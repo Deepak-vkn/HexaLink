@@ -7,8 +7,8 @@ interface LoginFormProps {
   password: string;
   setPassword: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  isCompany?: boolean; // Optional prop to determine if it's a company login
-  isAdmin?: boolean; // Optional prop to determine if it's an admin login
+  isCompany?: boolean; 
+  isAdmin?: boolean; 
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPassword, onSubmit, isCompany = false, isAdmin = false }) => {

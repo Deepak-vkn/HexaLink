@@ -28,7 +28,7 @@ const UserRegister = () => {
         const id = data.data._id;
         navigate('/otp', { state: { userid: id } });
       } else {
-        toastr.error(data.message); // Show error using toastr
+        toastr.error(data.message); 
       }
     } catch (error) {
       toastr.error('Error registering user');

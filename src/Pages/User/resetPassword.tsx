@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ResetPassword from '../../Components/resetPassword';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { resetPassword } from '../../api/user/post';  // Adjust the path based on your project structure
+import { resetPassword } from '../../api/user/post'; 
 
 const ResetPasswordPage: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
@@ -23,7 +23,7 @@ const ResetPasswordPage: React.FC = () => {
         return;
       }
     try {
-      // Use the resetPassword function to make the API call
+     
       const response = await resetPassword(newPassword, token);
       if(response.success){
         alert(response.message);

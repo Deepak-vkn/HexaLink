@@ -8,6 +8,7 @@ import { userPost } from '../../api/user/post';
 import { Link } from 'react-router-dom';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
+
 const home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user:any = useSelector((state: RootState) => state.user.userInfo);
@@ -20,13 +21,13 @@ const home = () => {
       const reader = new FileReader();
   
       reader.onloadend = async () => {
-        // Convert the file to Base64 string
+       
         const base64String = reader.result as string;
   
         const formData = new FormData();
         formData.append('file', base64String);
         formData.append('caption', caption);
-        formData.append('userId', user._id); // Ensure user._id is in the correct format
+        formData.append('userId', user._id); 
   
         try {
           const response = await userPost(formData);
@@ -41,7 +42,7 @@ const home = () => {
         }
       };
   
-      // Read the file as Data URL
+ 
       reader.readAsDataURL(file);
     } else {
       toastr.error('File or user ID is missing');
@@ -54,7 +55,7 @@ const home = () => {
       {/* Profile Picture */}
       <img
         className="w-16 h-16 rounded-full mx-auto object-cover"
-        
+        src={user?.image || 'https://via.placeholder.com/150'}
         alt={`${user?.name}'s profile`}
       />
       {/* User Name */}
@@ -115,7 +116,7 @@ const home = () => {
             placeholder="What's on your mind?"
           />
           <button className="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-600">
-            Post
+           Create  Post
           </button>
         </div>
       {/* Create Post Modal */}

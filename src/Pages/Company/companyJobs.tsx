@@ -76,16 +76,16 @@ const CompanyJobs: FC = () => {
       let response;
   
       if (editMode && selectedJob?._id) {
-        // Handle job update
+
         response = await updateJob(selectedJob._id, payload);
         if (response.success) {
           toastr.success('Job updated successfully!');
-          // Optionally send data to another route here if needed
+         
         } else {
           toastr.error(response.message);
         }
       } else {
-        // Handle job creation
+       
         response = await saveJob(payload);
         if (response.success) {
           toastr.success('Job created successfully!');

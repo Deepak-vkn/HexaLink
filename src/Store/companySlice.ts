@@ -1,7 +1,7 @@
 // src/Store/companySlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Define the Company interface
+
 export interface Company {
     _id: string;
     name: string;
@@ -12,7 +12,7 @@ export interface Company {
     is_verified: boolean;
 }
 
-// Define the CompanyAuthState interface
+
 export interface CompanyAuthState {
     companyInfo: Company | null;
     login: boolean;

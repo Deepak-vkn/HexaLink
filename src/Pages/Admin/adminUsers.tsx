@@ -1,7 +1,7 @@
 import AdminNav from '../../Components/admin/adminNav';
 import Table from '../../Components/admin/table';
 import { fetchUsers } from '../../api/admin/get'
-import { blockUser } from '../../api/admin/post'; // Import the block/unblock functions
+import { blockUser } from '../../api/admin/post'; 
 import React, { useState, useEffect } from 'react';
 
 const AdminUsers: React.FC = () => {

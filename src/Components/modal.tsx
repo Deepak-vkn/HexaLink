@@ -1,11 +1,18 @@
 import { FC, useState, useEffect } from 'react';
 
+interface Education {
+  degree?: string;
+  institution?: string;
+  year?: number;
+}
+
 interface User {
   name: string;
   role?: string;
   about?: string;
-  education?: string;
+  education?: Education;
   skills?: string[];
+  image?: string;
 }
 
 interface ModalProps {
@@ -13,25 +20,34 @@ interface ModalProps {
   onClose: () => void;
   user: User | null;
   fields: string[];
-  onSaveChanges: (updatedUser: User) => void; // New prop for the callback
+  onSaveChanges: (updatedUser: User) => void;
 }
 
 const Modal: FC<ModalProps> = ({ isOpen, onClose, user, fields, onSaveChanges }) => {
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [about, setAbout] = useState('');
-  const [education, setEducation] = useState('');
-  const [skills, setSkills] = useState<string[]>([]);
+  const [education, setEducation] = useState<Education>({});
+  const [skill, setSkill] = useState<string>(''); 
+  const [skills, setSkills] = useState<string[]>([]); 
+  const [aboutImage, setAboutImage] = useState<string>(user?.image || '');
 
   useEffect(() => {
     if (user) {
       setName(user.name);
       setRole(user.role || '');
       setAbout(user.about || '');
-      setEducation(user.education || '');
-      setSkills(user.skills || []);
+      setEducation(user.education || {});
+      setSkills(user.skills || []); 
+      setAboutImage(user.image || '');
     }
   }, [user]);
+
+  useEffect(() => {
+    if (skills.length > 0) {
+      handleSaveChanges();
+    }
+  }, [skills]); 
 
   if (!isOpen) return null;
 
@@ -41,11 +57,38 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, user, fields, onSaveChanges })
       role,
       about,
       education,
-      skills,
+      skills, 
+      image: aboutImage,
     };
-    onSaveChanges(updatedUser); // Call the callback function with the updated user data
+    onSaveChanges(updatedUser);
+    setEducation({
+      degree: '',
+      institution: '',
+      year: undefined,
+    });
+    setSkills([]);
     onClose();
   };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAboutImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAddSkill = () => {
+    console.log('Adding skill:', skill); 
+    if (skill.trim() !== '') {
+      setSkills((prev) => [...prev, skill]);
+      setSkill('');
+    }
+  };
+
 
   return (
     <div className="fixed left-0 top-14 z-[1055] block h-full w-full overflow-y-auto overflow-x-hidden outline-none" aria-labelledby="exampleModalComponentsLabel" aria-hidden="true">
@@ -100,39 +143,103 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, user, fields, onSaveChanges })
                 />
               </div>
             )}
+
             {fields.includes('education') && (
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Education</label>
+                <h2 className="text-lg font-semibold text-gray-800">Education Information</h2>
+                <div className="space-y-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Degree</label>
+                    <input
+                      type="text"
+                      className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-primary-400 focus:outline-none transition duration-200 ease-in-out"
+                      placeholder="Degree"
+                      value={education.degree || ''}
+                      onChange={(e) => setEducation(prev => ({ ...prev, degree: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Institution</label>
+                    <input
+                      type="text"
+                      className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-primary-400 focus:outline-none transition duration-200 ease-in-out"
+                      placeholder="Institution"
+                      value={education.institution || ''}
+                      onChange={(e) => setEducation(prev => ({ ...prev, institution: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Year</label>
+                    <input
+                      type="number"
+                      className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-primary-400 focus:outline-none transition duration-200 ease-in-out"
+                      placeholder="Year"
+                      value={education.year || ''}
+                      onChange={(e) => setEducation(prev => ({ ...prev, year: Number(e.target.value) }))}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {fields.includes('image') && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Profile Image</label>
                 <input
-                  type="text"
-                  className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-b-2 focus:border-primary-400 focus:outline-none transition duration-200 ease-in-out"
-                  value={education}
-                  onChange={(e) => setEducation(e.target.value)}
+                  type="file"
+                  className="mt-1 block w-full"
+                  accept="image/*"
+                  onChange={handleImageChange}
                 />
+                {aboutImage && (
+                  <img src={aboutImage} alt="Profile preview" className="mt-4 h-32 w-32 object-cover" />
+                )}
               </div>
             )}
 
             {fields.includes('skills') && (
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Skills (comma separated)</label>
-                <input
-                  type="text"
-                  className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-b-2 focus:border-primary-400 focus:outline-none transition duration-200 ease-in-out"
-                  value={skills.join(', ')}
-                  onChange={(e) => setSkills(e.target.value.split(',').map(skill => skill.trim()))}
-                />
+                <label className="block text-sm font-medium text-gray-700">Skills</label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-primary-400 focus:outline-none transition duration-200 ease-in-out"
+                    value={skill}
+                    onChange={(e) => setSkill(e.target.value)}
+                  />
+                  
+                </div>
+                {skills.length > 0 && (
+                  <ul className="mt-2 space-y-1">
+                    {skills.map((skill, index) => (
+                      <li key={index} className="text-sm text-gray-700">{skill}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </div>
 
-          <div className="flex items-center justify-end p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+          <div className="flex flex-shrink-0 items-center justify-end rounded-b-md border-t-2 border-neutral-100 p-4 dark:border-white/10">
+          <button
+  type="button"
+  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded hover:bg-gray-400"
+  onClick={() => {
+    if (fields.includes('skills')) {
+      handleAddSkill();
+    } else {
+      handleSaveChanges();
+    }
+  }}
+>
+  {fields.includes('skills') ? 'Add Skill' : 'Save Changes'}
+</button>
             <button
-              data-modal-hide="static-modal"
               type="button"
-              className="text-white bg-gray-800 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              onClick={handleSaveChanges}
+              className="ml-2 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-400 rounded hover:bg-secondary-700"
+              onClick={onClose}
             >
-              Save Changes
+              Close
             </button>
           </div>
         </div>

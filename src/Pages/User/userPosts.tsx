@@ -8,14 +8,14 @@ const UserPosts = () => {
   const [posts, setPosts] = useState([]);
   const user = useSelector((state: RootState) => state.user.userInfo);
 
+
   useEffect(() => {
-    console.log('UserPosts component rendered');
-    console.log('User:', user);
+    console.log('logged user is ',user)
     
     const fetchPosts = async () => {
       if (user && user._id) {
         try {
-          console.log('Fetching posts for userId:', user._id);
+          console.log('Fetching posts for userId:', user);
           const postsData = await getUserPosts(user._id);
 
           console.log('PostsData:', postsData);
@@ -32,7 +32,7 @@ const UserPosts = () => {
     };
 
     fetchPosts();
-  }, [user?._id]); // Use `user._id` specifically to avoid unnecessary renders
+  }, [user?._id]); 
 
   console.log('Posts state:', posts);
 

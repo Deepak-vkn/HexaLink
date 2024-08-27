@@ -14,8 +14,6 @@ const ForgetPasswordPage = () => {
     else{
       toastr.error(response.message);
     }
-
-   
   };
 
   return <ForgetPassword isCompany={false} onSubmit={handleForgetPasswordSubmit} />;

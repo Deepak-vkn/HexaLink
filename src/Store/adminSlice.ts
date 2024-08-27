@@ -1,7 +1,7 @@
 // src/Store/adminSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-// Define the Admin interface
+
 export interface Admin {
     id: string;
     name: string;
@@ -9,7 +9,6 @@ export interface Admin {
     password: string;
 }
 
-// Define the AdminAuthState interface
 export interface AdminAuthState {
     adminInfo: Admin | null;
     login: boolean;
