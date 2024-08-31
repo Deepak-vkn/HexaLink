@@ -121,7 +121,10 @@ const Jobs: React.FC = () => {
       <Navbar user={user} />
       <div className="flex flex-grow">
         <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user}/>
+
+
         <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user} />
+        
       </div>
 
       {/* Modal */}

@@ -3,7 +3,7 @@ import CompanyNav from '../../Components/company/companyNav';
 import Modal from '../../Components/company/modal';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import { saveJob, fetchJobs,updateJob } from '../../api/company/post';
+import { saveJob, fetchJobs, updateJob } from '../../api/company/post';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 
@@ -16,16 +16,17 @@ const CompanyJobs: FC = () => {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [editMode, setEditMode] = useState(false);
   const [viewMode, setViewMode] = useState(false);
+  const [sortBy, setSortBy] = useState<'active' | 'inactive' | 'all'>('all'); // New state for sorting
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
     setViewMode(true);
+  };
 
-  }
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditMode(false);
-    setSelectedJob(null); 
+    setSelectedJob(null);
     setViewMode(false);
   };
 
@@ -43,7 +44,8 @@ const CompanyJobs: FC = () => {
   const fetchAvailableJobs = async () => {
     setLoading(true);
     try {
-      const response = await fetchJobs(company?._id as string);
+        
+      const response = await fetchJobs(company?._id as string, sortBy); // Pass sortBy as a parameter
       if (response.success) {
         setJobs(response.jobs);
       } else {
@@ -61,31 +63,28 @@ const CompanyJobs: FC = () => {
     if (company?._id) {
       fetchAvailableJobs();
     }
-  }, [company]);
+  }, [company, sortBy]); // Re-fetch jobs when company ID or sortBy changes
 
   const handleSaveJob = async (data: any) => {
     try {
       const companyId = company?._id;
-  
+
       if (!companyId) {
         throw new Error('Company ID is missing');
       }
-  
-      const payload = { ...data, companyId };
-  
-      let response;
-  
-      if (editMode && selectedJob?._id) {
 
+      const payload = { ...data, companyId };
+
+      let response;
+
+      if (editMode && selectedJob?._id) {
         response = await updateJob(selectedJob._id, payload);
         if (response.success) {
           toastr.success('Job updated successfully!');
-         
         } else {
           toastr.error(response.message);
         }
       } else {
-       
         response = await saveJob(payload);
         if (response.success) {
           toastr.success('Job created successfully!');
@@ -93,14 +92,13 @@ const CompanyJobs: FC = () => {
           toastr.error(response.message);
         }
       }
-  
-      fetchAvailableJobs(); 
+
+      fetchAvailableJobs();
       handleCloseModal();
     } catch (error) {
       console.error('Error saving job:', error);
     }
   };
-  
 
   const getStatusClass = (status: string) => {
     switch (status) {
@@ -117,17 +115,57 @@ const CompanyJobs: FC = () => {
     <>
       <div className="flex min-h-screen">
         <CompanyNav title={'Jobs'} />
-        <button
-          data-modal-hide="static-modal"
-          type="button"
-          className="fixed top-16 right-4 text-white bg-gray-800 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          onClick={handleOpenModal}
-        >
-          Create Job
-        </button>
 
         <div className="flex-1 ml-64 p-2">
-          <div className="flex flex-wrap justify-start mt-20">
+          <div className="flex justify-end items-center mt-16 space-x-4">
+            <button
+              data-modal-hide="static-modal"
+              type="button"
+              className="text-white bg-gray-800 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              onClick={handleOpenModal}
+            >
+              Create Job
+            </button>
+
+            <div className="relative">
+              <input
+                type="search"
+                className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 pr-10 leading-5 text-gray-900 placeholder-gray-500"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <button
+                type="button"
+                className="absolute right-0 top-0 m-1 flex h-full w-10 items-center justify-center text-gray-500 hover:text-gray-900"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-5.197-5.197M16.5 16.5A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <select
+              onChange={(e) => setSortBy(e.target.value as 'active' | 'inactive' | 'all')}
+              className="px-4 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="all">All Jobs</option>
+              <option value="active">Active Jobs</option>
+              <option value="inactive">Inactive Jobs</option>
+            </select>
+          </div>
+
+          <div className="flex flex-wrap justify-start mt-8">
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">{error}</p>}
             {jobs.length > 0 ? (
@@ -173,7 +211,7 @@ const CompanyJobs: FC = () => {
                       View
                     </button>
                     <button
-                      className="bg-gray-400 text-white px-3 py-1 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="bg-gray-400 text-white px-3 py-1 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
                       onClick={() => handleEditJob(job)}
                     >
                       Edit
@@ -182,7 +220,7 @@ const CompanyJobs: FC = () => {
                 </div>
               ))
             ) : (
-              <p>No jobs available.</p>
+              !loading && <p>No jobs found.</p>
             )}
           </div>
         </div>
@@ -191,20 +229,8 @@ const CompanyJobs: FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onSaveChanges={handleSaveJob}
-        fields={[
-          'title',
-          'location',
-          'description',
-          'package',
-          'expires',
-          'opening',
-          'status',
-          'skill',
-          'experience',
-          'level',
-        ]}
-        jobDetails={selectedJob}
+        onSave={handleSaveJob}
+        job={selectedJob}
         editMode={editMode}
         viewMode={viewMode}
       />

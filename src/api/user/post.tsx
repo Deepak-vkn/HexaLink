@@ -257,3 +257,15 @@ export const updateEducation = async (userId: string, index: number,field:string
     throw error;
   }
 };
+
+
+ export const sendToBackend = async (query: string) => {
+  try {
+
+    const response = await axiosInstance.post('/search', { query });
+    return response.data
+  } catch (error) {
+    console.error("Error sending search term to backend:", error);
+  }
+};
+

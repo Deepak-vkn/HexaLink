@@ -26,3 +26,14 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       throw new Error('Failed to fetch jobs'); 
     }
   };
+  export async function fetchFollowDocument(userId: string): Promise<any> {
+    try {
+      const response = await axiosInstance.get(`/follow?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching follow document:', error);
+      return { success: false, message: 'Failed to fetch follow data' };
+    }
+  }
+  
+  

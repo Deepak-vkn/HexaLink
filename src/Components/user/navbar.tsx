@@ -1,8 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { logoutcall } from '../../api/user/post';
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { logoutcall, sendToBackend } from '../../api/user/post';
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { logout } from '../../Store/userSlice';
+import { IoIosSearch } from "react-icons/io";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 interface NavbarProps {
   user?: any | null;
@@ -11,9 +18,14 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ user }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -45,6 +57,9 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setIsModalOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -53,6 +68,28 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const handleSearchChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchQuery(value);
+
+    if (value) {
+      const results = await sendToBackend(value); // Adjust this to match your actual API response structure
+      setSearchResults(results);
+      setIsModalOpen(true); // Show the modal with search results
+    } else {
+      setSearchResults([]);
+      setIsModalOpen(false);
+    }
+  };
+
+  const handleItemClick = (result:any) => {
+    console.log('clcied profile navigate')
+    navigate(`/profile`, {
+      state: { user: result, isCurrentUser: false }
+    });
+  };
+
 
   return (
     <nav className="sticky top-0 z-10 block w-full max-w-full px-4 py-2 text-gray-800 bg-white border rounded-none shadow-md lg:px-8 lg:py-2">
@@ -88,6 +125,44 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
               </li>
             </ul>
           </div>
+
+          {/* Search bar */}
+          <div className="hidden lg:flex items-center relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder="Search users..."
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+            <button
+              id="search-button"
+              type="button"
+              className="btn btn-primary ml-2 py-2 px-4"
+            >
+              <IoIosSearch />
+            </button>
+
+            {/* Modal displaying search results */}
+            {isModalOpen && searchResults?.length > 0 && (
+              <div ref={modalRef} className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg z-20">
+                <ul>
+                {searchResults.map((result: any) => (
+        <li key={result.id} className="p-2 hover:bg-gray-100 cursor-pointer flex items-center">
+          <img 
+            src={result.image} 
+            alt={result.name} 
+            className="w-8 h-8 rounded-full mr-3"
+            onClick={() => handleItemClick(result)} 
+          />
+          {result.name}
+        </li>
+      ))}
+              </ul>
+              </div>
+            )}
+          </div>
+
           <div className="relative flex items-center gap-x-1">
             <button
               onClick={toggleDropdown}
@@ -115,6 +190,7 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
               </div>
             )}
           </div>
+
           <button
             className="relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-inherit transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
             type="button"

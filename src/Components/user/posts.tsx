@@ -1,4 +1,7 @@
 import React from 'react';
+import { IoMdHeartEmpty, } from "react-icons/io";
+import { FaRegComment } from "react-icons/fa";
+import { CiSaveDown2 } from "react-icons/ci";
 
 interface Post {
   _id: string;
@@ -44,12 +47,8 @@ const Posts: React.FC<PostsProps> = ({ posts }) => {
                 {/* Icons */}
                 <div className="flex justify-center mt-2"> {/* Adjusted margin-top */}
                   <div className="flex space-x-4 bg-gray-100 py-1 px-4 rounded-full shadow-lg ">
-                    <button className="p-2 rounded-full bg">
-                      <img
-                        src="/src/Public/like.png"
-                        alt="Like"
-                        className="w-6 h-6"
-                      />
+                    <button className="p-2 rounded-full">
+                      <IoMdHeartEmpty className="w-6 h-6 text-black" />
                     </button>
                     <button className="p-2 rounded-full">
                       <img

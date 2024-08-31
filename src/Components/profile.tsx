@@ -1,11 +1,12 @@
 import React, { useState,useEffect } from 'react';
 import Modal from './modal';
 import { updateUser,updateEducation } from '../api/user/post';
-import { getUserPosts } from '../api/user/get'
+import { getUserPosts ,fetchFollowDocument} from '../api/user/get'
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 interface UserProfileProps {
-  user?: any
+  user?: any;
+  isCurrentUser:boolean;
 }
 interface Post {
   image: string;
@@ -13,20 +14,23 @@ interface Post {
   postAt: string; 
 }
 
-const Profile: React.FC<UserProfileProps> = ({ user }) => {
+const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [fieldsToShow, setFieldsToShow] = useState<string[]>([]);
   const [userData, setUserData] = useState<any | null>(user);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [followData, setFollowData] = useState(null);
 
 
   const handleOpenModal = (fields: string[]) => {
       setFieldsToShow(fields);
       setIsModalOpen(true);
   };
+
   const handleCloseModal = () => {
       setIsModalOpen(false);
   };
+
   const handleSaveChanges = async (updatedUser: any) => {
       try {
           // Function to find changed fields
@@ -80,6 +84,7 @@ const Profile: React.FC<UserProfileProps> = ({ user }) => {
   };
 
 
+
   const handleDelete = async (index: number,field) => {
     try {
       const response = await updateEducation(user._id, index,field);
@@ -98,28 +103,37 @@ const Profile: React.FC<UserProfileProps> = ({ user }) => {
     }
   };
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchPostsAndFollowData = async () => {
       if (user && user._id) {
         try {
           console.log('Fetching posts for userId:', user._id);
+
+          // Fetching user posts
           const postsData = await getUserPosts(user._id);
-
-
           if (postsData.success) {
             setPosts(postsData.posts || []);
-           
           } else {
             toastr.error(postsData.message);
           }
+
+          console.log('Fetching follow data for userId:', user._id);
+          const followResponse = await fetchFollowDocument(user._id);
+          if (followResponse.success) {
+            console.log(followResponse.follow )
+            setFollowData(followResponse.follow || null);
+          } else {
+            toastr.error(followResponse.message);
+          }
+
         } catch (error) {
-          toastr.error('Error fetching posts');
-          console.error('Error fetching posts:', error);
+          toastr.error('Error fetching data');
+          console.error('Error fetching data:', error);
         }
       }
     };
-    fetchPosts();
-    
-      setUserData(user);
+
+    fetchPostsAndFollowData();
+    setUserData(user);
   }, [user]);
 
   return (
@@ -149,31 +163,45 @@ const Profile: React.FC<UserProfileProps> = ({ user }) => {
           </a>
         </div> */}
         <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-white px-4">
-  <h5 className="text-xl mb-2">Hello, I'm</h5>
-  <h2 className="text-5xl font-bold mb-4">{user.name}</h2>
-  <p className="text-center mb-6 max-w-lg">
-    {user.role?user.role:'Add Your Role'}
-  </p>
-  <div className="flex space-x-6">
-    <div className="flex flex-col items-center">
-      <span className="text-2xl font-semibold ">244</span>
-      <span className="text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300">Following</span>
-    </div>
-    <div className="flex flex-col items-center">
-      <span className="text-2xl font-semibold">200</span>
-      <span className="text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300">Followers</span>
-    </div>
+        <h5 className="text-xl mb-2">Hello, I'm</h5>
+        <h2 className="text-5xl font-bold mb-4">{user.name}</h2>
+        <p className="text-center mb-6 max-w-lg">
+          {user.role?user.role:'Add Your Role'}
+        </p>
+        <div className="flex space-x-6">
+  <div className="flex flex-col items-center">
+    <button className="w-32 text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300">
+      Message
+    </button>
+    <span className="text-2xl font-semibold mt-2">244</span>
+    <span className="text-sm text-white">Following</span>
+  </div>
+  <div className="flex flex-col items-center">
+    <button className="w-32 text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300">
+      Follow
+    </button>
+    <span className="text-2xl font-semibold mt-2">200</span>
+    <span className="text-sm text-white">Followers</span>
   </div>
 </div>
-<div className="absolute bottom-4 right-4">
-    <button className=" text-white p-2 rounded-full shadow "   onClick={() => handleOpenModal(['name','role'])} >
-      <img
-        src="\src\Public\edit-editor-pen-pencil-write-icon--4.png"
-        alt="Edit"
-        className="w-6 h-6"
-      />
-    </button>
-  </div>
+
+
+      </div>
+      {isCurrentUser && (
+        <div className="absolute bottom-4 right-4">
+          <button
+            className="text-white p-2 rounded-full shadow"
+            onClick={() => handleOpenModal(['name', 'role'])}
+          >
+            <img
+              src="/src/Public/edit-editor-pen-pencil-write-icon--4.png"
+              alt="Edit"
+              className="w-6 h-6"
+            />
+          </button>
+        </div>
+      )}
+
       </div>
       
       {/* COBER IMAGE END */}
@@ -206,15 +234,21 @@ const Profile: React.FC<UserProfileProps> = ({ user }) => {
         </div> */}
       </div>
     </div>
-    <div className="absolute bottom-4 right-4">
-      <a className=" p-2 rounded-full shadow hover:cursor-pointer"  onClick={() => handleOpenModal(['about','image'])}>
-        <img
-          src="\src\Public\edit-editor-pen-pencil-write-icon--4.png"
-          alt="Edit"
-          className="w-6 h-6"
-        />
-      </a>
-    </div>
+    {isCurrentUser && (
+  <div className="absolute bottom-4 right-4">
+    <button
+      className="p-2 rounded-full shadow hover:cursor-pointer"
+      onClick={() => handleOpenModal(['about', 'image'])}
+    >
+      <img
+        src="/src/Public/edit-editor-pen-pencil-write-icon--4.png"
+        alt="Edit"
+        className="w-6 h-6"
+      />
+    </button>
+  </div>
+)}
+
   </div>
 </div>
 
@@ -229,18 +263,20 @@ const Profile: React.FC<UserProfileProps> = ({ user }) => {
           <p className="text-gray-600 mt-2">
             There are many variations of passages of Lorem Ipsum available, but the majority have suffered
           </p>
-          <div className="absolute top-0 right-0 mt-4 mr-4">
-            <a
-              className="p-2 rounded-full shadow hover:cursor-pointer"
-              onClick={() => handleOpenModal(['education'])}
-            >
-              <img
-                src="/src/Public/add.png"
-                alt="Add"
-                className="w-6 h-6"
-              />
-            </a>
-          </div>
+          {isCurrentUser && (
+  <div className="absolute top-0 right-0 mt-4 mr-4">
+    <button
+      className="p-2 rounded-full shadow hover:cursor-pointer"
+      onClick={() => handleOpenModal(['education'])}
+    >
+      <img
+        src="/src/Public/add.png"
+        alt="Add"
+        className="w-6 h-6"
+      />
+    </button>
+  </div>
+)}
         </div>
 
         <div className="row feature-row grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -252,15 +288,21 @@ const Profile: React.FC<UserProfileProps> = ({ user }) => {
                   <h4 className="text-xl font-semibold mb-2">Program : {edu.degree || 'Degree'}</h4>
                   <p className="text-gray-600">Institution : {edu.institution || 'Institution'}</p>
                   <p className="text-gray-600">Year of Completion {edu.year || 'Year'}</p>
-                  <div className="absolute bottom-4 right-4 flex space-x-2">
-                    <a className="p-2 rounded-full shadow hover:bg-gray-100"  onClick={() => handleDelete(index,'education')}>
-                      <img
-                        src="/src/Public/delete.png"
-                        alt="Delete"
-                        className="w-4 h-4"
-                      />
-                    </a>
-                  </div>
+                  {isCurrentUser && (
+  <div className="absolute bottom-4 right-4 flex space-x-2">
+    <button
+      className="p-2 rounded-full shadow hover:bg-gray-100"
+      onClick={() => handleDelete(index, 'education')}
+    >
+      <img
+        src="/src/Public/delete.png"
+        alt="Delete"
+        className="w-4 h-4"
+      />
+    </button>
+  </div>
+)}
+
                 </div>
               </div>
             ))
@@ -281,33 +323,41 @@ const Profile: React.FC<UserProfileProps> = ({ user }) => {
       <p className="text-gray-600 mt-2 text-sm">
         A showcase of the technologies I work with and my proficiency in them.
       </p>
-      <div className="absolute bottom-3 right-4">
-                <a className="p-2 rounded-full shadow hover:cursor-pointer"    onClick={() => handleOpenModal(['skills'])}>
-                    <img
-                        src="\src\Public\add.png" 
-                        alt="Add"
-                        className="w-6 h-6"
-                    />
-                </a>
-              </div>
+      {isCurrentUser && (
+  <div className="absolute bottom-3 right-4">
+    <button
+      className="p-2 rounded-full shadow hover:cursor-pointer"
+      onClick={() => handleOpenModal(['skills'])}
+    >
+      <img
+        src="/src/Public/add.png"
+        alt="Add"
+        className="w-6 h-6"
+      />
+    </button>
+  </div>
+)}
+
     </div>
     <div className="row skill-row grid grid-cols-2 md:grid-cols-7 gap-4">
       {user.skill.map((skill: string, index: number) => (
         <div key={index} className="col-md-3">
           <div className="relative skill-col bg-white p-4 text-center rounded-lg shadow-md transition duration-300 hover:shadow-lg">
             <h4 className="text-md font-semibold mb-1">{skill}</h4>
-            <div className="absolute bottom-1 right-2">
-              <button
-                className="p-2 rounded-full shadow"
-                onClick={() => handleDelete(index,'skill')}
-              >
-                <img
-                src="\src\Public\delete.png" 
-                alt="Edit"
-                className="w-4 h-4"
-            />
-              </button>
-            </div>
+            {isCurrentUser && (
+  <div className="absolute bottom-1 right-2">
+    <button
+      className="p-2 rounded-full shadow"
+      onClick={() => handleDelete(index, 'skill')}
+    >
+      <img
+        src="/src/Public/delete.png"
+        alt="Delete"
+        className="w-4 h-4"
+      />
+    </button>
+  </div>
+)}
           </div>
         </div>
       ))}

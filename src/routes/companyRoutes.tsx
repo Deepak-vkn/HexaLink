@@ -8,7 +8,7 @@ import Companymid from '../middleware/company/companyHome';
 import CompanyNav from '../Components/company/companyNav';
 import CompanyForgetPassword from '../Pages/Company/forgetPassword';
 import CompanyResetPassword from '../Pages/Company/resetPassword';
-import CompanyJobs from '../Pages/Company/companyJobs';
+import CompanyJobs from '../Pages/Company/companyJobs'
 const CompanyRoutes: React.FC = () => {
   return (
     <Routes>
