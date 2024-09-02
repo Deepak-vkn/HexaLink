@@ -1,7 +1,9 @@
 import React, { useState,useEffect } from 'react';
 import Modal from './modal';
-import { updateUser,updateEducation } from '../api/user/post';
+import { updateUser,updateEducation,followRequest } from '../api/user/post';
 import { getUserPosts ,fetchFollowDocument} from '../api/user/get'
+import { useSelector } from 'react-redux';
+import { RootState } from '../Store/store'
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 interface UserProfileProps {
@@ -20,7 +22,10 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   const [userData, setUserData] = useState<any | null>(user);
   const [posts, setPosts] = useState<Post[]>([]);
   const [followData, setFollowData] = useState(null);
-
+  const [isFollowed, setIsFollowed] = useState<boolean>(false); 
+  const [followButtonText, setFollowButtonText] = useState<string>('Follow');
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false); // Track button state// Track if the user is followed
+  const mainUser = useSelector((state: RootState) => state.user.userInfo);
 
   const handleOpenModal = (fields: string[]) => {
       setFieldsToShow(fields);
@@ -33,7 +38,7 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
 
   const handleSaveChanges = async (updatedUser: any) => {
       try {
-          // Function to find changed fields
+       
           const getChangedFields = (originalUser: any, updatedUser: any) => {
               if (!originalUser) return updatedUser;
 
@@ -56,12 +61,11 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
               return;
           }
 
-          // Send the changed fields along with the user ID to the backend
+
           const response = await updateUser(userData?._id, changedFields);
           console.log('User updated successfully:', response);
           if (response && response.success) {
-              
-              // Update local user state with the updated user object from the backend
+ 
               setUserData((prevUserData) => {
                 console.log('Previous user data:', prevUserData);
                
@@ -83,12 +87,9 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
       handleCloseModal();
   };
 
-
-
   const handleDelete = async (index: number,field) => {
     try {
       const response = await updateEducation(user._id, index,field);
-      
       // Check the response to determine if the update was successful
       if (response.success) {
         toastr.success(response.message);
@@ -102,40 +103,79 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
       toastr.error('Error deleting education');
     }
   };
-  useEffect(() => {
-    const fetchPostsAndFollowData = async () => {
-      if (user && user._id) {
-        try {
-          console.log('Fetching posts for userId:', user._id);
 
-          // Fetching user posts
-          const postsData = await getUserPosts(user._id);
-          if (postsData.success) {
-            setPosts(postsData.posts || []);
-          } else {
-            toastr.error(postsData.message);
-          }
+  const fetchData = async () => {
+    if (user && user._id) {
+      try {
+        console.log('Fetching posts for userId:', user._id);
 
-          console.log('Fetching follow data for userId:', user._id);
-          const followResponse = await fetchFollowDocument(user._id);
-          if (followResponse.success) {
-            console.log(followResponse.follow )
-            setFollowData(followResponse.follow || null);
-          } else {
-            toastr.error(followResponse.message);
-          }
-
-        } catch (error) {
-          toastr.error('Error fetching data');
-          console.error('Error fetching data:', error);
+        const postsData = await getUserPosts(user._id);
+        if (postsData.success) {
+          setPosts(postsData.posts || []);
+        } else {
+          toastr.error(postsData.message);
         }
-      }
-    };
 
-    fetchPostsAndFollowData();
+        console.log('Fetching follow data for userId:', user._id);
+        const followResponse = await fetchFollowDocument(user._id);
+        if (followResponse.success) {
+          console.log(followResponse.follow);
+          setFollowData(followResponse.follow || null);
+          if (!isCurrentUser && mainUser?._id) {
+            const currentUserId = mainUser._id;
+            // Check if the current user has sent a follow request
+            const followRequestSent = followResponse.follow.following.some((follow: any) => follow.id === currentUserId && follow.status === 'requested');
+            if (followRequestSent) {
+              setFollowButtonText('Accept');
+              setIsButtonDisabled(false);
+          
+            } else if (followResponse.follow.followers.some((follower: any) => follower.id === currentUserId && follower.status === 'approved')) {
+              setFollowButtonText('Following');
+              setIsButtonDisabled(true);
+      
+            } else {
+              setFollowButtonText('Follow');
+              setIsButtonDisabled(false);
+            
+            }
+          }
+        
+        } else {
+          toastr.error(followResponse.message);
+        }
+      } catch (error) {
+        toastr.error('Error fetching data');
+        console.error('Error fetching data:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
     setUserData(user);
   }, [user]);
 
+  const handleFollowClick = async () => {
+    try {
+      if (!mainUser?._id || !user._id) {
+        console.error('Invalid user IDs for follow action');
+        return; 
+    }
+        const result = await followRequest(mainUser?._id, user._id);
+        if (result) {
+        console.log('Follow action successful:', result);
+        if (result.success) {
+          setFollowButtonText('Requested');
+          setIsButtonDisabled(true);
+        } 
+      } else {
+        console.error('Follow action failed');
+      }
+    } catch (error) {
+        console.error('Error handling follow click:', error);
+
+    }
+};
   return (
     <div>
      <Modal isOpen={isModalOpen}
@@ -170,22 +210,33 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
         </p>
         <div className="flex space-x-6">
   <div className="flex flex-col items-center">
-    <button className="w-32 text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300">
+    {!isCurrentUser &&(<button className="w-32 text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300">
       Message
-    </button>
-    <span className="text-2xl font-semibold mt-2">244</span>
+    </button>)}
+    
+    <span className="text-2xl font-semibold mt-2">
+  {followData?.following.filter(follow => follow.status === 'approved').length}
+</span>
+
     <span className="text-sm text-white">Following</span>
-  </div>
+  </div> 
   <div className="flex flex-col items-center">
-    <button className="w-32 text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300">
-      Follow
-    </button>
-    <span className="text-2xl font-semibold mt-2">200</span>
+  {!isCurrentUser && (
+                <button
+                  className="w-32 text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300"
+                  onClick={handleFollowClick}
+                  disabled={isButtonDisabled} // Disable button based on status
+                >
+                  {followButtonText} {/* Button text changes based on follow status */}
+                </button>
+              )}
+
+<span className="text-2xl font-semibold mt-2">
+  {followData?.followers.filter(follow => follow.status === 'approved').length}
+</span>
     <span className="text-sm text-white">Followers</span>
   </div>
 </div>
-
-
       </div>
       {isCurrentUser && (
         <div className="absolute bottom-4 right-4">
@@ -203,9 +254,7 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
       )}
 
       </div>
-      
       {/* COBER IMAGE END */}
-
 
       {/* ABOUT START */}
 

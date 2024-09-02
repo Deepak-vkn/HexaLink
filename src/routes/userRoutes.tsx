@@ -12,7 +12,7 @@ import Otp from '../Components/otp';
 import UserProfile from '../Pages/User/userProfile';
 import UserPosts from '../Pages/User/userPosts';
 import UserJobs from '../Pages/User/jobs';
-
+import UserNotification from '../Pages/User/userNotification';
 const UserRoutes: React.FC = () => {
 
   return (
@@ -29,9 +29,10 @@ const UserRoutes: React.FC = () => {
       <Route path="/resetPassword" element={<UserResetPaaword />} />
       <Route path="/forgetpassword" element={<ForgetPassword />} />
       <Route path="/otp" element={<Otp />} />
-      <Route path="/profile" element={<UserProfile />} />
+      <Route path="/profile/:userId?" element={<UserProfile />} />
       <Route path="/posts" element={< UserPosts />} />
       <Route path="/jobs" element={< UserJobs />} />
+      <Route path="/notification" element={< UserNotification />} />
     </Routes>
   );
 }

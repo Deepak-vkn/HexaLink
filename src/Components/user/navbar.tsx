@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { logout } from '../../Store/userSlice';
 import { IoIosSearch } from "react-icons/io";
-
+import { IoPerson ,IoNotifications } from "react-icons/io5";
 interface User {
   id: string;
   name: string;
@@ -84,10 +84,12 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
   };
 
   const handleItemClick = (result:any) => {
-    console.log('clcied profile navigate')
-    navigate(`/profile`, {
-      state: { user: result, isCurrentUser: false }
+    console.log('Clicked profile navigate');
+    const userId = result._id; 
+    navigate(`/profile/${userId}`, {
+      state: { isCurrentUser: false }
     });
+
   };
 
 
@@ -120,7 +122,12 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
               </li>
               <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
                 <Link to="/profile" className="flex items-center">
-                  PROFILE
+                <IoPerson />
+                </Link>
+              </li>
+              <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+                <Link to="/notification" className="flex items-center">
+               <IoNotifications />
                 </Link>
               </li>
             </ul>

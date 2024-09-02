@@ -234,8 +234,6 @@ export const applyJob = async (formData: FormData): Promise<any> => {
   }
 };
 
-
-
 export const updateEducation = async (userId: string, index: number,field:string): Promise<any> => {
   console.log('raeched apu')
   try {
@@ -269,3 +267,18 @@ export const updateEducation = async (userId: string, index: number,field:string
   }
 };
 
+
+export const followRequest = async (userId: string,followId: string) => {
+  try {
+console.log('userid is ',userId)
+console.log('follow is ',followId)
+    const response = await axiosInstance.post('/followUser', {userId,followId}, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data
+  } catch (error) {
+    console.error("Error sending search term to backend:", error);
+  }
+};

@@ -26,9 +26,22 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       throw new Error('Failed to fetch jobs'); 
     }
   };
+
   export async function fetchFollowDocument(userId: string): Promise<any> {
     try {
-      const response = await axiosInstance.get(`/follow?userId=${userId}`);
+      console.log('raeched api fetch follow')
+      const response = await axiosInstance.get(`/fetchFollow?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching follow document:', error);
+      return { success: false, message: 'Failed to fetch follow data' };
+    }
+  }
+
+  export async function fetchNotification(userId: string): Promise<any> {
+    try {
+      console.log('raeched api fetch notifictaion')
+      const response = await axiosInstance.get(`/fetchNotification?userId=${userId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching follow document:', error);
@@ -36,4 +49,15 @@ export const getUserPosts = async (userId: string): Promise<any> => {
     }
   }
   
-  
+
+  export const getUser = async (userId: string): Promise<any> => {
+    try {
+      console.log('raeched fetchuserpost',userId)
+      const response = await axiosInstance.get('/fetchUser', { params: { userId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user posts:', error);
+      alert('Failed to fetch user posts.');
+      return { success: false, message: 'Failed to fetch user posts.' };
+    }
+  }; 
