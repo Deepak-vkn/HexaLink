@@ -44,7 +44,7 @@ const UserProfilePage = () => {
 
   return (
     <div>
-      <Navbar user={profileUser} />
+      <Navbar user={user} />
       <UserProfile user={profileUser} isCurrentUser={isCurrentUser} />
     </div>
   );

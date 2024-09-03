@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import Modal from './modal';
-import { updateUser,updateEducation,followRequest } from '../api/user/post';
+import { updateUser,updateEducation,followRequest,unfollowRequest } from '../api/user/post';
 import { getUserPosts ,fetchFollowDocument} from '../api/user/get'
 import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store'
@@ -107,39 +107,53 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   const fetchData = async () => {
     if (user && user._id) {
       try {
-        console.log('Fetching posts for userId:', user._id);
-
         const postsData = await getUserPosts(user._id);
         if (postsData.success) {
           setPosts(postsData.posts || []);
         } else {
           toastr.error(postsData.message);
         }
-
-        console.log('Fetching follow data for userId:', user._id);
+  
         const followResponse = await fetchFollowDocument(user._id);
         if (followResponse.success) {
-          console.log(followResponse.follow);
           setFollowData(followResponse.follow || null);
           if (!isCurrentUser && mainUser?._id) {
             const currentUserId = mainUser._id;
-            // Check if the current user has sent a follow request
-            const followRequestSent = followResponse.follow.following.some((follow: any) => follow.id === currentUserId && follow.status === 'requested');
-            if (followRequestSent) {
+  
+            // Check if the profile user has sent a follow request to the main user
+            const isRequestSentByUser = followResponse.follow.following.some(
+              (follow: any) =>
+                follow.id === currentUserId && follow.status === 'requested'
+            );
+  
+            // If a follow request is sent by the user, show "Accept" button
+            if (isRequestSentByUser) {
               setFollowButtonText('Accept');
               setIsButtonDisabled(false);
-          
-            } else if (followResponse.follow.followers.some((follower: any) => follower.id === currentUserId && follower.status === 'approved')) {
-              setFollowButtonText('Following');
-              setIsButtonDisabled(true);
-      
             } else {
-              setFollowButtonText('Follow');
-              setIsButtonDisabled(false);
-            
+              // Check if the main user is already following the profile user
+              const isFollowing = followResponse.follow.followers.some(
+                (follower: any) =>
+                  follower.id === currentUserId && follower.status === 'approved'
+              );
+              // Check if the main user has sent a follow request to the profile user
+              const isRequested = followResponse.follow.followers.some(
+                (follower: any) =>
+                  follower.id === currentUserId && follower.status === 'requested'
+              );
+  
+              if (isFollowing) {
+                setFollowButtonText('Unfollow');
+                // setIsButtonDisabled(true);
+              } else if (isRequested) {
+                setFollowButtonText('Requested');
+                setIsButtonDisabled(true);
+              } else {
+                setFollowButtonText('Follow');
+                setIsButtonDisabled(false);
+              }
             }
           }
-        
         } else {
           toastr.error(followResponse.message);
         }
@@ -159,23 +173,51 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
     try {
       if (!mainUser?._id || !user._id) {
         console.error('Invalid user IDs for follow action');
-        return; 
-    }
-        const result = await followRequest(mainUser?._id, user._id);
-        if (result) {
-        console.log('Follow action successful:', result);
-        if (result.success) {
-          setFollowButtonText('Requested');
-          setIsButtonDisabled(true);
-        } 
+        return;
+      }
+  
+      let result;
+      if (followButtonText === 'Follow') {
+        // Send follow request from mainUser to the profile user
+        result = await followRequest(mainUser._id, user._id);
+      } else if (followButtonText === 'Accept') {
+        result = await followRequest(user._id, mainUser._id);
+      }
+      else if (followButtonText === 'Unfollow') {
+        await handleUnfollowClick(); // Call the Unfollow function
+        return; // Exit since handleUnfollowClick handles everything
+      }
+  
+      if (result && result.success) {
+        // Fetch updated follow data and posts after follow action
+        await fetchData();
+  
       } else {
-        console.error('Follow action failed');
+        toastr.error('Follow action failed');
       }
     } catch (error) {
-        console.error('Error handling follow click:', error);
-
+      console.error('Error handling follow click:', error);
     }
-};
+  };
+  const handleUnfollowClick = async () => {
+    try {
+      if (!mainUser?._id || !user._id) {
+        console.error('Invalid user IDs for unfollow action');
+        return;
+      }
+  
+      const result = await unfollowRequest(mainUser._id, user._id); // Unfollow request
+      if (result && result.success) {
+        await fetchData(); // Refresh the data to update the UI
+      } else {
+        toastr.error('Unfollow action failed');
+      }
+    } catch (error) {
+      console.error('Error handling unfollow click:', error);
+    }
+  };
+  
+  
   return (
     <div>
      <Modal isOpen={isModalOpen}

@@ -61,3 +61,18 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       return { success: false, message: 'Failed to fetch user posts.' };
     }
   }; 
+
+
+  export const likePost = async (postId: string,userId:string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/likepost', {
+        params: { postId, userId } // Include userId as a parameter
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
+
+  

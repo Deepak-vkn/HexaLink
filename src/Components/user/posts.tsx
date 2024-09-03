@@ -1,8 +1,8 @@
-import React from 'react';
-import { IoMdHeartEmpty, } from "react-icons/io";
+import React, { useState } from 'react';
 import { FaRegComment } from "react-icons/fa";
-import { CiSaveDown2 } from "react-icons/ci";
-
+import { BsSave2 } from "react-icons/bs";
+import { MdOutlineThumbUp } from "react-icons/md";
+import { likePost } from '../../api/user/get';
 interface Post {
   _id: string;
   userId: string;
@@ -13,12 +13,31 @@ interface Post {
   postAt: string;
   __v: number;
 }
-
 interface PostsProps {
   posts: Post[];
+  user:any;
 }
 
-const Posts: React.FC<PostsProps> = ({ posts }) => {
+const Posts: React.FC<PostsProps> = ({ posts,user }) => {
+  const [liked, setLiked] = useState(false);
+
+
+  const handleLikeClick = async (postId: string) => {
+    try {
+      const response = await likePost(postId,user._id);
+      if (response.success) {
+        setLiked(true);
+        console.log('Post liked successfully');
+      } else {
+
+        console.error('Failed to like the post:', response.message);
+      }
+    } catch (error) {
+
+      console.error('An error occurred while liking the post:', error);
+    }
+  };
+  
   return (
     <div className="space-y-4">
       {posts.map((post) => (
@@ -47,22 +66,14 @@ const Posts: React.FC<PostsProps> = ({ posts }) => {
                 {/* Icons */}
                 <div className="flex justify-center mt-2"> {/* Adjusted margin-top */}
                   <div className="flex space-x-4 bg-gray-100 py-1 px-4 rounded-full shadow-lg ">
-                    <button className="p-2 rounded-full">
-                      <IoMdHeartEmpty className="w-6 h-6 text-black" />
+                    <button className="p-2 rounded-full" onClick={() => handleLikeClick(post._id)}>
+                    <MdOutlineThumbUp size={24} className={`${liked ? 'text-blue-500' : 'text-gray-500'}`} /> {/* Apply color based on state */}
                     </button>
                     <button className="p-2 rounded-full">
-                      <img
-                        src="/src/Public/comment.png"
-                        alt="Comment"
-                        className="w-6 h-6"
-                      />
+                      <FaRegComment size={24} />
                     </button>
                     <button className="p-2 rounded-full">
-                      <img
-                        src="/src/Public/save.png"
-                        alt="Save"
-                        className="w-6 h-6"
-                      />
+                      <BsSave2  size={24} />
                     </button>
                   </div>
                 </div>

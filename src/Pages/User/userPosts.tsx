@@ -38,7 +38,7 @@ const UserPosts = () => {
 
   return (
     <div>
-      <Posts posts={posts} />
+      <Posts posts={posts} user={user}/>
     </div>
   );
 }
