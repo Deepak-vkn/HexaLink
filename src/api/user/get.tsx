@@ -85,3 +85,17 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       return { success: false, message: 'Failed to fetch user posts.' };
     }
   }; 
+  export const fetchFollowingPosts = async (userId:string) => {
+    try {
+ 
+      const response = await axiosInstance.get('/fetchFollowingPosts', { params: { userId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user posts:', error);
+      alert('Failed to fetch user posts.');
+      return { success: false, message: 'Failed to fetch user posts.' };
+    }
+  
+  };
+  
+  

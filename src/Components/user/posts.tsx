@@ -5,11 +5,12 @@ import { MdOutlineThumbUp } from "react-icons/md";
 import { CiMenuKebab } from "react-icons/ci";
 import { likePost,deletePost } from '../../api/user/get';
 import CreatePostModal from './handlePost'
-import { updatePost } from '../../api/user/post';
+import { updatePost,addComment } from '../../api/user/post';
+import CommentModal from './commentModal';
 interface Post {
   _id: string;
-  userId: string;
-  likes: { userId: string }[];
+  userId: any;
+  likes:  any ;
   image: string | null;
   caption: string;
   comments: any[];
@@ -20,24 +21,61 @@ interface Post {
 interface PostsProps {
   posts: Post[];
   user: { _id: string };
+  isUser?:boolean
 }
 
-const Posts: React.FC<PostsProps> = ({ posts, user }) => {
+const Posts: React.FC<PostsProps> = ({ posts, user ,isUser=false}) => {
   const [likedPosts, setLikedPosts] = useState<string[]>([]);
   const [postsState, setPostsState] = useState<Post[]>([]);
   const [activePostMenu, setActivePostMenu] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);  // State for modal visibility
   const [editingPost, setEditingPost] = useState<Post | null>(null);  // State for the post being edited
+  const [isCommnetModalOpen, setIsCommnetModalOpen] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+
 
   useEffect(() => {
     console.log('Setting postsState with posts:', posts);
     setPostsState(posts);
   }, [posts]);
 
+  const handleOpenCommentModal = (postId: string) => {
+    setSelectedPostId(postId);
+    setIsCommnetModalOpen(true);
+  };
+
+  const handleCloseCommentModal = () => {
+    setIsCommnetModalOpen(false);
+    setSelectedPostId(null);
+  };
+
+  const handleAddComment = async (message: string) => {
+    if (selectedPostId) {
+      try {
+        const response = await addComment(selectedPostId, user._id, message);
+        if (response.success) {
+          const updatedPost = response.postDoc;
+          setPostsState(prevPosts =>
+            prevPosts.map(post =>
+              post._id === selectedPostId ? updatedPost : post
+            )
+          );
+          console.log('Comment added successfully');
+        } else {
+          console.error('Failed to add comment:', response.message);
+        }
+      } catch (error) {
+        console.error('An error occurred while adding the comment:', error);
+      }
+    }
+    // handleCloseCommentModal();
+  };
+
   const handleLikeClick = async (postId: string) => {
     try {
       const response = await likePost(postId, user._id);
       if (response.success) {
+        console.log('updted post is ', response.postDoc)
         const updatedPost = response.postDoc;
         setPostsState(prevPosts =>
           prevPosts.map(post =>
@@ -73,7 +111,6 @@ const Posts: React.FC<PostsProps> = ({ posts, user }) => {
       setPostsState(posts.filter(post => post._id !== postId));
     }
   };
-
   const handleSave = async (file: File | null, caption: string,postId?:string) => {
     // Handle saving the updated post here
     if(postId){
@@ -105,33 +142,36 @@ const Posts: React.FC<PostsProps> = ({ posts, user }) => {
             <div className="flex items-center">
               <img
                 className="w-12 h-12 rounded-full object-cover"
-                src="https://via.placeholder.com/150"
+                src={post.userId.image}
                 alt="User profile"
               />
               <div className="ml-3">
-                <h4 className="font-semibold text-blue-gray-900">You</h4>
+                <h4 className="font-semibold text-blue-gray-900">{post.userId.name}</h4>
                 <p className="text-gray-500 text-sm">{new Date(post.postAt).toLocaleString()}</p>
               </div>
             </div>
             {/* Three-dot menu */}
-            <div className="relative">
-              <button
-                className="text-gray-600 focus:outline-none"
-                onClick={() => toggleMenu(post._id)}
-              >
-                <CiMenuKebab size={24} />
-              </button>
-              {activePostMenu === post._id && (
-                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-1 z-10">
-                  <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" onClick={() => openEditModal(post)}>
-                    Edit
-                  </button>
-                  <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" onClick={() => deletePostFunction(post._id)}>
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
+            {isUser &&(
+               <div className="relative">
+               <button
+                 className="text-gray-600 focus:outline-none"
+                 onClick={() => toggleMenu(post._id)}
+               >
+                 <CiMenuKebab size={24} />
+               </button>
+               {activePostMenu === post._id && (
+                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-1 z-10">
+                   <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" onClick={() => openEditModal(post)}>
+                     Edit
+                   </button>
+                   <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" onClick={() => deletePostFunction(post._id)}>
+                     Delete
+                   </button>
+                 </div>
+               )}
+             </div>
+            )}
+           
           </div>
 
           {/* Post Content */}
@@ -154,10 +194,10 @@ const Posts: React.FC<PostsProps> = ({ posts, user }) => {
                     <button className="p-2 rounded-full flex flex-col items-center" onClick={() => handleLikeClick(post._id)}>
                       <MdOutlineThumbUp
                         size={24}
-                        className={post.likes.some(like => like.userId === user._id) ? 'text-blue-500' : 'text-gray-500'}
+                        className={post.likes.some(like => like.userId._id === user._id) ? 'text-blue-500' : 'text-gray-500'}
                       />
                     </button>
-                    <button className="p-2 rounded-full">
+                    <button className="p-2 rounded-full"  onClick={() => handleOpenCommentModal(post._id)}>
                       <FaRegComment size={24} />
                     </button>
                     <button className="p-2 rounded-full">
@@ -191,6 +231,12 @@ const Posts: React.FC<PostsProps> = ({ posts, user }) => {
     />
     
       )}
+      <CommentModal
+        isOpen={isCommnetModalOpen}
+        onClose={handleCloseCommentModal}
+        comments={selectedPostId ? postsState.find(post => post._id === selectedPostId)?.comments || [] : []}
+        onAddComment={handleAddComment}
+      />
     </div>
   );
 };

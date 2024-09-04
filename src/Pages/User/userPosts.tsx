@@ -7,8 +7,6 @@ import { RootState } from '../../Store/store';
 const UserPosts = () => {
   const [posts, setPosts] = useState([]);
   const user = useSelector((state: RootState) => state.user.userInfo);
-
-
   useEffect(() => {
     console.log('logged user is ',user)
     
@@ -38,7 +36,7 @@ const UserPosts = () => {
 
   return (
     <div>
-      <Posts posts={posts} user={user}/>
+      <Posts posts={posts} user={user} isUser={true}/>
     </div>
   );
 }
