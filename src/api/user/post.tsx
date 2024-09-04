@@ -296,4 +296,19 @@ console.log('follow is ',unfollowId)
   } catch (error) {
     console.error("Error sending search term to backend:", error);
   }
+}
+  export const updatePost = async (caption: string,postId:string) => {
+    try {
+      console.log('reched update post')
+  
+      const response = await axiosInstance.post('/updatePost', {caption,postId}, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data
+    } catch (error) {
+      console.error("Error sending search term to backend:", error);
+    }
+  
 };

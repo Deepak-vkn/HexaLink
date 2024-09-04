@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (file: File | null, caption: string) => void;
+  onSave: (file: File | null, caption: string,postId?: string) => void;
+  isEditing?: boolean;
+  post?: any | null;
 }
 
-const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose,onSave  }) => {
+const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSave, isEditing = false, post }) => {
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | ArrayBuffer | null>(null);
   const [caption, setCaption] = useState('');
+
+  useEffect(() => {
+    if (isEditing && post) {
+      setCaption(post.caption);
+      setFilePreview(post.image || null);  // Set the image preview if available
+    } else {
+      setCaption('');
+      setFilePreview(null);
+      setFile(null);
+    }
+  }, [isEditing, post]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -24,7 +37,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose,onSav
   };
 
   const handleSave = () => {
-    onSave(file, caption);
+    if (isEditing && post) {
+      onSave(null, caption, post._id);  // Send caption and postId when editing
+    } else {
+      onSave(file, caption);  // Send file and caption when creating
+    }
     onClose();
   };
 
@@ -55,45 +72,49 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose,onSav
           </svg>
         </button>
 
-        <h3 className="text-lg font-semibold mb-4">Create a Post</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {isEditing ? 'Edit Post' : 'Create a Post'}
+        </h3>
 
         {/* File Upload */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
-          <div className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
-            {filePreview && typeof filePreview === 'string' && filePreview.startsWith('data:image/') ? (
-              <img
-                src={filePreview}
-                alt="File Preview"
-                className="w-full h-full object-cover rounded-lg"
+        {!isEditing && (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
+            <div className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+              {filePreview && typeof filePreview === 'string' && filePreview.startsWith('data:image/') ? (
+                <img
+                  src={filePreview}
+                  alt="File Preview"
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center p-5">
+                  <svg
+                    aria-hidden="true"
+                    className="w-10 h-10 mb-3 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M7 16V8m4-4v12m4-8v8m4-4v4M5 8v8m4-8v8m4-4v4m4-8v8"
+                    ></path>
+                  </svg>
+                  <p className="text-sm text-gray-500">Click to upload or drag and drop</p>
+                </div>
+              )}
+              <input
+                type="file"
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={handleFileChange}
               />
-            ) : (
-              <div className="flex flex-col items-center justify-center p-5">
-                <svg
-                  aria-hidden="true"
-                  className="w-10 h-10 mb-3 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M7 16V8m4-4v12m4-8v8m4-4v4M5 8v8m4-8v8m4-4v4m4-8v8"
-                  ></path>
-                </svg>
-                <p className="text-sm text-gray-500">Click to upload or drag and drop</p>
-              </div>
-            )}
-            <input
-              type="file"
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              onChange={handleFileChange}
-            />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Caption */}
         <div className="mb-4">

@@ -74,5 +74,14 @@ export const getUserPosts = async (userId: string): Promise<any> => {
     }
   }; 
 
-
-  
+  export const deletePost = async (postId: string): Promise<any> => {
+    try {
+ 
+      const response = await axiosInstance.get('/deletePost', { params: { postId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user posts:', error);
+      alert('Failed to fetch user posts.');
+      return { success: false, message: 'Failed to fetch user posts.' };
+    }
+  }; 
