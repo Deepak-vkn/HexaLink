@@ -42,6 +42,10 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
     } else {
       onSave(file, caption);  // Send file and caption when creating
     }
+    setFile(null);
+    setFilePreview(null);
+    setCaption('');
+    onClose();
     onClose();
   };
 
@@ -80,13 +84,14 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
         {!isEditing && (
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
-            <div className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
+            <div className="relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
               {filePreview && typeof filePreview === 'string' && filePreview.startsWith('data:image/') ? (
-                <img
-                  src={filePreview}
-                  alt="File Preview"
-                  className="w-full h-full object-cover rounded-lg"
-                />
+               <img
+               src={filePreview}
+               alt="File Preview"
+               className="w-full h-full object-contain rounded-lg"  // Use object-contain instead of object-cover
+             />
+             
               ) : (
                 <div className="flex flex-col items-center justify-center p-5">
                   <svg

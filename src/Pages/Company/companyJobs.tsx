@@ -72,9 +72,7 @@ const CompanyJobs: FC = () => {
       if (!companyId) {
         throw new Error('Company ID is missing');
       }
-
       const payload = { ...data, companyId };
-
       let response;
 
       if (editMode && selectedJob?._id) {
@@ -227,13 +225,15 @@ const CompanyJobs: FC = () => {
       </div>
 
       <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSave={handleSaveJob}
-        job={selectedJob}
-        editMode={editMode}
-        viewMode={viewMode}
-      />
+  isOpen={isModalOpen}
+  onClose={handleCloseModal}
+  onSaveChanges={handleSaveJob}
+  jobDetails={selectedJob}
+  editMode={editMode}
+  viewMode={viewMode}
+  fields={['title', 'location', 'description', 'package', 'expires', 'opening', 'status', 'skill', 'experience', 'level']} // Example of fields
+/>
+
     </>
   );
 };

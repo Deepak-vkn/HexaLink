@@ -11,9 +11,9 @@ const axiosInstance = axios.create({
 // Add response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Check if the response contains user data
+  
     if (response.data && response.data.user) {
-      // Dispatch action to update the user state using the store
+      
       store.dispatch(setCredentials(response.data.user));
     }
     return response;

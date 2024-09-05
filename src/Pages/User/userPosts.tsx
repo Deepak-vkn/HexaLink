@@ -3,15 +3,18 @@ import Posts from '../../Components/user/posts';
 import { getUserPosts } from '../../api/user/get';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
+import Loading from '../../Components/loading';
 
 const UserPosts = () => {
   const [posts, setPosts] = useState([]);
   const user = useSelector((state: RootState) => state.user.userInfo);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   useEffect(() => {
     console.log('logged user is ',user)
     
     const fetchPosts = async () => {
       if (user && user._id) {
+        setIsLoading(true);
         try {
           console.log('Fetching posts for userId:', user);
           const postsData = await getUserPosts(user._id);
@@ -20,11 +23,15 @@ const UserPosts = () => {
 
           if (postsData.success) {
             setPosts(postsData.posts || []);
-          } else {
-            alert(postsData.message || 'No posts found.');
           }
+          //  else {
+          //   alert(postsData.message || 'No posts found.');
+          // }
         } catch (error) {
           console.error('Error fetching posts:', error);
+        }
+        finally {
+          setIsLoading(false); // Set loading to false after fetching
         }
       }
     };
@@ -36,7 +43,13 @@ const UserPosts = () => {
 
   return (
     <div>
-      <Posts posts={posts} user={user} isUser={true}/>
+
+{isLoading ? (
+        <Loading /> // Display a loading component when data is being fetched
+      ) : (
+        <Posts posts={posts} user={user} isUser={true}/>
+      )}
+      
     </div>
   );
 }

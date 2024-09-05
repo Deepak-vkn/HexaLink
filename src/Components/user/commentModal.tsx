@@ -52,19 +52,25 @@ const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, comments, 
           ></path>
         </svg>
       </button>
-  
       <h3 className="text-lg font-semibold mb-4">Comments</h3>
-  
       {/* Comments Section with Fixed Height and Scroll */}
       <div className="max-h-[300px] overflow-y-auto mb-4">
         {comments.length > 0 ? (
           comments.map((comment, index) => (
             <div key={index} className="flex items-start space-x-4 mb-4">
-              <img
-                src={comment.userId.image}
-                alt={`${comment.userId.name}'s profile`}
-                className="w-10 h-10 rounded-full"
-              />
+             {comment.userId.image ? (
+  <img
+    className="w-12 h-12 rounded-full object-cover"
+    src={comment.userId.image}
+    alt={`${comment.userId.name.charAt(0).toUpperCase()}'s profile`}
+  />
+) : (
+  <div className="w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center text-white font-bold text-lg">
+    {comment.userId.name.charAt(0).toUpperCase()}
+  </div>
+)}
+
+
               <div className="flex-1">
                 <p className="font-semibold">{comment.userId.name}</p>
                 <p className="text-gray-600">{comment.message}</p>

@@ -10,12 +10,13 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import { fetchFollowingPosts } from '../../api/user/get';
 import Posts from '../../Components/user/posts';
-
+import Loading from '../../Components/loading';
 
 const home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user:any = useSelector((state: RootState) => state.user.userInfo);
   const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
 
 
@@ -24,6 +25,7 @@ const home = () => {
     
     const fetchPosts = async () => {
       if (user && user._id) {
+        setIsLoading(true);
         try {
           console.log('Fetching posts for userId:', user);
           const postsData = await fetchFollowingPosts(user._id);
@@ -32,11 +34,15 @@ const home = () => {
 
           if (postsData.success) {
             setPosts(postsData.postDoc || []);
-          } else {
-            alert(postsData.message || 'No posts found.');
-          }
+          } 
+          // else {
+          //   alert(postsData.message || 'No posts found.');
+          // }
         } catch (error) {
           console.error('Error fetching posts:', error);
+        }
+        finally {
+          setIsLoading(false); 
         }
       }
     };
@@ -73,7 +79,7 @@ const home = () => {
         }
       };
   
- 
+
       reader.readAsDataURL(file);
     } else {
       toastr.error('File or user ID is missing');
@@ -83,23 +89,38 @@ const home = () => {
     <div>
       <Navbar user={user}/>
       <div className="fixed top-20 left-20 w-64 bg-gray-100 p-4 rounded-lg shadow-md text-center">
-      {/* Profile Picture */}
+  {/* Center Profile Picture */}
+  <div className="flex justify-center">
+    {user?.image ? (
       <img
-        className="w-16 h-16 rounded-full mx-auto object-cover"
-        src={user?.image || 'https://via.placeholder.com/150'}
+        className="w-16 h-16 rounded-full object-cover"
+        src={user.image}
         alt={`${user?.name}'s profile`}
       />
-      {/* User Name */}
-      <h3 className="text-lg font-semibold mt-2 mb-4">{user?.name}</h3>
-      {/* Create Post Button */}
-      <Link
-        to="/posts"
-        className="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-600 block text-center"
-      >
-        Post
-      </Link>
-    </div>
-     <Posts user={user} posts={posts} isUser={false}/>
+    ) : (
+      <div className="w-16 h-16 rounded-full bg-gray-500 flex items-center justify-center text-white font-bold text-lg">
+        {user?.name.charAt(0).toUpperCase()}
+      </div>
+    )}
+  </div>
+  
+  {/* User Name */}
+  <h3 className="text-lg font-semibold mt-2 mb-4">{user?.name}</h3>
+
+  {/* Create Post Button */}
+  <Link
+    to="/posts"
+    className="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-600 block text-center"
+  >
+    Post
+  </Link>
+</div>
+
+    {isLoading ? (
+        <Loading /> // Display a loading component when data is being fetched
+      ) : (
+        <Posts user={user} posts={posts} isUser={false} />
+      )}
        <div className="fixed top-20 right-20 w-64 bg-gray-100 p-4 rounded-lg shadow-md text-center" onClick={toggleModal}>
           <h3 className="text-lg font-semibold mb-4">CREATE POST</h3>
           <textarea

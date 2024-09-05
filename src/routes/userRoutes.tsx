@@ -13,6 +13,7 @@ import UserProfile from '../Pages/User/userProfile';
 import UserPosts from '../Pages/User/userPosts';
 import UserJobs from '../Pages/User/jobs';
 import UserNotification from '../Pages/User/userNotification';
+import Loading from '../Components/loading';
 const UserRoutes: React.FC = () => {
 
   return (
@@ -33,6 +34,7 @@ const UserRoutes: React.FC = () => {
       <Route path="/posts" element={< UserPosts />} />
       <Route path="/jobs" element={< UserJobs />} />
       <Route path="/notification" element={< UserNotification />} />
+      <Route path="/loading" element={< Loading />} />
     </Routes>
   );
 }
