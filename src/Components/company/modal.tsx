@@ -5,7 +5,7 @@ interface ModalProps {
   onClose: () => void;
   onSaveChanges: (data: any) => Promise<void>;
   fields: string[];
-  jobDetails: any; // or more specific type if you have one
+  jobDetails: any; 
   editMode: boolean;
   viewMode:boolean;
 }
@@ -22,7 +22,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
   const [experience, setExperience] = useState<string>('');
   const [level, setLevel] = useState<string>('');
 
-  // Helper function to reset form fields
+
   const resetForm = () => {
     console.log('reset triggerd2')
     setJobTitle('');
@@ -40,7 +40,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
 
   useEffect(() => {
     if (isOpen && jobDetails) {
-      // Populate the form fields with the existing job details
+    
       setJobTitle(jobDetails.title || '');
 
       setLocation(jobDetails.location || '');
@@ -117,7 +117,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
                   className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-b-2 focus:border-primary-600 focus:outline-none transition duration-200 ease-in-out"
                   value={title}
                   onChange={(e) => setJobTitle(e.target.value)}
-                  disabled={!editMode && !viewMode}  // Disable input when not in edit mode
+                  disabled={!editMode && !viewMode}  
                 />
               </div>
             )}
@@ -130,7 +130,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
                   className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-b-2 focus:border-primary-600 focus:outline-none transition duration-200 ease-in-out"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                   disabled={!editMode && !viewMode}  // Disable input when not in edit mode
+                   disabled={!editMode && !viewMode} 
                 />
               </div>
             )}
@@ -143,7 +143,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
                   style={{ minHeight: '1.5rem', resize: 'vertical' }}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                   disabled={!editMode && !viewMode}  // Disable input when not in edit mode
+                   disabled={!editMode && !viewMode} 
                 />
               </div>
             )}
@@ -182,7 +182,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
                   className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-b-2 focus:border-primary-600 focus:outline-none transition duration-200 ease-in-out"
                   value={opening}
                   onChange={(e) => setOpening(e.target.value)}
-                   disabled={!editMode && !viewMode}  // Disable input when not in edit mode
+                   disabled={!editMode && !viewMode}  
                 />
               </div>
             )}
@@ -194,7 +194,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
                   className="mt-1 block w-full border-0 border-b-2 border-gray-300 focus:border-b-2 focus:border-primary-600 focus:outline-none transition duration-200 ease-in-out"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                   disabled={!editMode && !viewMode}  // Disable input when not in edit mode
+                   disabled={!editMode && !viewMode}  
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>

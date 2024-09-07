@@ -24,16 +24,18 @@ const UserRoutes: React.FC = () => {
       </Route>
 
       <Route element={<Usermid />}>
+    
         <Route path="/home" element={<Userhome />} />
+        <Route path="/profile/:userId?" element={<UserProfile />} />
+      <Route path="/posts" element={< UserPosts />} />
+      <Route path="/jobs" element={< UserJobs />} />
+      <Route path="/notification" element={< UserNotification />} />
       </Route>
       <Route path="/nav" element={<Navbar />} />
       <Route path="/resetPassword" element={<UserResetPaaword />} />
       <Route path="/forgetpassword" element={<ForgetPassword />} />
       <Route path="/otp" element={<Otp />} />
-      <Route path="/profile/:userId?" element={<UserProfile />} />
-      <Route path="/posts" element={< UserPosts />} />
-      <Route path="/jobs" element={< UserJobs />} />
-      <Route path="/notification" element={< UserNotification />} />
+   
       <Route path="/loading" element={< Loading />} />
     </Routes>
   );

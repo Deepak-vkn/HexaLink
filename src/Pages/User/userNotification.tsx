@@ -15,7 +15,6 @@ const UserNotification = () => {
         try {
           const result = await fetchNotification(user._id);
           if (result.success) {
-            console.log(result.data)
             setNotifications(result.data || []);
           } else {
             setError(result.message);
@@ -46,16 +45,12 @@ const UserNotification = () => {
           <div className="flex items-center mb-2">
             <img
               className="w-12 h-12 rounded-full object-cover"
-              src="https://via.placeholder.com/150"
+              src={notification.userId?.image || "https://via.placeholder.com/150"}
               alt="User profile"
             />
             <div className="ml-3">
               <h4 className="font-semibold text-blue-gray-900">
-                {notification.type === 'follow'
-                  ? 'Follow Request'
-                  : notification.type === 'like'
-                  ? 'Like'
-                  : 'Comment'}
+                {notification.userId?.name || 'Unknown User'}
               </h4>
               <p className="text-gray-500 text-sm">
                 {new Date(notification.createdAt).toLocaleString()}

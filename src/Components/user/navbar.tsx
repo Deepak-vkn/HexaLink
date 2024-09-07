@@ -3,8 +3,9 @@ import { logoutcall, sendToBackend } from '../../api/user/post';
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { logout } from '../../Store/userSlice';
-import { IoIosSearch } from "react-icons/io";
-import { IoPerson ,IoNotifications } from "react-icons/io5";
+import { IoPerson, IoNotifications, IoHome, IoBriefcase, IoChatbubbles } from "react-icons/io5";
+import { IoIosSearch, IoMdMenu, IoMdClose } from "react-icons/io";
+
 interface User {
   id: string;
   name: string;
@@ -74,9 +75,9 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
     setSearchQuery(value);
 
     if (value) {
-      const results = await sendToBackend(value); // Adjust this to match your actual API response structure
+      const results = await sendToBackend(value); 
       setSearchResults(results);
-      setIsModalOpen(true); // Show the modal with search results
+      setIsModalOpen(true); 
     } else {
       setSearchResults([]);
       setIsModalOpen(false);
@@ -94,160 +95,110 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
 
 
   return (
-    <nav className="sticky top-0 z-10 block w-full max-w-full px-4 py-2 text-gray-800 bg-white border rounded-none shadow-md lg:px-8 lg:py-2">
-      <div className="flex items-center justify-between">
-        <Link
-          to="/"
-          className="mr-4 block cursor-pointer py-1.5 font-sans text-base font-medium leading-relaxed text-inherit antialiased"
-        >
-          Hexa Link
-        </Link>
-        <div className="flex items-center gap-4">
-          <div className="hidden mr-4 lg:block">
-            <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-              <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/" className="flex items-center">
-                  HOME
-                </Link>
-              </li>
-              <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/jobs" className="flex items-center">
-                  JOBS
-                </Link>
-              </li>
-              <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/messages" className="flex items-center">
-                  MESSAGES
-                </Link>
-              </li>
-              <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/profile" className="flex items-center">
-                <IoPerson />
-                </Link>
-              </li>
-              <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/notification" className="flex items-center">
-               <IoNotifications />
-                </Link>
-              </li>
-            </ul>
-          </div>
+    <nav className="sticky top-0 z-50 bg-white shadow-md">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+      <div className="flex justify-between h-14">
+        <div className="flex">
+          <Link to="/" className="flex-shrink-0 flex items-center">
+            <span className="text-lg font-bold text-blue-500">Hexa Link</span>
+          </Link>
+        </div>
 
-          {/* Search bar */}
-          <div className="hidden lg:flex items-center relative">
+        <div className="hidden sm:ml-4 sm:flex sm:items-center">
+          <div className="relative">
             <input
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search users..."
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-56 px-3 py-1.5 text-sm rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            <button
-              id="search-button"
-              type="button"
-              className="btn btn-primary ml-2 py-2 px-4"
-            >
-              <IoIosSearch />
-            </button>
-
-            {/* Modal displaying search results */}
-            {isModalOpen && searchResults?.length > 0 && (
-              <div ref={modalRef} className="absolute top-full left-0 mt-2 w-full bg-white border border-gray-300 rounded-md shadow-lg z-20">
-                <ul>
-                {searchResults.map((result: any) => (
-        <li key={result.id} className="p-2 hover:bg-gray-100 cursor-pointer flex items-center">
-          <img 
-            src={result.image} 
-            alt={result.name} 
-            className="w-8 h-8 rounded-full mr-3"
-            onClick={() => handleItemClick(result)} 
-          />
-          {result.name}
-        </li>
-      ))}
-              </ul>
-              </div>
-            )}
+            <IoIosSearch className="absolute right-3 top-1.5 text-gray-400 text-lg" />
           </div>
 
-          <div className="relative flex items-center gap-x-1">
+          {isModalOpen && searchResults?.length > 0 && (
+            <div ref={modalRef} className="absolute top-14 right-0 mt-1 w-56 bg-white border border-gray-300 rounded-md shadow-lg z-20">
+              <ul>
+                {searchResults.map((result: any) => (
+                  <li key={result.id} className="p-1.5 hover:bg-gray-100 cursor-pointer flex items-center text-sm" onClick={() => handleItemClick(result)}>
+                    <img src={result.image} alt={result.name} className="w-6 h-6 rounded-full mr-2" />
+                    <span>{result.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="hidden sm:ml-4 sm:flex sm:items-center space-x-3">
+            <Link to="/" className="text-sm text-gray-600 hover:text-gray-400">Home</Link>
+            <Link to="/jobs" className="text-sm text-gray-600 hover:text-gray-400">Jobs</Link>
+            <Link to="/messages" className="text-sm text-gray-600 hover:text-gray-400">Messages</Link>
+            <Link to="/profile" className="text-gray-600 hover:text-gray-400"><IoPerson size={16} /></Link>
+            <Link to="/notification" className="text-gray-600 hover:text-gray-400"><IoNotifications size={16} /></Link>
+          </div>
+
+          <div className="ml-4 relative">
             <button
               onClick={toggleDropdown}
-              className="select-none rounded-lg bg-gradient-to-tr from-gray-900 to-gray-800 py-2 px-4 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-              type="button"
+              className="bg-blue-500 text-white rounded-full px-3 py-1.5 text-xs font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600"
             >
-              <span>{user ? user.name : 'Sample'}</span>
+              {user ? user.name : 'Sample'}
             </button>
-            {/* Dropdown menu */}
             {isDropdownOpen && (
-              <div
-                ref={dropdownRef}
-                className="z-10 absolute right-0 mt-2 w-40 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
-              >
-                <ul className="py-1 text-sm text-gray-700 dark:text-gray-200">
-                  <li>
-                    <a
-                      onClick={handleLogout}
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer"
-                    >
-                      Logout
-                    </a>
-                  </li>
-                </ul>
+              <div ref={dropdownRef} className="origin-top-right absolute right-0 mt-1 w-40 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
               </div>
             )}
           </div>
+        </div>
 
+        <div className="flex items-center sm:hidden">
           <button
-            className="relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-inherit transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
-            type="button"
             onClick={toggleMenu}
+            className="inline-flex items-center justify-center p-1.5 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
           >
-            <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
-            </span>
+            {isMenuOpen ? <IoMdClose size={20} /> : <IoMdMenu size={20} />}
           </button>
         </div>
       </div>
-      {isMenuOpen && (
-        <div className="lg:hidden">
-          <ul className="flex flex-col gap-2 mt-2 mb-4">
-            <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              <Link to="/" className="flex items-center">
-                HOME
-              </Link>
-            </li>
-            <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              <Link to="/jobs" className="flex items-center">
-                JOBS
-              </Link>
-            </li>
-            <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              <Link to="/messages" className="flex items-center">
-                MESSAGES
-              </Link>
-            </li>
-            <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-              <Link to="/profile" className="flex items-center">
-                PROFILE
-              </Link>
-            </li>
-          </ul>
+    </div>
+
+    {isMenuOpen && (
+      <div className="sm:hidden">
+        <div className="pt-2 pb-3 space-y-1">
+          <Link to="/" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Home</Link>
+          <Link to="/jobs" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Jobs</Link>
+          <Link to="/messages" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Messages</Link>
+          <Link to="/profile" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Profile</Link>
+          <Link to="/notification" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Notifications</Link>
         </div>
-      )}
-    </nav>
+        <div className="pt-3 pb-2 border-t border-gray-200">
+          <div className="flex items-center px-3">
+            <div className="flex-shrink-0">
+              <img className="h-8 w-8 rounded-full" src={user?.image || 'https://via.placeholder.com/32'} alt="" />
+            </div>
+            <div className="ml-2">
+              <div className="text-sm font-medium text-gray-800">{user ? user.name : 'Sample User'}</div>
+              <div className="text-xs font-medium text-gray-500">{user ? user.email : 'sample@example.com'}</div>
+            </div>
+          </div>
+          <div className="mt-2 space-y-1">
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-600 hover:bg-gray-100"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </nav>
   );
 };
 

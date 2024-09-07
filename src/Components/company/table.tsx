@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface TableProps {
-  data: any[]; // Adjust the type as needed
+  data: any[]; 
   headings: string[];
   onApplicationDecision: (applicationId: string, decision: string) => void;
 }
@@ -13,30 +13,30 @@ const Table: React.FC<TableProps> = ({ data, headings, onApplicationDecision }) 
         <table className="min-w-full bg-white table-fixed">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              <th className="py-3 px-6 text-left w-10">#</th> {/* Adjust width for index column */}
+              <th className="py-3 px-6 text-left w-10">#</th> 
               {headings.map((heading, index) => (
                 <th key={index} className="py-3 px-6 text-left">
                   {heading}
                 </th>
               ))}
-              <th className="py-3 px-6 text-left w-32">Resume</th> {/* Adjust width for Resume column */}
-              <th className="py-3 px-6 text-left w-32">Application Decision</th> {/* Adjust width for dropdown column */}
+              <th className="py-3 px-6 text-left w-32">Resume</th> 
+              <th className="py-3 px-6 text-left w-32">Application Decision</th> 
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
             {data.map((applicant, index) => (
               <tr key={applicant._id} className="border-b border-gray-200 hover:bg-gray-100">
-                {/* Index */}
+         
                 <td className="py-3 px-6 text-left">{index + 1}</td>
-                {/* Name */}
+          
                 <td className="py-3 px-6 text-left">{applicant.name}</td>
-                {/* Email */}
+            
                 <td className="py-3 px-6 text-left">{applicant.email}</td>
-                {/* Experience */}
+             
                 <td className="py-3 px-6 text-left">{applicant.experience}</td>
-                {/* Status */}
+            
                 <td className="py-3 px-6 text-left">{applicant.status}</td>
-                {/* View Resume */}
+             
                 <td className="py-3 px-6 text-center">
                   <a 
                     href={`data:application/pdf;base64,${applicant.resume}`} 

@@ -11,6 +11,7 @@ interface UserProfileProps {
   isCurrentUser:boolean;
 }
 interface Post {
+  _id:string;
   image: string;
   caption: string;
   postAt: string; 
@@ -51,10 +52,9 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
               return changedFields;
           };
 
-          // Find the changed fields
           const changedFields = getChangedFields(userData, updatedUser);
 
-          // If there are no changes, do nothing
+     
           if (Object.keys(changedFields).length === 0) {
               console.log('No changes detected.');
               handleCloseModal();
@@ -66,7 +66,7 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
           console.log('User updated successfully:', response);
           if (response && response.success) {
  
-              setUserData((prevUserData) => {
+              setUserData((prevUserData:any) => {
                 console.log('Previous user data:', prevUserData);
                
                 return {
@@ -87,14 +87,13 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
       handleCloseModal();
   };
 
-  const handleDelete = async (index: number,field) => {
+  const handleDelete = async (index: number,field:any) => {
     try {
       const response = await updateEducation(user._id, index,field);
-      // Check the response to determine if the update was successful
+    
       if (response.success) {
         toastr.success(response.message);
-        // Update the UI state after successful deletion if needed
-        // e.g., setEducation(prev => prev.filter((_, i) => i !== index));
+     
       } else {
         toastr.error(response.message);
       }
@@ -120,23 +119,22 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
           if (!isCurrentUser && mainUser?._id) {
             const currentUserId = mainUser._id;
   
-            // Check if the profile user has sent a follow request to the main user
             const isRequestSentByUser = followResponse.follow.following.some(
               (follow: any) =>
                 follow.id === currentUserId && follow.status === 'requested'
             );
   
-            // If a follow request is sent by the user, show "Accept" button
+
             if (isRequestSentByUser) {
               setFollowButtonText('Accept');
               setIsButtonDisabled(false);
             } else {
-              // Check if the main user is already following the profile user
+   
               const isFollowing = followResponse.follow.followers.some(
                 (follower: any) =>
                   follower.id === currentUserId && follower.status === 'approved'
               );
-              // Check if the main user has sent a follow request to the profile user
+             
               const isRequested = followResponse.follow.followers.some(
                 (follower: any) =>
                   follower.id === currentUserId && follower.status === 'requested'
@@ -144,6 +142,7 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   
               if (isFollowing) {
                 setFollowButtonText('Unfollow');
+                setIsFollowed(true)
                 // setIsButtonDisabled(true);
               } else if (isRequested) {
                 setFollowButtonText('Requested');
@@ -178,18 +177,18 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   
       let result;
       if (followButtonText === 'Follow') {
-        // Send follow request from mainUser to the profile user
+
         result = await followRequest(mainUser._id, user._id);
       } else if (followButtonText === 'Accept') {
         result = await followRequest(user._id, mainUser._id);
       }
       else if (followButtonText === 'Unfollow') {
-        await handleUnfollowClick(); // Call the Unfollow function
-        return; // Exit since handleUnfollowClick handles everything
+        await handleUnfollowClick(); 
+        return; 
       }
   
       if (result && result.success) {
-        // Fetch updated follow data and posts after follow action
+     
         await fetchData();
   
       } else {
@@ -206,9 +205,9 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
         return;
       }
   
-      const result = await unfollowRequest(mainUser._id, user._id); // Unfollow request
+      const result = await unfollowRequest(mainUser._id, user._id); 
       if (result && result.success) {
-        await fetchData(); // Refresh the data to update the UI
+        await fetchData(); 
       } else {
         toastr.error('Unfollow action failed');
       }
@@ -257,7 +256,9 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
     </button>)}
     
     <span className="text-2xl font-semibold mt-2">
-  {followData?.following.filter(follow => follow.status === 'approved').length}
+  {/* {followData?.following.filter(follow => follow.status === 'approved').length} */}
+  {(followData as any)?.following?.filter((follow: any) => follow.status === 'approved').length}
+
 </span>
 
     <span className="text-sm text-white">Following</span>
@@ -267,14 +268,16 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
                 <button
                   className="w-32 text-sm px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-black transition duration-300"
                   onClick={handleFollowClick}
-                  disabled={isButtonDisabled} // Disable button based on status
+                  disabled={isButtonDisabled} 
                 >
-                  {followButtonText} {/* Button text changes based on follow status */}
+                  {followButtonText} 
                 </button>
               )}
 
 <span className="text-2xl font-semibold mt-2">
-  {followData?.followers.filter(follow => follow.status === 'approved').length}
+  {/* {followData?.followers.filter(follow => follow.status === 'approved').length} */}
+  {(followData as any)?.followers?.filter((follow: any) => follow.status === 'approved').length}
+
 </span>
     <span className="text-sm text-white">Followers</span>
   </div>
@@ -471,25 +474,24 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
           </p>
         </div>
 
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-               {posts.map((post) => (
-          <div className="bg-white p-4 shadow-md rounded-lg mb-6">
-          <img src={post.image} alt="Blog 1" className="w-full mb-4 rounded"/>
-            <span className="text-gray-500 text-sm">{new Date(post.postAt).toLocaleString()}</span>
-          
-            <p className="text-gray-700 text-base">
-            {post.caption}
-            </p>
-          </div>  ))}
-
-          
-          
-
-         
+          {(!isCurrentUser && isFollowed) ? (
+          <p className="text-center text-gray-500">You need to follow this user to see their posts.</p>
+          ) : (
+            posts.map((post) => (
+              <div key={post._id} className="bg-white p-4 shadow-md rounded-lg mb-6">
+                <img src={post.image} alt="Blog 1" className="w-full mb-4 rounded"/>
+                <span className="text-gray-500 text-sm">{new Date(post.postAt).toLocaleString()}</span>
+                <p className="text-gray-700 text-base">
+                  {post.caption}
+                </p>
+              </div>
+            ))
+            
+          )}
         </div>
       </div>
-    </div> 
+    </div>
 
    {/* <!--*************** My posts ends Here ***************--> */}
 

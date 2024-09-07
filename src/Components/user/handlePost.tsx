@@ -40,7 +40,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
     if (isEditing && post) {
       onSave(null, caption, post._id);  // Send caption and postId when editing
     } else {
-      onSave(file, caption);  // Send file and caption when creating
+      onSave(file, caption);  
     }
     setFile(null);
     setFilePreview(null);

@@ -66,7 +66,7 @@ export const getUserPosts = async (userId: string): Promise<any> => {
   export const likePost = async (postId: string,userId:string): Promise<any> => {
     try {
       const response = await axiosInstance.get('/likepost', {
-        params: { postId, userId } // Include userId as a parameter
+        params: { postId, userId } 
       });
       return response.data;
     } catch (error) {

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../Store/store'; // Adjust the import path as needed
+import { RootState } from '../../Store/store'; 
 import { fetchApplications, updateApplicationStatus } from '../../api/company/get';
 import { fetchJobs } from '../../api/company/post';
 import Table from '../../Components/company/table';
-import CompanyNav from '../../Components/company/companyNav'; // Ensure this path is correct
+import CompanyNav from '../../Components/company/companyNav'; 
 import Loading from '../../Components/loading';
 
 const CompanyApplications = () => {
@@ -89,7 +89,7 @@ const CompanyApplications = () => {
 
     return (
         <div className="flex min-h-screen">
-            <CompanyNav title="Applications" /> {/* Ensure this component is correctly imported and used */}
+            <CompanyNav title="Applications" /> 
             <div className="flex-1 ml-64 p-6">
                 <h1 className="text-2xl font-semibold mb-4">Company Applications</h1>
 
@@ -127,7 +127,7 @@ const CompanyApplications = () => {
                 </div>
 
                 {loadingTable ? (
-                    <Loading /> // Show table loading indicator
+                    <Loading /> 
                 ) : filteredApplications.length === 0 ? (
                     <p>No applications found.</p>
                 ) : (

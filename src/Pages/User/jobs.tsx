@@ -117,15 +117,13 @@ const Jobs: React.FC = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen ">
       <Navbar user={user} />
-      <div className="flex flex-grow">
-        <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user}/>
+      <div className="flex flex-grow ml-20 mr-20">
+  <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user} />
+  <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user} />
+</div>
 
-
-        <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user} />
-        
-      </div>
 
       {/* Modal */}
       {isJobApplyOpen && selectedJob && (

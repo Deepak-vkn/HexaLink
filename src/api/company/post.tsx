@@ -139,15 +139,13 @@ export const saveJob = async (data: any): Promise<any> => {
 };
 
 
-export const fetchJobs = async (companyId: string, sortBy: 'active' | 'inactive' | 'all'
-
-): Promise<any> => {
+export const fetchJobs = async (companyId: string, sortBy: 'active' | 'inactive' | 'all'): Promise<any> => {
   console.log('Reached fetch jobs:', companyId, 'with sort:', sortBy);
   try {
     const response = await axiosInstance.post('/company/fetchJobs', 
     { 
       companyId,
-      sortBy, // Include the sortBy parameter in the request body
+      sortBy, 
     }, {
       headers: {
         'Content-Type': 'application/json'

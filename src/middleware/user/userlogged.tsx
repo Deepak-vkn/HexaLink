@@ -10,7 +10,6 @@ const UserLogged: React.FC = () => {
         return <Navigate to='/home' />
     }
     
-
     return <Outlet />
 }
 
