@@ -12,6 +12,7 @@ import 'toastr/build/toastr.min.css';
 import { fetchFollowingPosts } from '../../api/user/get';
 import Posts from '../../Components/user/posts';
 import Loading from '../../Components/loading';
+import FollowSuggesion from '../../Components/user/followSuggesion';
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -97,12 +98,7 @@ const Home = () => {
 };
 
 
-  // Dummy data for user suggestions
-  const suggestedUsers = [
-    { id: 1, name: 'John Doe', title: 'Software Engineer' },
-    { id: 2, name: 'Jane Smith', title: 'Product Manager' },
-    { id: 3, name: 'Alex Johnson', title: 'UI/UX Designer' },
-  ];
+
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -188,24 +184,8 @@ const Home = () => {
                 Create Post
               </button>
             </div>
-
-            <div className="bg-white shadow rounded-lg p-4">
-              <h3 className="text-md font-semibold text-gray-800 mb-3">Suggested Connections</h3>
-              <ul className="space-y-3">
-                {suggestedUsers.map((user) => (
-                  <li key={user.id} className="flex items-center">
-                    <FaUserCircle className="w-8 h-8 text-gray-400 mr-2" />
-                    <div>
-                      <p className="font-medium text-sm text-gray-800">{user.name}</p>
-                      <p className="text-xs text-gray-600">{user.title}</p>
-                    </div>
-                    <button className="ml-auto bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs hover:bg-blue-200 transition duration-300">
-                      Connect
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <FollowSuggesion/>
+           
           </div>
         </div>
       </div>

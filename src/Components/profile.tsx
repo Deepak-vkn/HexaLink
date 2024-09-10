@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store'
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
+
 import UserListModal from './user/likeModal'
 interface UserProfileProps {
   user?: any;
@@ -31,7 +32,6 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   const [isUserListModalOpen, setIsUserListModalOpen] = useState(false);
 const [modalUsers, setModalUsers] = useState([]);
 const [modalTitle, setModalTitle] = useState('');
-
 
   const handleShowFollowers = () => {
    
@@ -235,8 +235,7 @@ const [modalTitle, setModalTitle] = useState('');
       console.error('Error handling unfollow click:', error);
     }
   };
-  
-  
+
   return (
     <div>
      <Modal isOpen={isModalOpen}

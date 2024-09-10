@@ -127,11 +127,19 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
                         className="p-2 hover:bg-gray-100 cursor-pointer flex items-center text-sm"
                         onClick={() => handleItemClick(result)}
                       >
-                        <img
-                          src={result.image}
-                          alt={result.name}
-                          className="w-6 h-6 rounded-full mr-2"
-                        />
+                      {result.image ? (
+                      <img
+                        src={result.image}
+                        alt={result.name}
+                        className="w-6 h-6 rounded-full mr-2"
+                      />
+                    ) : (
+                      <div
+                        className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center mr-2 text-white text-xs"
+                      >
+                        {result.name.charAt(0).toUpperCase()}
+                      </div>
+                       )}
                         <span>{result.name}</span>
                       </li>
                     ))}

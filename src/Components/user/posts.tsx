@@ -177,13 +177,13 @@ const handleCloseLikeModal = () => {
   return (
     <div className="max-w-2xl mx-auto">
       {postsState.length === 0 ? (
-        <div className="text-center mt-10 bg-white p-6 rounded-lg shadow">
+        <div className="text-center mt-10 bg-white p-6 rounded-lg shadow-">
           <p className="text-gray-500 text-xl mb-2">No posts available.</p>
           <p className="text-gray-600">Follow your friends to see their latest posts!</p>
         </div>
       ) : (
         postsState.map((post) => (
-          <div key={post._id} className="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+          <div key={post._id} className="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
             {/* User Info and Menu */}
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center">

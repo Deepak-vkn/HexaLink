@@ -107,3 +107,13 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+
+  export const followSuggestion = async (userId:string): Promise<any> => {
+    try {
+     
+      const response = await axiosInstance.get('/followSuggestion', { params: { userId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
