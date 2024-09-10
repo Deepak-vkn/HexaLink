@@ -241,10 +241,10 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, fields, onSaveChanges, jobDeta
             )}
           </div>
         </div>
-        <div className="flex justify-end p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-end p-4 border-t border-gray-200 dark:border-blue-500">
           <button
             type="button"
-            className="px-4 py-2 text-white bg-gray-800 hover:bg-gray-600 rounded-md"
+            className="px-4 py-2 text-white bg-blue-800 hover:bg-blue-500 rounded-md"
             onClick={handleSaveChanges}
              disabled={!editMode && !viewMode}  // Disable button when not in edit mode
           >

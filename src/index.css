@@ -4,7 +4,31 @@
 @tailwind utilities;
 /* src/index.css */
 
+
 body {
   background-color:#dce6f1; /* Set the entire background color to black */
   
 }
+
+/* Custom styles for slick dots */
+.slick-dots {
+  @apply absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2;
+}
+
+.slick-dots li {
+  @apply w-2 h-2;
+}
+
+.slick-dots li button {
+  @apply p-0;
+}
+
+.slick-dots li button:before {
+  content: '';
+  @apply block w-2 h-2 bg-gray-500 rounded-full;
+}
+
+.slick-dots li.slick-active button:before {
+  @apply bg-blue-500;
+}
+

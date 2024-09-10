@@ -27,4 +27,13 @@ export const fetchApplications = async (companyId: string): Promise<any> => {
       return { success: false, message: 'Failed to update application status.' };
     }
   };
+
   
+  export const verifyToken = async (): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/company/verify-token');
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 

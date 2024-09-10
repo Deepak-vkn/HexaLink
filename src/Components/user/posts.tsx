@@ -7,7 +7,27 @@ import CreatePostModal from './handlePost';
 import { updatePost, addComment } from '../../api/user/post';
 import CommentModal from './commentModal';
 import Loading from '../loading';
+import LikeModal from './likeModal';
 
+
+
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
+const sliderSettings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  arrows: true,
+  adaptiveHeight: true
+};
+
+
+ // This should be correct for most setups
+ // Ensure this path matches the version you're using
 // Define the types for user, post, comment, and like
 interface User {
   _id: string;
@@ -30,7 +50,7 @@ interface Post {
   _id: string;
   userId: any;
   likes:  any ;
-  image: string | null;
+  images: string[] | null;
   caption: string;
   comments: any[];
   postAt: string;
@@ -52,7 +72,20 @@ const Posts: React.FC<PostsProps> = ({ posts, user, isUser = false }) => {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [showMore, setShowMore] = useState(false);
+  const [isLikeModalOpen, setIsLikeModalOpen] = useState<boolean>(false);
   const maxCaptionLength = 100; 
+
+
+
+const handleOpenLikeModal = (postId: string) => {
+  setSelectedPostId(postId);
+  setIsLikeModalOpen(true);
+};
+
+const handleCloseLikeModal = () => {
+  setIsLikeModalOpen(false);
+  setSelectedPostId(null);
+};
 
   const toggleShowMore = () => {
     setShowMore(prev => !prev);
@@ -206,21 +239,27 @@ const Posts: React.FC<PostsProps> = ({ posts, user, isUser = false }) => {
           </button>
         )}
       </p>
+   
+{post.images && post.images.length > 0 && (
+  <div className="relative w-full h-80 overflow-hidden">
+    <Slider {...sliderSettings} className="relative w-full h-full">
+      {post.images.map((image: string, index: number) => (
+        <div key={index} className="w-full h-80 flex items-center justify-center bg-gray-100">
+          <img
+            src={image}
+            alt={`Image ${index + 1}`}
+            className="w-full h-full object-contain"
+          />
+        </div>
+      ))}
+    </Slider>
+  </div>
+)}
 
-            {/* Post Image */}
-            {post.image && (
-              <div className="relative pt-[56.25%]">
-                <img
-                  src={post.image}
-                  alt="Post content"
-                  className="absolute top-0 left-0 w-full h-full object-contain"
-                />
-              </div>
-            )}
 
             {/* Like and Comment Count */}
             <div className="px-4 py-2 bg-gray-50 text-sm text-gray-500 flex justify-between">
-              <span>{post.likes.length} likes</span>
+              <span  onClick={() => handleOpenLikeModal(post._id)} >{post.likes.length} likes</span>
               <span>{post.comments.length} comments</span>
             </div>
 
@@ -268,6 +307,14 @@ const Posts: React.FC<PostsProps> = ({ posts, user, isUser = false }) => {
         comments={selectedPostId ? postsState.find(post => post._id === selectedPostId)?.comments || [] : []}
         onAddComment={handleAddComment}
       />
+
+<LikeModal
+  isOpen={isLikeModalOpen}
+  onClose={handleCloseLikeModal}
+  title='likes'
+  users={postsState.find(post => post._id === selectedPostId)?.likes.map(like => like.userId) || []}
+/>
+
     </div>
   );
 };

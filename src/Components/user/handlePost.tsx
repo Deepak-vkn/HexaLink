@@ -3,49 +3,59 @@ import React, { useState, useEffect } from 'react';
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (file: File | null, caption: string,postId?: string) => void;
+  onSave: (files: File[] | null, caption: string, postId?: string) => void;
   isEditing?: boolean;
   post?: any | null;
 }
 
+
 const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSave, isEditing = false, post }) => {
-  const [file, setFile] = useState<File | null>(null);
-  const [filePreview, setFilePreview] = useState<string | ArrayBuffer | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [caption, setCaption] = useState('');
+  const MAX_FILES = 4; // Maximum file upload limit
 
   useEffect(() => {
     if (isEditing && post) {
       setCaption(post.caption);
-      setFilePreview(post.image || null);  // Set the image preview if available
+      setFilePreviews(post.images || []); // Set the image previews if available
     } else {
       setCaption('');
-      setFilePreview(null);
-      setFile(null);
+      setFilePreviews([]);
+      setFiles([]);
     }
   }, [isEditing, post]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(selectedFile);
+    const selectedFiles = Array.from(event.target.files || []);
+    
+    // Check if the total files exceed the limit
+    if (selectedFiles.length + files.length > MAX_FILES) {
+      alert(`You can upload a maximum of ${MAX_FILES} files.`);
+      return;
     }
+
+    setFiles([...files, ...selectedFiles]);
+    
+    const newPreviews = selectedFiles.map((file) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setFilePreviews((prev) => [...prev, reader.result as string]);
+      };
+      return reader.result as string;
+    });
   };
 
   const handleSave = () => {
     if (isEditing && post) {
-      onSave(null, caption, post._id);  // Send caption and postId when editing
+      onSave(null, caption, post._id); // Send caption and postId when editing
     } else {
-      onSave(file, caption);  
+      onSave(files, caption);  
     }
-    setFile(null);
-    setFilePreview(null);
+    setFiles([]);
+    setFilePreviews([]);
     setCaption('');
-    onClose();
     onClose();
   };
 
@@ -83,15 +93,19 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
         {/* File Upload */}
         {!isEditing && (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Upload Files</label>
             <div className="relative flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer">
-              {filePreview && typeof filePreview === 'string' && filePreview.startsWith('data:image/') ? (
-               <img
-               src={filePreview}
-               alt="File Preview"
-               className="w-full h-full object-contain rounded-lg"  // Use object-contain instead of object-cover
-             />
-             
+              {filePreviews.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {filePreviews.map((preview, index) => (
+                    <img
+                      key={index}
+                      src={preview}
+                      alt={`File Preview ${index}`}
+                      className="w-16 h-16 object-contain rounded-lg"
+                    />
+                  ))}
+                </div>
               ) : (
                 <div className="flex flex-col items-center justify-center p-5">
                   <svg
@@ -114,13 +128,18 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
               )}
               <input
                 type="file"
+                multiple
                 className="absolute inset-0 opacity-0 cursor-pointer"
                 onChange={handleFileChange}
               />
             </div>
+            {files.length > MAX_FILES && (
+              <p className="text-sm text-red-500 mt-2">
+                You can upload a maximum of {MAX_FILES} files.
+              </p>
+            )}
           </div>
         )}
-
         {/* Caption */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">Caption</label>

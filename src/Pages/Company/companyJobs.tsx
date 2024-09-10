@@ -163,64 +163,63 @@ const CompanyJobs: FC = () => {
             </select>
           </div>
 
-          <div className="flex flex-wrap justify-start mt-8">
-            {loading && <p>Loading...</p>}
-            {error && <p className="text-red-500">{error}</p>}
-            {jobs.length > 0 ? (
-              jobs.map((job) => (
-                <div
-                  key={job._id}
-                  className="w-80 h-75 max-w-sm rounded-lg overflow-hidden shadow-lg m-4 bg-white"
-                >
-                  <div className="px-6 py-4 bg-gray-100 h-24 flex flex-col">
-                    <div className="font-bold text-xl mb-2 text-gray-800 truncate">{job.title}</div>
-                    <p className="text-gray-600 text-sm font-semibold">{job.package} LPA</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {jobs.map((job) => (
+              <div key={job._id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <h2 className="text-xl font-semibold text-gray-800 truncate">{job.title}</h2>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(job.status)}`}>
+                      {job.status}
+                    </span>
                   </div>
-                  <div className="px-6 py-4 flex-1">
-                    <div className="mt-4">
-                      <div className="flex mb-2 items-center">
-                        <p className="text-gray-800 font-semibold flex-shrink-0">Applications:</p>
-                        <p className="text-gray-600 text-sm flex-grow ml-2">{job.applications}</p>
-                      </div>
-                      <div className="flex mb-2 items-center">
-                        <p className="text-gray-800 font-semibold flex-shrink-0">Package:</p>
-                        <p className="text-gray-600 text-sm flex-grow ml-2">{job.package} LPA</p>
-                      </div>
-                      <div className="flex mb-2 items-center">
-                        <p className="text-gray-800 font-semibold flex-shrink-0">Level:</p>
-                        <p className="text-gray-600 text-sm flex-grow ml-2">{job.level}</p>
-                      </div>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                      </svg>
+                      <span>{job.level}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      <span>{job.package} LPA</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                      </svg>
+                      <span>{job.applications} Applications</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      <span>Expires: {new Date(job.expires).toLocaleDateString()}</span>
                     </div>
                   </div>
 
-                  <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
-                    <span className={`inline-block rounded-full px-3 py-1 text-sm font-semibold ${getStatusClass(job.status)}`}>
-                      {job.status}
-                    </span>
-                    <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
-                      Expires: {new Date(job.expires).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="px-6 pt-4 pb-2 flex justify-between">
+                  <div className="flex justify-between items-center mt-4">
                     <button
-                      className="bg-gray-800 text-white px-3 py-1 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300"
                       onClick={() => handleViewJob(job)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 ease-in-out"
                     >
-                      View
+                      View Details
                     </button>
                     <button
-                      className="bg-gray-400 text-white px-3 py-1 rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
                       onClick={() => handleEditJob(job)}
+                      className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition duration-300 ease-in-out"
                     >
                       Edit
                     </button>
                   </div>
                 </div>
-              ))
-            ) : (
-              !loading && <p>No jobs found.</p>
-            )}
+              </div>
+            ))}
           </div>
+
         </div>
       </div>
 

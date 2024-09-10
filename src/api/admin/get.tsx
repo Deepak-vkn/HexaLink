@@ -31,3 +31,11 @@ export const fetchCompany = async () => {
     }
 };
 
+export const verifyToken = async (): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/admin/verify-token');
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 

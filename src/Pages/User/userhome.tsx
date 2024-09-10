@@ -40,37 +40,62 @@ const Home = () => {
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
-  const handleSavePost = async (file: File | null, caption: string) => {
-    if (file && user?._id) {
-      const reader = new FileReader();
-  
-      reader.onloadend = async () => {
-       
-        const base64String = reader.result as string;
-  
-        const formData = new FormData();
-        formData.append('file', base64String);
-        formData.append('caption', caption);
-        formData.append('userId', user._id); 
-  
-        try {
-          const response = await userPost(formData);
-  
-          if (response.success) {
-            toastr.success(response.message || 'Post created successfully');
-          } else {
-            toastr.error(response.message || 'Failed to create post');
-          }
-        } catch (error) {
-          toastr.error('Failed to create post');
-        }
-      };
-  
-      reader.readAsDataURL(file);
-    } else {
-      toastr.error('File or user ID is missing');
+  const handleSavePost = async (files: file[], caption: string) => {
+    console.log('the selcted imaeg is ',files)
+    if (files.length > 4) {
+        toastr.error('You can upload up to 4 images only');
+        return;
     }
-  };
+
+    if (files.length === 0 || !user?._id) {
+        toastr.error('No files selected or user ID is missing');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('caption', caption);
+    formData.append('userId', user._id);
+
+    const base64Images: string[] = [];
+    const readFilePromises = files.map(file => {
+        return new Promise<void>((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                base64Images.push(base64String);
+                resolve();
+            };
+
+            reader.onerror = () => {
+                reject(new Error('Failed to read file'));
+            };
+
+            reader.readAsDataURL(file);
+        });
+    });
+
+    try {
+        await Promise.all(readFilePromises);
+
+        // Append all base64 images to FormData as an array
+        base64Images.forEach(base64String => {
+            formData.append('images', base64String);
+        });
+
+        // Send the request to the backend
+        const response = await userPost(formData);
+
+        if (response.success) {
+            toastr.success(response.message || 'Post created successfully');
+        } else {
+            toastr.error(response.message || 'Failed to create post');
+        }
+    } catch (error) {
+        toastr.error('Failed to create post');
+    }
+};
+
 
   // Dummy data for user suggestions
   const suggestedUsers = [

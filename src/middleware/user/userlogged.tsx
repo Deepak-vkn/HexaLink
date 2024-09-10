@@ -9,7 +9,6 @@ const UserLogged: React.FC = () => {
     if (userInfo) {
         return <Navigate to='/home' />
     }
-    
     return <Outlet />
 }
 

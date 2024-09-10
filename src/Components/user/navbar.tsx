@@ -96,109 +96,123 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-md">
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-      <div className="flex justify-between h-14">
-        <div className="flex">
-          <Link to="/" className="flex-shrink-0 flex items-center">
-            <span className="text-lg font-bold text-blue-500">Hexa Link</span>
-          </Link>
-        </div>
-
-        <div className="hidden sm:ml-4 sm:flex sm:items-center">
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search users..."
-              className="w-56 px-3 py-1.5 text-sm rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <IoIosSearch className="absolute right-3 top-1.5 text-gray-400 text-lg" />
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="flex justify-between h-14">
+          <div className="flex">
+            <Link to="/" className="flex-shrink-0 flex items-center">
+              <span className="text-lg font-bold text-blue-500">Hexa Link</span>
+            </Link>
           </div>
 
-          {isModalOpen && searchResults?.length > 0 && (
-            <div ref={modalRef} className="absolute top-14 right-0 mt-1 w-56 bg-white border border-gray-300 rounded-md shadow-lg z-20">
-              <ul>
-                {searchResults.map((result: any) => (
-                  <li key={result.id} className="p-1.5 hover:bg-gray-100 cursor-pointer flex items-center text-sm" onClick={() => handleItemClick(result)}>
-                    <img src={result.image} alt={result.name} className="w-6 h-6 rounded-full mr-2" />
-                    <span>{result.name}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div className="hidden sm:ml-4 sm:flex sm:items-center space-x-3">
-            <Link to="/" className="text-sm text-gray-600 hover:text-gray-400">Home</Link>
-            <Link to="/jobs" className="text-sm text-gray-600 hover:text-gray-400">Jobs</Link>
-            <Link to="/messages" className="text-sm text-gray-600 hover:text-gray-400">Messages</Link>
-            <Link to="/profile" className="text-gray-600 hover:text-gray-400"><IoPerson size={16} /></Link>
-            <Link to="/notification" className="text-gray-600 hover:text-gray-400"><IoNotifications size={16} /></Link>
-          </div>
-
-          <div className="ml-4 relative">
-            <button
-              onClick={toggleDropdown}
-              className="bg-blue-500 text-white rounded-full px-3 py-1.5 text-xs font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600"
-            >
-              {user ? user.name : 'Sample'}
-            </button>
-            {isDropdownOpen && (
-              <div ref={dropdownRef} className="origin-top-right absolute right-0 mt-1 w-40 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
+          <div className="hidden sm:ml-4 sm:flex sm:items-center">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search users..."
+                className="w-56 px-3 py-1.5 text-sm rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <IoIosSearch className="absolute right-3 top-1.5 text-gray-400 text-lg" />
+              
+              {isModalOpen && searchResults?.length > 0 && (
+                <div
+                  ref={modalRef}
+                  className="absolute top-12 w-full bg-white border border-gray-300 rounded-md shadow-lg z-20"
                 >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center sm:hidden">
-          <button
-            onClick={toggleMenu}
-            className="inline-flex items-center justify-center p-1.5 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-          >
-            {isMenuOpen ? <IoMdClose size={20} /> : <IoMdMenu size={20} />}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    {isMenuOpen && (
-      <div className="sm:hidden">
-        <div className="pt-2 pb-3 space-y-1">
-          <Link to="/" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Home</Link>
-          <Link to="/jobs" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Jobs</Link>
-          <Link to="/messages" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Messages</Link>
-          <Link to="/profile" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Profile</Link>
-          <Link to="/notification" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Notifications</Link>
-        </div>
-        <div className="pt-3 pb-2 border-t border-gray-200">
-          <div className="flex items-center px-3">
-            <div className="flex-shrink-0">
-              <img className="h-8 w-8 rounded-full" src={user?.image || 'https://via.placeholder.com/32'} alt="" />
+                  <ul>
+                    {searchResults.map((result: any) => (
+                      <li
+                        key={result.id}
+                        className="p-2 hover:bg-gray-100 cursor-pointer flex items-center text-sm"
+                        onClick={() => handleItemClick(result)}
+                      >
+                        <img
+                          src={result.image}
+                          alt={result.name}
+                          className="w-6 h-6 rounded-full mr-2"
+                        />
+                        <span>{result.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
-            <div className="ml-2">
-              <div className="text-sm font-medium text-gray-800">{user ? user.name : 'Sample User'}</div>
-              <div className="text-xs font-medium text-gray-500">{user ? user.email : 'sample@example.com'}</div>
+
+            <div className="hidden sm:ml-4 sm:flex sm:items-center space-x-3">
+              <Link to="/" className="text-sm text-gray-600 hover:text-gray-400">Home</Link>
+              <Link to="/jobs" className="text-sm text-gray-600 hover:text-gray-400">Jobs</Link>
+              <Link to="/messages" className="text-sm text-gray-600 hover:text-gray-400">Messages</Link>
+              <Link to="/profile" className="text-gray-600 hover:text-gray-400"><IoPerson size={16} /></Link>
+              <Link to="/notification" className="text-gray-600 hover:text-gray-400"><IoNotifications size={16} /></Link>
+            </div>
+
+            <div className="ml-4 relative">
+              <button
+                onClick={toggleDropdown}
+                className="bg-blue-500 text-white rounded-full px-3 py-1.5 text-xs font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600"
+              >
+                {user ? user.name : 'Sample'}
+              </button>
+              {isDropdownOpen && (
+                <div
+                  ref={dropdownRef}
+                  className="origin-top-right absolute right-0 mt-1 w-40 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                >
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-          <div className="mt-2 space-y-1">
+
+          <div className="flex items-center sm:hidden">
             <button
-              onClick={handleLogout}
-              className="block w-full text-left px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-600 hover:bg-gray-100"
+              onClick={toggleMenu}
+              className="inline-flex items-center justify-center p-1.5 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
             >
-              Logout
+              {isMenuOpen ? <IoMdClose size={20} /> : <IoMdMenu size={20} />}
             </button>
           </div>
         </div>
       </div>
-    )}
-  </nav>
+
+      {isMenuOpen && (
+        <div className="sm:hidden">
+          <div className="pt-2 pb-3 space-y-1">
+            <Link to="/" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Home</Link>
+            <Link to="/jobs" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Jobs</Link>
+            <Link to="/messages" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Messages</Link>
+            <Link to="/profile" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Profile</Link>
+            <Link to="/notification" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Notifications</Link>
+          </div>
+          <div className="pt-3 pb-2 border-t border-gray-200">
+            <div className="flex items-center px-3">
+              <div className="flex-shrink-0">
+                <img className="h-8 w-8 rounded-full" src={user?.image || 'https://via.placeholder.com/32'} alt="" />
+              </div>
+              <div className="ml-2">
+                <div className="text-sm font-medium text-gray-800">{user ? user.name : 'Sample User'}</div>
+                <div className="text-xs font-medium text-gray-500">{user ? user.email : 'sample@example.com'}</div>
+              </div>
+            </div>
+            <div className="mt-2 space-y-1">
+              <button
+                onClick={handleLogout}
+                className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </nav>
   );
 };
 

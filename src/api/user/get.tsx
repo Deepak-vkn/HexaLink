@@ -98,4 +98,12 @@ export const getUserPosts = async (userId: string): Promise<any> => {
   
   };
   
-  
+
+  export const verifyToken = async (): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/verify-token');
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 

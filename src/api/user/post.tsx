@@ -178,7 +178,7 @@ export const userPost = async (formData: FormData): Promise<any> => {
     for (const [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
       }
-  
+  console.log('form data is ',formData)
     const response = await axiosInstance.post('/userpost', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

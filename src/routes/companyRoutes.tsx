@@ -19,12 +19,13 @@ const CompanyRoutes: React.FC = () => {
       </Route>
       <Route element={<Companymid />}>
         <Route path="/home" element={<CompanyHome />} />
+        <Route path="/jobs" element={<CompanyJobs />} />
+        <Route path="/applications" element={<CompanyApplications/>} />
       </Route>
       <Route path="/nav" element={<CompanyNav />} />
       <Route path="/forgetpassword" element={<CompanyForgetPassword />} />
       <Route path="/passwordreset" element={<CompanyResetPassword/>} />
-      <Route path="/jobs" element={<CompanyJobs />} />
-      <Route path="/applications" element={<CompanyApplications/>} />
+     
     </Routes>
   );
 };

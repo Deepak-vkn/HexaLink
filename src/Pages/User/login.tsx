@@ -22,7 +22,7 @@ const UserLogin = () => {
         console.log(response.message)
         toastr.success(response.message);
           dispatch(setCredentials(response.user))
-        navigate('/home')
+          navigate('/home')
       } else {
         if (response.message === 'User not verified. OTP has been sent.') {
           toastr.error(response.message);

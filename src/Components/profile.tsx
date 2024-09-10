@@ -6,13 +6,14 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store'
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
+import UserListModal from './user/likeModal'
 interface UserProfileProps {
   user?: any;
   isCurrentUser:boolean;
 }
 interface Post {
   _id:string;
-  image: string;
+  images: string[];
   caption: string;
   postAt: string; 
 }
@@ -27,7 +28,26 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   const [followButtonText, setFollowButtonText] = useState<string>('Follow');
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false); // Track button state// Track if the user is followed
   const mainUser = useSelector((state: RootState) => state.user.userInfo);
+  const [isUserListModalOpen, setIsUserListModalOpen] = useState(false);
+const [modalUsers, setModalUsers] = useState([]);
+const [modalTitle, setModalTitle] = useState('');
 
+
+  const handleShowFollowers = () => {
+   
+    const approvedFollowers = (followData as any)?.followers?.filter((follow: any) => follow.status === 'approved');
+    setModalUsers(approvedFollowers);
+    console.log(approvedFollowers)
+    setModalTitle('Followers');
+    setIsUserListModalOpen(true);
+  };
+  
+  const handleShowFollowing = () => {
+    const approvedFollowing = (followData as any)?.following?.filter((follow: any) => follow.status === 'approved');
+    setModalUsers(approvedFollowing);
+    setModalTitle('Following');
+    setIsUserListModalOpen(true);
+  };
   const handleOpenModal = (fields: string[]) => {
       setFieldsToShow(fields);
       setIsModalOpen(true);
@@ -116,15 +136,15 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
         const followResponse = await fetchFollowDocument(user._id);
         if (followResponse.success) {
           setFollowData(followResponse.follow || null);
+         
           if (!isCurrentUser && mainUser?._id) {
             const currentUserId = mainUser._id;
   
             const isRequestSentByUser = followResponse.follow.following.some(
               (follow: any) =>
-                follow.id === currentUserId && follow.status === 'requested'
+                follow.id._id === currentUserId && follow.status === 'requested'
             );
   
-
             if (isRequestSentByUser) {
               setFollowButtonText('Accept');
               setIsButtonDisabled(false);
@@ -132,12 +152,12 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
    
               const isFollowing = followResponse.follow.followers.some(
                 (follower: any) =>
-                  follower.id === currentUserId && follower.status === 'approved'
+                  follower.id._id === currentUserId && follower.status === 'approved'
               );
              
               const isRequested = followResponse.follow.followers.some(
                 (follower: any) =>
-                  follower.id === currentUserId && follower.status === 'requested'
+                  follower.id._id === currentUserId && follower.status === 'requested'
               );
   
               if (isFollowing) {
@@ -255,13 +275,13 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
       Message
     </button>)}
     
-    <span className="text-2xl font-semibold mt-2">
+    <span className="text-2xl font-semibold mt-2" >
   {/* {followData?.following.filter(follow => follow.status === 'approved').length} */}
   {(followData as any)?.following?.filter((follow: any) => follow.status === 'approved').length}
 
 </span>
 
-    <span className="text-sm text-white">Following</span>
+    <span className="text-sm text-white cursor-pointer hover:underline hover:text-blue-400" onClick={handleShowFollowing}>Following</span>
   </div> 
   <div className="flex flex-col items-center">
   {!isCurrentUser && (
@@ -274,12 +294,18 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
                 </button>
               )}
 
-<span className="text-2xl font-semibold mt-2">
+<span className="text-2xl font-semibold mt-2" >
   {/* {followData?.followers.filter(follow => follow.status === 'approved').length} */}
   {(followData as any)?.followers?.filter((follow: any) => follow.status === 'approved').length}
 
 </span>
-    <span className="text-sm text-white">Followers</span>
+<span 
+  className="text-sm text-white cursor-pointer hover:underline hover:text-blue-400" 
+  onClick={handleShowFollowers}
+>
+  Followers
+</span>
+
   </div>
 </div>
       </div>
@@ -473,27 +499,33 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
             There are many variations of passages of Lorem Ipsum available, but the majority have suffered
           </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {(!isCurrentUser && isFollowed) ? (
-          <p className="text-center text-gray-500">You need to follow this user to see their posts.</p>
-          ) : (
-            posts.map((post) => (
-              <div key={post._id} className="bg-white p-4 shadow-md rounded-lg mb-6">
-                <img src={post.image} alt="Blog 1" className="w-full mb-4 rounded"/>
-                <span className="text-gray-500 text-sm">{new Date(post.postAt).toLocaleString()}</span>
-                <p className="text-gray-700 text-base">
-                  {post.caption}
-                </p>
-              </div>
-            ))
-            
-          )}
-        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center">
+  {(!isCurrentUser && !isFollowed) ? (
+    <p className="text-center text-gray-500">You need to follow this user to see their posts.</p>
+  ) : (
+    posts.map((post) => (
+      <div key={post._id} className="bg-white p-3 shadow-sm rounded-lg mb-4 max-w-xs w-full">
+        <img src={post.images[0]} alt="Post Image" className="w-full h-32 object-cover mb-2 rounded"/>
+        <span className="text-gray-400 text-xs">{new Date(post.postAt).toLocaleString()}</span>
+        <p className="text-gray-600 text-sm mt-2">
+          {post.caption}
+        </p>
+      </div>
+    ))
+  )}
+</div>
       </div>
     </div>
 
    {/* <!--*************** My posts ends Here ***************--> */}
+
+
+   <UserListModal 
+  isOpen={isUserListModalOpen} 
+  onClose={() => setIsUserListModalOpen(false)} 
+  title={modalTitle}  // e.g., "Likes" or "Followers"
+  users={modalUsers}   // e.g., users from likes or followers/following
+/>
 
     </div>
   );
