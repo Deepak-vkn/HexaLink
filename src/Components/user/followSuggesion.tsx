@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import { followSuggestion } from '../../api/user/get'; // Import the API function
-import { followRequest } from '../../api/user/post'; // Follow request API
+import { followSuggestion } from '../../api/user/get'; 
+import { followRequest } from '../../api/user/post'; 
 
 interface SuggestedUser {
-  _id: string; // The id field of the user returned from the backend
+  _id: string; 
   name: string;
   title: string;
   image?: string;
@@ -16,11 +16,10 @@ const FollowSuggestion: React.FC = () => {
   const [suggestedUsers, setSuggestedUsers] = useState<SuggestedUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [buttonStates, setButtonStates] = useState<{ [key: string]: string }>({}); // Track button states per user
+  const [buttonStates, setButtonStates] = useState<{ [key: string]: string }>({}); 
 
-  const user = useSelector((state: RootState) => state.user.userInfo); // Get the current user info
+  const user = useSelector((state: RootState) => state.user.userInfo); 
 
-  // Dummy fallback data if no suggestions are returned
   const dummyUsers: SuggestedUser[] = [
     { _id: '1', name: 'John Doe', title: 'Software Engineer' },
     { _id: '2', name: 'Jane Smith', title: 'Product Manager' },
@@ -34,16 +33,15 @@ const FollowSuggestion: React.FC = () => {
         setError(null);
 
         if (user?._id) {
-          const response = await followSuggestion(user._id); // Pass userId to the API call
+          const response = await followSuggestion(user._id); 
 
           if (response.length === 0) {
             setSuggestedUsers(dummyUsers);
           } else {
-            // Limit the suggestions to 5
+       
             const limitedSuggestions = response.slice(0, 5);
             setSuggestedUsers(limitedSuggestions);
 
-            // Initialize button states to 'Follow' for each user
             const initialButtonStates = limitedSuggestions.reduce((acc: any, curr: SuggestedUser) => {
               acc[curr._id] = 'Follow';
               return acc;
@@ -54,14 +52,14 @@ const FollowSuggestion: React.FC = () => {
       } catch (err) {
         setError('Failed to load suggestions');
         console.error(err);
-        setSuggestedUsers(dummyUsers); // Use dummy data if API fails
+        setSuggestedUsers(dummyUsers); 
       } finally {
         setLoading(false);
       }
     };
 
     fetchSuggestions();
-  }, [user?._id]); // Rerun the effect if the user ID changes
+  }, [user?._id]); 
 
   const handleFollowClick = async (suggestedUserId: string) => {
     try {
@@ -70,11 +68,10 @@ const FollowSuggestion: React.FC = () => {
         return;
       }
 
-      // Call followRequest API
       const result = await followRequest(user._id, suggestedUserId);
 
       if (result && result.success) {
-        // Update button state to 'Requested' and disable the button
+       
         setButtonStates((prevStates) => ({
           ...prevStates,
           [suggestedUserId]: 'Requested',

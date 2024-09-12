@@ -13,12 +13,12 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
   const [files, setFiles] = useState<File[]>([]);
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [caption, setCaption] = useState('');
-  const MAX_FILES = 4; // Maximum file upload limit
+  const MAX_FILES = 4; 
 
   useEffect(() => {
     if (isEditing && post) {
       setCaption(post.caption);
-      setFilePreviews(post.images || []); // Set the image previews if available
+      setFilePreviews(post.images || []); 
     } else {
       setCaption('');
       setFilePreviews([]);
@@ -28,8 +28,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
-    
-    // Check if the total files exceed the limit
+
     if (selectedFiles.length + files.length > MAX_FILES) {
       alert(`You can upload a maximum of ${MAX_FILES} files.`);
       return;
@@ -49,7 +48,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
 
   const handleSave = () => {
     if (isEditing && post) {
-      onSave(null, caption, post._id); // Send caption and postId when editing
+      onSave(null, caption, post._id); 
     } else {
       onSave(files, caption);  
     }
@@ -154,7 +153,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
         {/* Save Button */}
         <div className="flex items-center justify-end">
           <button
-            className="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none"
+            className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-500 focus:outline-none"
             onClick={handleSave}
           >
             Save

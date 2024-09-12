@@ -27,7 +27,7 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   const [followData, setFollowData] = useState(null);
   const [isFollowed, setIsFollowed] = useState<boolean>(false); 
   const [followButtonText, setFollowButtonText] = useState<string>('Follow');
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false); // Track button state// Track if the user is followed
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false); 
   const mainUser = useSelector((state: RootState) => state.user.userInfo);
   const [isUserListModalOpen, setIsUserListModalOpen] = useState(false);
 const [modalUsers, setModalUsers] = useState([]);

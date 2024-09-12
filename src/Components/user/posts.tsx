@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaRegComment, FaRegHeart, FaHeart,FaThumbsUp  } from "react-icons/fa";
 import { BsSave2 } from "react-icons/bs";
 import { CiMenuKebab } from "react-icons/ci";
-import { likePost, deletePost } from '../../api/user/get';
+import { likePost, deletePost,deletePostComments } from '../../api/user/get';
 import CreatePostModal from './handlePost';
 import { updatePost, addComment } from '../../api/user/post';
 import CommentModal from './commentModal';
@@ -174,6 +174,36 @@ const handleCloseLikeModal = () => {
     }
   };
 
+  const handleDeleteComment = async (commentIndex: number) => {
+    if (selectedPostId) {
+      try {
+        const response = await deletePostComments(selectedPostId, commentIndex);
+        
+        if (response.success) {
+         
+          const updatedPost = response.populatedPost;
+  
+          if (updatedPost) {
+
+            setPostsState(prevPosts =>
+              prevPosts.map(post =>
+                post._id === selectedPostId ? updatedPost : post
+              )
+            );
+          } else {
+            console.error('Updated post data not available in response.');
+          }
+        } else {
+          console.error('Failed to delete comment:', response.message);
+        }
+      } catch (error) {
+        console.error('An error occurred while deleting the comment:', error);
+      }
+    }
+  };
+  
+
+
   return (
     <div className="max-w-2xl mx-auto">
       {postsState.length === 0 ? (
@@ -269,7 +299,7 @@ const handleCloseLikeModal = () => {
                 className="flex items-center space-x-2 text-gray-500  transition duration-200"
                 onClick={() => handleLikeClick(post._id)}
               >
-                {post.likes.some(like => like.userId._id === user._id) ? (
+                {post.likes.some((like :any)=> like.userId._id === user._id) ? (
                   <FaThumbsUp  className="text-blue-500" size={18} />
                 ) : (
                   <FaThumbsUp  size={18} />
@@ -301,18 +331,19 @@ const handleCloseLikeModal = () => {
         />
       )}
   
-      <CommentModal
-        isOpen={isCommentModalOpen}
-        onClose={handleCloseCommentModal}
-        comments={selectedPostId ? postsState.find(post => post._id === selectedPostId)?.comments || [] : []}
-        onAddComment={handleAddComment}
-      />
+  <CommentModal
+  isOpen={isCommentModalOpen}
+  onClose={handleCloseCommentModal}
+  comments={postsState.find(post => post._id === selectedPostId)?.comments || []}
+  onAddComment={handleAddComment}
+  onDeleteComment={handleDeleteComment} // Pass delete handler
+/>
 
 <LikeModal
   isOpen={isLikeModalOpen}
   onClose={handleCloseLikeModal}
   title='likes'
-  users={postsState.find(post => post._id === selectedPostId)?.likes.map(like => like.userId) || []}
+  users={postsState.find(post => post._id === selectedPostId)?.likes.map((like:any) => like.userId) || []}
 />
 
     </div>

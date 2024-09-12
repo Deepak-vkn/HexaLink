@@ -41,7 +41,7 @@ const UserProfilePage = () => {
   }, [userId, user]);
 
   if (!profileUser) {
-    // Optionally show a loading state while the data is being fetched
+   
     return <div>Loading...</div>;
   }
   console.log('profiler is ',profileUser)
@@ -50,7 +50,7 @@ const UserProfilePage = () => {
     <div>
       <Navbar user={user} />
       {isLoading ? (
-        <Loading /> // Display a loading component when data is being fetched
+        <Loading /> 
       ) : (
         <UserProfile user={profileUser} isCurrentUser={isCurrentUser} />
       )}

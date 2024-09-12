@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { verifyToken } from '../../api/user/get'; // Correct axios import
+import { verifyToken } from '../../api/user/get'; 
 import { RootState } from '../../Store/store';
 import { logout } from '../../Store/userSlice'; 
 import { useDispatch } from 'react-redux';
@@ -36,16 +36,12 @@ const UserMiddleware = () => {
     }
   }, [login, dispatch]);
 
-
   if (!login || tokenValid === false) {
     return <Navigate to='/' />;
   }
-
   if (tokenValid === null) {
     return <div>Loading...</div>;
   }
-
-
   return <Outlet />;
 };
 export default UserMiddleware;

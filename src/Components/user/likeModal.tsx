@@ -9,7 +9,7 @@ interface User {
     name: string;
     image?: string;
   };
-  _id?: string;  // Added to handle users without an `id` field
+  _id?: string;  
   name?: string;
   image?: string;
   followTime: string;
@@ -28,7 +28,7 @@ const UserListModal: React.FC<UserListModalProps> = ({ isOpen, onClose, title, u
   const mainUser = useSelector((state: RootState) => state.user.userInfo);
 
   const handleItemClick = (userId: string) => {
-    if (userId === mainUser?._id) return; // Disable click if it's the current user
+    if (userId === mainUser?._id) return; 
     console.log('Clicked profile navigate with user ID:', userId);
     navigate(`/profile/${userId}`, {
       state: { isCurrentUser: false }

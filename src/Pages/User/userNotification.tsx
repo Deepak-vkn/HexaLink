@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import { fetchNotification } from '../../api/user/get'; // Adjust the import path as needed
+import { fetchNotification } from '../../api/user/get'; 
 
 const UserNotification = () => {
   const user = useSelector((state: RootState) => state.user.userInfo);

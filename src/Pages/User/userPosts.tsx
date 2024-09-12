@@ -8,7 +8,7 @@ import Loading from '../../Components/loading';
 const UserPosts = () => {
   const [posts, setPosts] = useState([]);
   const user = useSelector((state: RootState) => state.user.userInfo);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false); 
   useEffect(() => {
     console.log('logged user is ',user)
     
@@ -31,7 +31,7 @@ const UserPosts = () => {
           console.error('Error fetching posts:', error);
         }
         finally {
-          setIsLoading(false); // Set loading to false after fetching
+          setIsLoading(false); 
         }
       }
     };
@@ -45,7 +45,7 @@ const UserPosts = () => {
     <div>
 
 {isLoading ? (
-        <Loading /> // Display a loading component when data is being fetched
+        <Loading /> 
       ) : (
         <Posts posts={posts} user={user} isUser={true}/>
       )}

@@ -16,7 +16,7 @@ const CompanyJobs: FC = () => {
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [editMode, setEditMode] = useState(false);
   const [viewMode, setViewMode] = useState(false);
-  const [sortBy, setSortBy] = useState<'active' | 'inactive' | 'all'>('all'); // New state for sorting
+  const [sortBy, setSortBy] = useState<'active' | 'inactive' | 'all'>('all'); 
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -45,7 +45,7 @@ const CompanyJobs: FC = () => {
     setLoading(true);
     try {
         
-      const response = await fetchJobs(company?._id as string, sortBy); // Pass sortBy as a parameter
+      const response = await fetchJobs(company?._id as string, sortBy); 
       if (response.success) {
         setJobs(response.jobs);
       } else {
@@ -63,7 +63,7 @@ const CompanyJobs: FC = () => {
     if (company?._id) {
       fetchAvailableJobs();
     }
-  }, [company, sortBy]); // Re-fetch jobs when company ID or sortBy changes
+  }, [company, sortBy]); 
 
   const handleSaveJob = async (data: any) => {
     try {

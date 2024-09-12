@@ -328,3 +328,6 @@ export const addComment = async (postId: string,userId:string,comment:string) =>
   }
 
 };
+
+
+

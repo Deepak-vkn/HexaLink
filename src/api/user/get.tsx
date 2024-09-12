@@ -117,3 +117,16 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+  
+  export const deletePostComments = async (postId: string, commentIndex: number) => {
+    try {
+      const response = await axiosInstance.delete('/deleteComment', {
+        data: { postId, commentIndex },  
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      throw error;  
+    }
+  };
+  
