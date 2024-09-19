@@ -5,6 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { logout } from '../../Store/userSlice';
 import { IoPerson, IoNotifications, IoHome, IoBriefcase, IoChatbubbles } from "react-icons/io5";
 import { IoIosSearch, IoMdMenu, IoMdClose } from "react-icons/io";
+import { initializeSocket } from '../../Socket/socket';
+import { socket } from '../../Socket/socket';
 
 interface User {
   id: string;
@@ -17,11 +19,16 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ user }) => {
+  initializeSocket()
+  if (user?._id) {
+    socket.emit('addUser', user._id);
+  }
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(5); 
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -63,12 +70,22 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
       }
     };
 
+    
     document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    // Initialize socket only once when the component mounts
+    initializeSocket();
+    if (user?._id) {
+      socket.emit('addUser', user._id);
+    }
+  
+  }, [user?._id]);
 
   const handleSearchChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -151,11 +168,17 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
             <div className="hidden sm:ml-4 sm:flex sm:items-center space-x-3">
               <Link to="/" className="text-sm text-gray-600 hover:text-gray-400">Home</Link>
               <Link to="/jobs" className="text-sm text-gray-600 hover:text-gray-400">Jobs</Link>
-              <Link to="/messages" className="text-sm text-gray-600 hover:text-gray-400">Messages</Link>
+              <Link to="/message" className="text-sm text-gray-600 hover:text-gray-400">Messages</Link>
               <Link to="/profile" className="text-gray-600 hover:text-gray-400"><IoPerson size={16} /></Link>
-              <Link to="/notification" className="text-gray-600 hover:text-gray-400"><IoNotifications size={16} /></Link>
+              <Link to="/notification" className="text-gray-600 hover:text-gray-400 relative">
+              <IoNotifications size={16} />
+              {notificationCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  {notificationCount}
+                </span>
+              )}
+            </Link>
             </div>
-
             <div className="ml-4 relative">
               <button
                 onClick={toggleDropdown}
@@ -195,7 +218,7 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
           <div className="pt-2 pb-3 space-y-1">
             <Link to="/" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Home</Link>
             <Link to="/jobs" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Jobs</Link>
-            <Link to="/messages" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Messages</Link>
+            <Link to="/message" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Messages</Link>
             <Link to="/profile" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Profile</Link>
             <Link to="/notification" className="block px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 hover:text-gray-600 hover:bg-gray-50">Notifications</Link>
           </div>

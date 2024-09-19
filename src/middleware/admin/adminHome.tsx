@@ -43,12 +43,10 @@ const AdminMiddleware = () => {
     return <Navigate to='/admin' />;
   }
 
- 
   if (tokenValid === null) {
     return <div>Loading...</div>;
   }
 
- 
   return <Outlet />;
 };
 

@@ -14,6 +14,7 @@ import UserPosts from '../Pages/User/userPosts';
 import UserJobs from '../Pages/User/jobs';
 import UserNotification from '../Pages/User/userNotification';
 import Loading from '../Components/loading';
+import Message from '../Pages/User/chat';
 const UserRoutes: React.FC = () => {
 
   return (
@@ -27,9 +28,10 @@ const UserRoutes: React.FC = () => {
     
         <Route path="/home" element={<Userhome />} />
         <Route path="/profile/:userId?" element={<UserProfile />} />
-      <Route path="/posts" element={< UserPosts />} />
-      <Route path="/jobs" element={< UserJobs />} />
-      <Route path="/notification" element={< UserNotification />} />
+        <Route path="/posts" element={< UserPosts />} />
+        <Route path="/jobs" element={< UserJobs />} />
+        <Route path="/notification" element={< UserNotification />} />
+        <Route path="/message" element={<Message />} />
       </Route>
       <Route path="/nav" element={<Navbar />} />
       <Route path="/resetPassword" element={<UserResetPaaword />} />

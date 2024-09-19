@@ -130,3 +130,31 @@ export const getUserPosts = async (userId: string): Promise<any> => {
     }
   };
   
+  export const fetchConversations = async (userId:string): Promise<any> => {
+    try {
+     
+      const response = await axiosInstance.get('/messages', { params: { userId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
+  
+  export const createConversation = async (sendObjectId:string, receiveObjectId:string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/createConversation', { params: { sendObjectId,receiveObjectId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
+  export const getMessages = async (conversationId:string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/getMessage', { params: { conversationId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
