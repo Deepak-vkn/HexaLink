@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import { fetchNotification } from '../../api/user/get'; 
+import { fetchNotification ,resetNotificationCount} from '../../api/user/get'; 
 
 const UserNotification = () => {
   const user = useSelector((state: RootState) => state.user.userInfo);
@@ -13,6 +13,7 @@ const UserNotification = () => {
     const loadNotifications = async () => {
       if (user?._id) {
         try {
+           resetNotificationCount(user._id);
           const result = await fetchNotification(user._id);
           if (result.success) {
             setNotifications(result.data || []);
@@ -45,12 +46,12 @@ const UserNotification = () => {
           <div className="flex items-center mb-2">
             <img
               className="w-12 h-12 rounded-full object-cover"
-              src={notification.userId?.image || "https://via.placeholder.com/150"}
+              src={notification.sourceId?.image || "https://via.placeholder.com/150"}
               alt="User profile"
             />
             <div className="ml-3">
               <h4 className="font-semibold text-blue-gray-900">
-                {notification.userId?.name || 'Unknown User'}
+                {notification.sourceId?.name || 'Unknown User'}
               </h4>
               <p className="text-gray-500 text-sm">
                 {new Date(notification.createdAt).toLocaleString()}

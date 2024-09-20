@@ -1,8 +1,6 @@
-import { FaUserCircle, FaRegEdit, FaRegBookmark, FaRegClock, FaRegFileAlt } from 'react-icons/fa';
+import { FaUserCircle, FaRegBookmark, FaRegClock, FaRegFileAlt } from 'react-icons/fa';
 import Noposts from '../../Components/user/Noposts';
-import Navbar from '../../Components/user/navbar'
 import { useSelector } from 'react-redux';
-import { RootState } from '../../Store/store'
 import CreatePostModal from '../../Components/user/handlePost'
 import { useState, useEffect } from 'react';
 import { userPost } from '../../api/user/post';
@@ -97,12 +95,8 @@ const Home = () => {
     }
 };
 
-
-
-
   return (
     <div className="bg-gray-100 min-h-screen">
-      <Navbar user={user} />
       <div className="max-w-7xl mx-auto px-8 py-8 sm:px-12 lg:px-16">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Left Sidebar - Profile and Activity */}

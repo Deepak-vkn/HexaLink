@@ -194,7 +194,6 @@ const [modalTitle, setModalTitle] = useState('');
         console.error('Invalid user IDs for follow action');
         return;
       }
-  
       let result;
       if (followButtonText === 'Follow') {
 
@@ -203,34 +202,34 @@ const [modalTitle, setModalTitle] = useState('');
         result = await followRequest(user._id, mainUser._id);
       }
       else if (followButtonText === 'Unfollow') {
-        await handleUnfollowClick(); 
+        await handleUnfollowClick();
         return; 
       }
-  
-      if (result && result.success) {
-     
-        await fetchData();
-  
-      } else {
-        toastr.error('Follow action failed');
-      }
+       fetchData(); 
+      // if (result && result.success) {
+      //   await fetchData();
+      // } else {
+      //   toastr.error('Follow action failed');
+      // }
     } catch (error) {
       console.error('Error handling follow click:', error);
     }
   };
+
+
   const handleUnfollowClick = async () => {
     try {
       if (!mainUser?._id || !user._id) {
         console.error('Invalid user IDs for unfollow action');
         return;
       }
-  
       const result = await unfollowRequest(mainUser._id, user._id); 
-      if (result && result.success) {
-        await fetchData(); 
-      } else {
-        toastr.error('Unfollow action failed');
-      }
+       fetchData(); 
+      // if (result && result.success) {
+      //   await fetchData(); 
+      // } else {
+      //   toastr.error('Unfollow action failed');
+      // }
     } catch (error) {
       console.error('Error handling unfollow click:', error);
     }

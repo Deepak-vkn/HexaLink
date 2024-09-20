@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
 import { logoutcall, sendToBackend } from '../../api/user/post';
 import { useDispatch } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link,useLocation  } from 'react-router-dom';
 import { logout } from '../../Store/userSlice';
 import { IoPerson, IoNotifications, IoHome, IoBriefcase, IoChatbubbles } from "react-icons/io5";
 import { IoIosSearch, IoMdMenu, IoMdClose } from "react-icons/io";
 import { initializeSocket } from '../../Socket/socket';
 import { socket } from '../../Socket/socket';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '../../Store/store'
+import { fetchNotification } from '../../api/user/get';
 interface User {
   id: string;
   name: string;
@@ -18,17 +20,20 @@ interface NavbarProps {
   user?: any | null;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user }) => {
+const Navbar: React.FC<NavbarProps> = () => {
   initializeSocket()
-  if (user?._id) {
-    socket.emit('addUser', user._id);
-  }
+ 
+    const user = useSelector((state:any) => state.user.userInfo);
+    if (user?._id) {
+      socket.emit('addUser', user._id);
+    }
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(5); 
+  const [notificationCount, setNotificationCount] = useState(0); 
+  const location = useLocation(); // To monitor the current route
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -77,15 +82,48 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+  // Reset notification count when navigating to the notification page
+  useEffect(() => {
+    if (location.pathname === '/notification') {
+      setNotificationCount(0); // Reset notification count
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
-    // Initialize socket only once when the component mounts
-    initializeSocket();
-    if (user?._id) {
-      socket.emit('addUser', user._id);
-    }
+    const fetchData = async () => {
+      initializeSocket();
+      if (user?._id) {
+        socket.emit('addUser', user._id);
+        try {
+          const result = await fetchNotification(user._id); 
+          if (result.success) {
+            // Count unread notifications
+            const unreadNotifications = result.data.filter(notification => !notification.isRead);
+            setNotificationCount(unreadNotifications.length); 
+          }
+        } catch (error) {
+          console.error('Error fetching notifications:', error);
+        }
+      }
+    };
+  
+    fetchData();
   
   }, [user?._id]);
+  
+   useEffect(() => {
+    const handleNotificationUpdate = (notification: any) => {
+      console.log('Notification received:', notification);
+      setNotificationCount((prevCount) => prevCount + 1);
+    };
+
+    socket.on('notificationUpdate', handleNotificationUpdate);
+
+    return () => {
+      socket.off('notificationUpdate', handleNotificationUpdate);
+    };
+  }, []); // Only run on mount and unmount
+
 
   const handleSearchChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -109,7 +147,6 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
     });
 
   };
-
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-md">

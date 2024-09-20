@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import Navbar from '../../Components/user/navbar';
 import JobList from '../../Components/user/jobList';
 import JobDetails from '../../Components/user/jobDetails';
 import { fetchJobs } from '../../api/user/get';
@@ -118,7 +117,6 @@ const Jobs: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen ">
-      <Navbar user={user} />
       <div className="flex flex-grow ml-20 mr-20">
   <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user} />
   <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user} />

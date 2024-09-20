@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import Navbar from '../../Components/user/navbar';
 import ChatList from '../../Components/user/chatList';
 import ChatBox from '../../Components/user/chatBox';
 import { fetchConversations } from '../../api/user/get'; // Adjust the import as needed
@@ -30,7 +29,6 @@ const ChatPage: React.FC = () => {
   };
   return (
     <div className="flex flex-col h-screen">
-      <Navbar user={user} />
       <div className="flex flex-1 overflow-hidden">
       <ChatList 
     chats={conversations}  

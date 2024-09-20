@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { FaUser, FaSearch } from 'react-icons/fa';
 import { fetchFollowDocument, createConversation } from '../../api/user/get';
+import { sendToBackend } from '../../api/user/post';
 
 interface Chat {
   _id: string;
   lastMessage: string;
   unreadCount?: number;
   lastMessageTime?: string;
-  otherUser: User; // Add this field to hold the other user's info
+  otherUser: User;
 }
 
 interface User {
@@ -52,6 +53,24 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
     }
   };
 
+  const handleSearchChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+
+    if (value) {
+      try {
+        const results = await sendToBackend(value);
+        setAvailableUsers(results);
+        setShowUsersList(true);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      }
+    } else {
+      setAvailableUsers([]);
+      setShowUsersList(false);
+    }
+  };
+
   const handleStartChat = async (userId: string) => {
     try {
       const response = await createConversation(user._id, userId);
@@ -82,7 +101,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
             placeholder="Search chats..."
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
           <FaSearch className="absolute left-3 top-3 text-gray-400" />
         </div>
@@ -137,13 +156,14 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
           </button>
         </div>
       )}
+
       {showUsersList && (
         <ul className="overflow-y-auto flex-grow">
           {availableUsers.map((user) => (
             <li
               key={user._id}
               className="p-4 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out border-b border-gray-100"
-              onClick={() => handleStartChat(user._id)}
+              onClick={() => handleStartChat(user._id)} // Pass the user ID to start a chat
             >
               <div className="flex items-center">
                 <FaUser className="w-12 h-12 rounded-full bg-gray-300 p-2 text-gray-600" />

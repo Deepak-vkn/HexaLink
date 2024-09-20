@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import UserProfile from '../../Components/profile';
-import Navbar from '../../Components/user/navbar';
+
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import { getUser } from '../../api/user/get'; 
@@ -48,7 +48,6 @@ const UserProfilePage = () => {
 
   return (
     <div>
-      <Navbar user={user} />
       {isLoading ? (
         <Loading /> 
       ) : (

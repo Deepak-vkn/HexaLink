@@ -158,3 +158,12 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+  export const resetNotificationCount = async (userId:string): Promise<any> => {
+    try {
+     
+      const response = await axiosInstance.get('/resetNotificationCount', { params: { userId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 

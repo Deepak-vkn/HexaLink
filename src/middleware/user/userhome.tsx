@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { verifyToken } from '../../api/user/get'; 
 import { RootState } from '../../Store/store';
 import { logout } from '../../Store/userSlice'; 
+import Navabar from '../../Components/user/navbar'
 import { useDispatch } from 'react-redux';
 
 const UserMiddleware = () => {
@@ -42,6 +43,12 @@ const UserMiddleware = () => {
   if (tokenValid === null) {
     return <div>Loading...</div>;
   }
-  return <Outlet />;
+  return (
+    <div>
+      <Navabar />  {/* Display the Navbar consistently across all routes */}
+      <Outlet />   {/* Render the child routes */}
+    </div>
+  );
+
 };
 export default UserMiddleware;
