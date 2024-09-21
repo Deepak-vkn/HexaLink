@@ -167,3 +167,14 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+
+  export const removeAllNotifications = async (userId:string,type:string): Promise<any> => {
+    console.log('clear notiftion calld in api')
+    try {
+      const response = await axiosInstance.get('/removeAllNotifications', { params: { userId ,type} });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+  

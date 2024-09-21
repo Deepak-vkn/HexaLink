@@ -159,7 +159,7 @@ const Home = () => {
               ) : posts.length > 0 ? (
                 <Posts user={user} posts={posts} isUser={false} />
               ) : (
-                <Noposts />
+                <Noposts title='No posts yet'/>
               )}
             </div>
           </div>

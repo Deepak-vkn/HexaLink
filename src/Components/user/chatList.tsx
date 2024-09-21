@@ -2,12 +2,14 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import { FaUser, FaSearch } from 'react-icons/fa';
 import { fetchFollowDocument, createConversation } from '../../api/user/get';
 import { sendToBackend } from '../../api/user/post';
+import { socket } from '../../Socket/socket';
+
 
 interface Chat {
   _id: string;
   lastMessage: string;
   unreadCount?: number;
-  lastMessageTime?: string;
+  updatedAt?: string;
   otherUser: User;
 }
 
@@ -138,9 +140,36 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
                   <h3 className="font-semibold text-gray-800">{chat.otherUser.name}</h3>
                   <p className="text-sm text-gray-600 truncate">{chat.lastMessage}</p>
                 </div>
-                {chat.lastMessageTime && (
-                  <span className="text-xs text-gray-400">{chat.lastMessageTime}</span>
-                )}
+                {chat.updatedAt && (
+  <span className="text-xs text-gray-400">
+    {(() => {
+      const messageDate = new Date(chat.updatedAt);
+      const today = new Date();
+
+      // Check if the date is the same day as today
+      const isSameDay =
+        messageDate.getDate() === today.getDate() &&
+        messageDate.getMonth() === today.getMonth() &&
+        messageDate.getFullYear() === today.getFullYear();
+
+      return isSameDay
+        ? messageDate.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+          })
+        : messageDate.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+          });
+    })()}
+  </span>
+)}
+
               </div>
             </li>
           ))}

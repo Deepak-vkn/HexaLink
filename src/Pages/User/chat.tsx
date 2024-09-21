@@ -3,7 +3,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import ChatList from '../../Components/user/chatList';
 import ChatBox from '../../Components/user/chatBox';
-import { fetchConversations } from '../../api/user/get'; // Adjust the import as needed
+import { fetchConversations } from '../../api/user/get'; 
+import { socket } from '../../Socket/socket';
+
+
+
 const ChatPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.userInfo);
   const [conversations, setConversations] = useState<any>([]);
@@ -22,6 +26,32 @@ const ChatPage: React.FC = () => {
 
     loadConversations();
   }, [user?._id]);
+
+  useEffect(() => {
+    // Listen for incoming messages
+    socket.on('receiveMessage', (data) => {
+      const { conversationId, content, sendTime } = data;
+
+      setConversations((prevConversations) =>
+        prevConversations.map((conversation) => {
+          if (conversation._id === conversationId) {
+            return {
+              ...conversation,
+              lastMessage: content,
+              updatedAt:sendTime ,
+            };
+          }
+          return conversation;
+        })
+      );
+    });
+
+ 
+    return () => {
+      socket.off('receiveMessage');
+    };
+  }, []);
+
 
   const handleConversationSelect = (conversation: any) => {
     console.log('Selected Conversation :', conversation);

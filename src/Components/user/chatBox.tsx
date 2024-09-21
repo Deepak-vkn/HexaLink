@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaUser, FaPaperPlane, FaEllipsisV, FaSmile } from 'react-icons/fa';
+import { FaUser, FaPaperPlane, FaEllipsisV, FaSmile ,FaCheck } from 'react-icons/fa';
 import { getMessages } from '../../api/user/get';
 import { socket } from '../../Socket/socket';
 
@@ -7,13 +7,15 @@ interface User {
   _id: string;
   name: string;
   image: string;
+
 }
 
 interface Message {
-  _id: string; // Ensure _id is included in the Message interface
+  _id: string; 
   content: string;
-  sendBy: string; // Change sender to sendBy
-  sendTime: string;
+  sendBy: string; 
+  sendTime: Date;
+  status: 'sent' | 'delivered' | 'read';
 }
 
 interface Conversation {
@@ -70,16 +72,17 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
         _id: Date.now().toString(), // Use a unique ID for the new message
         content: newMessage,
         sendBy: user._id, // Store the sender's ID
-        sendTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        sendTime: new Date(),
       };
       setMessages([...messages, newMsg]);
       setNewMessage('');
-
+      const sendTime = new Date();
       socket.emit('sendMessage', {
         conversationId: conversation._id,
         sendTo: conversation.user1._id === user._id ? conversation.user2._id : conversation.user1._id,
         sendBy: user._id,
         content: newMessage,
+
       }, (error: any) => {
         if (error) {
           console.error('Error sending message:', error);
@@ -95,16 +98,23 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
           <div className="p-4 bg-white shadow-sm flex items-center justify-between">
             <div className="flex items-center">
               <div className="relative">
-                <img
-                  src={conversation.user1._id === user._id ? conversation.user2.image : conversation.user1.image}
-                  alt={conversation.user1._id === user._id ? conversation.user2.name : conversation.user1.name}
-                  className="w-10 h-10 rounded-full"
-                />
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+              
+                {conversation.user1.image ? (
+                 <img
+                className="w-10 h-10 rounded-full"
+                 src={conversation.user1.image}
+                 alt="User profile"
+               />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-lg">
+                    {conversation.user1.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                {/* <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span> */}
               </div>
               <div className="ml-3">
                 <h2 className="text-lg font-semibold text-gray-800">{conversation.user1._id === user._id ? conversation.user2.name : conversation.user1.name}</h2>
-                <p className="text-sm text-gray-500">Online</p>
+                {/* <p className="text-sm text-gray-500">Online</p> */}
               </div>
             </div>
             <button className="text-gray-500 hover:text-gray-700">
@@ -117,16 +127,22 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
                 key={message._id}
                 className={`flex ${message.sendBy === user._id ? 'justify-end' : 'justify-start'}`}
               >
-                <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    message.sendBy === user._id
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white text-gray-800 border border-gray-200'
-                  }`}
-                >
-                  <p className="text-sm">{message.content}</p>
-                  <p className="text-xs mt-1 text-gray-400">{message.sendTime}</p>
-                </div>
+               <div
+  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg flex justify-between items-start ${
+    message.sendBy === user._id
+      ? 'bg-blue-500 text-white'
+      : 'bg-white text-gray-800 border border-gray-200'
+  }`}
+>
+  <div className="flex-1">
+    <p className="text-sm">{message.content}</p>
+    <p className="text-xs mt-1 text-B-400">
+    {new Date(message.sendTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+    </p>
+  </div>
+ 
+</div>
+
               </div>
             ))}
             <div ref={messagesEndRef} />

@@ -18,6 +18,8 @@
     "@reduxjs/toolkit": "^2.2.7",
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.3",
+    "framer-motion": "^11.5.6",
+    "lucide-react": "^0.445.0",
     "postcss": "^8.4.40",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
