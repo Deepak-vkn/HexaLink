@@ -5,7 +5,8 @@ import { logout,setCredentials } from '../Store/userSlice';
 import { companyLogout } from '../Store/companySlice';
 import {  adminLogout } from '../Store/adminSlice';
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5001',
+ // baseURL:'https://gsnj8j5b-5001.inc1.devtunnels.ms/',
+   baseURL: 'http://localhost:5001',
   withCredentials:true
 });
 

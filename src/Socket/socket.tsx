@@ -26,6 +26,7 @@ export let socket: Socket;
 export const initializeSocket = () => {
   if (!socket) {
     socket = io("http://localhost:5001");
+    //socket = io('https://gsnj8j5b-5001.inc1.devtunnels.ms/');
 
     console.log("Socket initialized with id:", socket.id);
   }

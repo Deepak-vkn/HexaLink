@@ -10,6 +10,7 @@ import { socket } from '../../Socket/socket';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store'
 import { fetchNotification } from '../../api/user/get';
+import VideoCallModal from './vedioCall/createCall';
 interface User {
   id: string;
   name: string;
@@ -34,6 +35,8 @@ const Navbar: React.FC<NavbarProps> = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0); 
   const location = useLocation(); // To monitor the current route
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const [callerInfo, setCallerInfo] = useState<any>(null); // S
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -93,7 +96,10 @@ const Navbar: React.FC<NavbarProps> = () => {
     const fetchData = async () => {
       initializeSocket();
       if (user?._id) {
+        // Add user to the socket
         socket.emit('addUser', user._id);
+  
+        // Fetch notifications
         try {
           const result = await fetchNotification(user._id); 
           if (result.success) {
@@ -104,10 +110,20 @@ const Navbar: React.FC<NavbarProps> = () => {
         } catch (error) {
           console.error('Error fetching notifications:', error);
         }
+  
+        // Incoming call logic
+        // socket.on('incomingCall', (callData) => {
+        //   console.log('Incoming call:', callData);
+        //   // Handle incoming call logic here, e.g., display a call modal, play a ringtone, etc.
+        // });
       }
     };
   
     fetchData();
+
+    // return () => {
+    //   socket.off('incomingCall'); // Remove the listener when the component unmounts
+    // };
   
   }, [user?._id]);
   
@@ -147,6 +163,12 @@ const Navbar: React.FC<NavbarProps> = () => {
     });
 
   };
+
+  const handleCloseCallModal = () => {
+    console.log('Call ended');
+    setIsCallModalOpen(false);
+  };
+
 
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-md">
@@ -279,6 +301,16 @@ const Navbar: React.FC<NavbarProps> = () => {
             </div>
           </div>
         </div>
+      )}
+       {isCallModalOpen && (
+        <VideoCallModal
+        onCall={() => {
+          console.log('Starting video call...');
+         
+        }}
+        onCancel={handleCloseCallModal}
+          to={callerInfo.id} 
+        />
       )}
     </nav>
   );

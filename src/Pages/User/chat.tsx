@@ -6,8 +6,6 @@ import ChatBox from '../../Components/user/chatBox';
 import { fetchConversations } from '../../api/user/get'; 
 import { socket } from '../../Socket/socket';
 
-
-
 const ChatPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.userInfo);
   const [conversations, setConversations] = useState<any>([]);
