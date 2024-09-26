@@ -111,11 +111,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           console.error('Error fetching notifications:', error);
         }
   
-        // Incoming call logic
-        // socket.on('incomingCall', (callData) => {
-        //   console.log('Incoming call:', callData);
-        //   // Handle incoming call logic here, e.g., display a call modal, play a ringtone, etc.
-        // });
+      
       }
     };
   
@@ -138,8 +134,21 @@ const Navbar: React.FC<NavbarProps> = () => {
     return () => {
       socket.off('notificationUpdate', handleNotificationUpdate);
     };
-  }, []); // Only run on mount and unmount
+  }, []); 
 
+  // useEffect(() => {
+  //   const handleIncomingCall = (callData: any) => {
+  //     console.log('Incoming call arrived :', callData);
+  //     setCallerInfo(callData); 
+  //     setIsCallModalOpen(true); 
+  //   };
+
+  //   socket.on('incoming:call', handleIncomingCall); 
+
+  //   return () => {
+  //     socket.off('incoming:call', handleIncomingCall); 
+  //   };
+  // }, []);
 
   const handleSearchChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -309,7 +318,8 @@ const Navbar: React.FC<NavbarProps> = () => {
          
         }}
         onCancel={handleCloseCallModal}
-          to={callerInfo.id} 
+           to={callerInfo.from} 
+          incomingInfo={callerInfo}
         />
       )}
     </nav>

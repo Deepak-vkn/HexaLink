@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { initializeSocket, socket } from '../../../Socket/socket'; // Import the initializeSocket and socket
+import { initializeSocket, socket } from '../../../Socket/socket';
+
 interface VideoCallModalProps {
-  onCall: () => void; // Function to notify that the call has started
-  onCancel: () => void; // Function to close the modal
-  to: string; // ID of the user to call
+  onCall: () => void;
+  onCancel: () => void;
+  to: string;
 }
 
 const peer = new RTCPeerConnection({
@@ -12,17 +13,16 @@ const peer = new RTCPeerConnection({
 
 const VideoCallModal: React.FC<VideoCallModalProps> = ({ onCall, onCancel, to }) => {
   const [isCalling, setIsCalling] = useState(false);
+  const [isIncomingCall, setIsIncomingCall] = useState(false); // State to track incoming call
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const localStreamRef = useRef<MediaStream | null>(null); // Ref to hold local media stream
+  const localStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
-    console.log('call id is to ',to)
-    
     // Cleanup on unmount
     return () => {
       if (isCalling) {
-        endVideoCall(); // Cleanup if the modal is closed and call is active
+        endVideoCall();
       }
     };
   }, [isCalling]);
@@ -30,66 +30,98 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onCall, onCancel, to })
   const startVideoCall = async () => {
     setIsCalling(true);
     try {
-      // Request access to the user's camera and microphone
       localStreamRef.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       if (localVideoRef.current) {
-        localVideoRef.current.srcObject = localStreamRef.current; // Set the local video element to show the user's camera
+        localVideoRef.current.srcObject = localStreamRef.current;
       }
 
-      // Add tracks to the peer connection
       localStreamRef.current.getTracks().forEach(track => peer.addTrack(track, localStreamRef.current));
 
-      // Create and send the call offer
       const localOffer = await peer.createOffer();
       await peer.setLocalDescription(new RTCSessionDescription(localOffer));
-      socket.emit('outgoing:call', { fromOffer: localOffer, to }); // Send the offer to the other user
+      socket.emit('outgoing:call', { fromOffer: localOffer, to });
 
-      onCall(); // Notify that the video call has started
+      onCall();
     } catch (error) {
       console.error('Error accessing media devices:', error);
       setIsCalling(false);
     }
   };
 
-  // Handling incoming call
-  socket.on('incomming:call', async data => {
-    console.log('incoming call received');
-    const { from, offer } = data;
+  socket.on('incoming:call', async (data) => {
+    console.log('Incoming call received');
+    const { offer } = data;
     await peer.setRemoteDescription(new RTCSessionDescription(offer));
 
-    // Create an answer and send it back
+    setIsIncomingCall(true); // Set incoming call state
+
+    // Automatically accept the call
     const answerOffer = await peer.createAnswer();
     await peer.setLocalDescription(new RTCSessionDescription(answerOffer));
-    socket.emit('call:accepted', { answere: answerOffer, to: from });
+    socket.emit('call:accepted', { answer: answerOffer, to: data.from });
 
-    // Set up the local media stream for the call
     localStreamRef.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    localVideoRef.current!.srcObject = localStreamRef.current;
-
-    // Add the local tracks to the peer connection
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = localStreamRef.current;
+    }
     localStreamRef.current.getTracks().forEach(track => peer.addTrack(track, localStreamRef.current));
   });
 
-  // Handling answer from remote peer
-  socket.on('incomming:answere', async data => {
+  socket.on('incoming:answer', async (data) => {
     const { offer } = data;
     await peer.setRemoteDescription(new RTCSessionDescription(offer));
   });
 
-  // Handling incoming stream from the remote peer
-  peer.ontrack = async ({ streams: [stream] }) => {
+  peer.ontrack = ({ streams: [stream] }) => {
     if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = stream; // Set the remote video source
+      remoteVideoRef.current.srcObject = stream;
       remoteVideoRef.current.play();
     }
   };
 
   const endVideoCall = () => {
+    // Stop and release all media tracks
+    if (localStreamRef.current) {
+      console.log('Stopping local media tracks...');
+      localStreamRef.current.getTracks().forEach((track) => {
+        track.stop(); // Stop the camera and audio tracks
+        console.log(`Track ${track.kind} stopped.`);
+      });
+      localStreamRef.current = null; // Release the media stream reference
+    } else {
+      console.log('No local stream found.');
+    }
+  
+    // Close the peer connection
+    if (peer) {
+      console.log('Closing peer connection...');
+      peer.close();
+      peer.onicecandidate = null;
+      peer.ontrack = null;
+    }
+  
+    // Reset the local and remote video elements
+    if (localVideoRef.current) {
+      console.log('Resetting local video...');
+      localVideoRef.current.srcObject = null; // Stop the local video stream
+    }
+  
+    if (remoteVideoRef.current) {
+      console.log('Resetting remote video...');
+      remoteVideoRef.current.srcObject = null; // Stop the remote video stream
+    }
+  
     setIsCalling(false);
-
-    localStreamRef.current?.getTracks().forEach(track => track.stop());
-    onCancel(); 
+    setIsIncomingCall(false); // Reset incoming call state
+  
+    // Reload the page after closing the call to ensure all streams are stopped
+    window.location.reload();
   };
+  
+  
+  
+  
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
       <div className="bg-white rounded-lg shadow-lg p-4 w-full max-w-md">
@@ -98,7 +130,7 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onCall, onCancel, to })
           <video
             ref={localVideoRef}
             autoPlay
-            muted // Mute the local video so the user doesn't hear themselves
+            muted
             className="w-32 h-32 rounded-full border-2 border-blue-500"
           />
           <video
@@ -116,10 +148,10 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onCall, onCancel, to })
           </button>
           <button
             className="bg-blue-500 text-white rounded-lg px-4 py-2"
-            onClick={startVideoCall}
-            disabled={isCalling} 
+            onClick={ startVideoCall} // Disable start call during incoming call
+            disabled={isCalling}
           >
-            {isCalling ? 'Calling...' : 'Start Call'}
+            {isCalling ? 'Calling...' : isIncomingCall ? 'Accept Call' : 'Start Call'}
           </button>
         </div>
       </div>
