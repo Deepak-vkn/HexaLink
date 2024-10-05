@@ -76,9 +76,11 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, user, fields, onSaveChanges })
       const reader = new FileReader();
       reader.onloadend = () => {
         setAboutImage(reader.result as string);
+       
       };
       reader.readAsDataURL(file);
     }
+
   };
 
   const handleAddSkill = () => {

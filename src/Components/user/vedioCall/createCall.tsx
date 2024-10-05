@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { initializeSocket, socket } from '../../../Socket/socket';
+import { MdCallEnd, MdCall, MdMic, MdMicOff, MdVideocam, MdVideocamOff } from 'react-icons/md';
 
 interface VideoCallModalProps {
-  onCall: () => void;
-  onCancel: () => void;
+  onClose: () => void;
   to: string;
 }
 
@@ -11,9 +11,11 @@ const peer = new RTCPeerConnection({
   iceServers: [{ urls: 'stun:stun.stunprotocol.org' }],
 });
 
-const VideoCallModal: React.FC<VideoCallModalProps> = ({ onCall, onCancel, to }) => {
+const VideoCallModal: React.FC<VideoCallModalProps> = ({ onClose, to }) => {
   const [isCalling, setIsCalling] = useState(false);
   const [isIncomingCall, setIsIncomingCall] = useState(false); // State to track incoming call
+  const [isMuted, setIsMuted] = useState(false); // State to track audio mute
+  const [isVideoOff, setIsVideoOff] = useState(false); // State to track video mute
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -30,18 +32,20 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onCall, onCancel, to })
   const startVideoCall = async () => {
     setIsCalling(true);
     try {
-      localStreamRef.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localStreamRef.current = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = localStreamRef.current;
       }
 
-      localStreamRef.current.getTracks().forEach(track => peer.addTrack(track, localStreamRef.current));
+      localStreamRef.current.getTracks().forEach((track) => peer.addTrack(track, localStreamRef.current));
 
       const localOffer = await peer.createOffer();
       await peer.setLocalDescription(new RTCSessionDescription(localOffer));
       socket.emit('outgoing:call', { fromOffer: localOffer, to });
-
-      onCall();
     } catch (error) {
       console.error('Error accessing media devices:', error);
       setIsCalling(false);
@@ -60,11 +64,15 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onCall, onCancel, to })
     await peer.setLocalDescription(new RTCSessionDescription(answerOffer));
     socket.emit('call:accepted', { answer: answerOffer, to: data.from });
 
-    localStreamRef.current = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    localStreamRef.current = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
+
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = localStreamRef.current;
     }
-    localStreamRef.current.getTracks().forEach(track => peer.addTrack(track, localStreamRef.current));
+    localStreamRef.current.getTracks().forEach((track) => peer.addTrack(track, localStreamRef.current));
   });
 
   socket.on('incoming:answer', async (data) => {
@@ -79,81 +87,91 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onCall, onCancel, to })
     }
   };
 
-  const endVideoCall = () => {
-    // Stop and release all media tracks
+  // Toggle mute for audio track
+  const toggleMute = () => {
     if (localStreamRef.current) {
-      console.log('Stopping local media tracks...');
-      localStreamRef.current.getTracks().forEach((track) => {
-        track.stop(); // Stop the camera and audio tracks
-        console.log(`Track ${track.kind} stopped.`);
+      localStreamRef.current.getAudioTracks().forEach((track) => {
+        track.enabled = !track.enabled;
       });
-      localStreamRef.current = null; // Release the media stream reference
-    } else {
-      console.log('No local stream found.');
+      setIsMuted((prev) => !prev);
     }
-  
-    // Close the peer connection
-    if (peer) {
-      console.log('Closing peer connection...');
-      peer.close();
-      peer.onicecandidate = null;
-      peer.ontrack = null;
+  };
+
+  // Toggle video on/off
+  const toggleVideo = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getVideoTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setIsVideoOff((prev) => !prev);
     }
-  
-    // Reset the local and remote video elements
-    if (localVideoRef.current) {
-      console.log('Resetting local video...');
-      localVideoRef.current.srcObject = null; // Stop the local video stream
-    }
-  
-    if (remoteVideoRef.current) {
-      console.log('Resetting remote video...');
-      remoteVideoRef.current.srcObject = null; // Stop the remote video stream
-    }
-  
+  };
+
+  const endVideoCall = () => {
     setIsCalling(false);
     setIsIncomingCall(false); // Reset incoming call state
-  
-    // Reload the page after closing the call to ensure all streams are stopped
-    window.location.reload();
+    localStreamRef.current?.getTracks().forEach((track) => track.stop());
+    onClose(); // Call the close function
+     window.location.reload();
   };
-  
-  
-  
-  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-      <div className="bg-white rounded-lg shadow-lg p-4 w-full max-w-md">
-        <h2 className="text-lg font-semibold mb-4">Video Call</h2>
-        <div className="flex justify-center mb-4">
+      <div className="bg-gray-900 rounded-lg shadow-lg p-4 w-full max-w-4xl aspect-video relative">
+        <video ref={remoteVideoRef} autoPlay className="w-full h-full rounded-lg object-cover" />
+        <div className="absolute top-4 right-4 w-32 h-32">
           <video
             ref={localVideoRef}
             autoPlay
             muted
-            className="w-32 h-32 rounded-full border-2 border-blue-500"
+            className={`w-full h-full rounded-lg object-cover border-2 ${
+              isVideoOff ? 'border-red-500 bg-gray-800' : 'border-blue-500'
+            }`}
           />
-          <video
-            ref={remoteVideoRef}
-            autoPlay
-            className="w-32 h-32 rounded-full border-2 border-gray-300"
-          />
+          {isVideoOff && (
+            <div className="absolute inset-0 flex items-center justify-center text-white">Video Off</div>
+          )}
         </div>
-        <div className="flex justify-between">
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
           <button
-            className="bg-red-500 text-white rounded-lg px-4 py-2"
+            className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
             onClick={endVideoCall}
           >
-            End Call
+            <MdCallEnd className="h-5 w-5" />
           </button>
           <button
-            className="bg-blue-500 text-white rounded-lg px-4 py-2"
-            onClick={ startVideoCall} // Disable start call during incoming call
+            className={`p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
+              isMuted
+                ? 'bg-gray-300 text-gray-700 hover:bg-gray-400 focus:ring-gray-500'
+                : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'
+            }`}
+            onClick={toggleMute}
+          >
+            {isMuted ? <MdMicOff className="h-5 w-5" /> : <MdMic className="h-5 w-5" />}
+          </button>
+          <button
+            className={`p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
+              isVideoOff
+                ? 'bg-gray-300 text-gray-700 hover:bg-gray-400 focus:ring-gray-500'
+                : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'
+            }`}
+            onClick={toggleVideo}
+          >
+            {isVideoOff ? <MdVideocamOff className="h-5 w-5" /> : <MdVideocam className="h-5 w-5" />}
+          </button>
+          <button
+            className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={startVideoCall}
             disabled={isCalling}
           >
-            {isCalling ? 'Calling...' : isIncomingCall ? 'Accept Call' : 'Start Call'}
+            <MdCall className="h-5 w-5" />
           </button>
         </div>
+        {isIncomingCall && !isCalling && (
+          <div className="absolute top-4 left-4 bg-blue-500 text-white px-4 py-2 rounded-lg animate-pulse">
+            Incoming Call...
+          </div>
+        )}
       </div>
     </div>
   );

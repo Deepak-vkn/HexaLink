@@ -178,3 +178,12 @@ export const getUserPosts = async (userId: string): Promise<any> => {
     }
   }; 
   
+  export const deleteMessage = async (messageId:string): Promise<any> => {
+    console.log('clear notiftion calld in api')
+    try {
+      const response = await axiosInstance.get('/deleteMessage', { params: { messageId} });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 

@@ -52,7 +52,6 @@ const ChatPage: React.FC = () => {
 
 
   const handleConversationSelect = (conversation: any) => {
-    console.log('Selected Conversation :', conversation);
     setSelectedConversation(conversation);
   };
   return (

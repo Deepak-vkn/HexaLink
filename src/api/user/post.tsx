@@ -330,4 +330,28 @@ export const addComment = async (postId: string,userId:string,comment:string) =>
 };
 
 
+export const uploadFile = async (file: any): Promise<any> => {
+  try {
+    // Log the contents of formData
+    console.log('FormData contents:');
+    for (const [key, value] of file.entries()) {
+      console.log(`${key}: ${value}`); // Log each key-value pair in formData
+    }
 
+    // Send the formData to the backend API
+    const response = await axiosInstance.post('/uploadFile', file, {
+      headers: {
+        'Content-Type': 'application/json', // Set the correct content type
+      },
+    });
+
+    // Log the response for further verification
+    console.log('Upload successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error during file upload:', error);
+    alert('Failed to upload file.');
+  }
+};
+
+  
