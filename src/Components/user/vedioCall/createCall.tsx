@@ -109,9 +109,9 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onClose, to }) => {
 
   const endVideoCall = () => {
     setIsCalling(false);
-    setIsIncomingCall(false); // Reset incoming call state
+    setIsIncomingCall(false); 
     localStreamRef.current?.getTracks().forEach((track) => track.stop());
-    onClose(); // Call the close function
+    onClose(); 
      window.location.reload();
   };
 

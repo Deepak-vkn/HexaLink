@@ -9,7 +9,7 @@ import { initializeSocket } from '../../Socket/socket';
 import { socket } from '../../Socket/socket';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store'
-import { fetchNotification } from '../../api/user/get';
+import { fetchNotification,unreadMessageCount } from '../../api/user/get';
 import VideoCallModal from './vedioCall/createCall';
 interface User {
   id: string;
@@ -37,6 +37,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   const location = useLocation(); // To monitor the current route
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   const [callerInfo, setCallerInfo] = useState<any>(null); // S
+  const [unreadMessage, setUnreadMessageCount] = useState(0);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -110,6 +111,17 @@ const Navbar: React.FC<NavbarProps> = () => {
         } catch (error) {
           console.error('Error fetching notifications:', error);
         }
+
+
+         // Fetch unread message count
+         try {
+          const messageCountResult = await unreadMessageCount(user._id);
+          if (messageCountResult.success) {
+            setUnreadMessageCount(messageCountResult.count);
+          }
+        } catch (error) {
+          console.error('Error fetching unread message count:', error);
+        }
   
       
       }
@@ -136,6 +148,37 @@ const Navbar: React.FC<NavbarProps> = () => {
     };
   }, []); 
 
+
+  useEffect(() => {
+    const handleMessageCountUpdate = (notification: any) => {
+      console.log('Message count update received:', notification);
+      // You can increase the unread message count by 1
+      setUnreadMessageCount((prevCount) => prevCount + 1);
+    };
+  
+    // Listening for the 'MessageCountUpdate' event
+    socket.on('MessageCountUpdate', handleMessageCountUpdate);
+  
+    return () => {
+      socket.off('MessageCountUpdate', handleMessageCountUpdate);
+    };
+  }, []); 
+
+  useEffect(() => {
+    const handleMessageCountUpdate = (notification: { count: number }) => {
+      console.log('Message count update received:', notification);
+      // Update the unread message count directly to the received count
+      setUnreadMessageCount(notification.count);
+    };
+
+    // Listening for the 'updateMessageCount' event
+    socket.on('updateMessageCount', handleMessageCountUpdate);
+
+    return () => {
+      // Clean up the event listener on component unmount
+      socket.off('updateMessageCount', handleMessageCountUpdate);
+    };
+  }, []);
   // useEffect(() => {
   //   const handleIncomingCall = (callData: any) => {
   //     console.log('Incoming call arrived :', callData);
@@ -232,11 +275,14 @@ const Navbar: React.FC<NavbarProps> = () => {
                 </div>
               )}
             </div>
-
             <div className="hidden sm:ml-4 sm:flex sm:items-center space-x-3">
               <Link to="/" className="text-sm text-gray-600 hover:text-gray-400">Home</Link>
               <Link to="/jobs" className="text-sm text-gray-600 hover:text-gray-400">Jobs</Link>
-              <Link to="/message" className="text-sm text-gray-600 hover:text-gray-400">Messages</Link>
+              <Link to="/message" className="text-sm text-gray-600 hover:text-gray-400 relative">Messages{unreadMessage > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                 {unreadMessage}
+                </span>
+              )}</Link>
               <Link to="/profile" className="text-gray-600 hover:text-gray-400"><IoPerson size={16} /></Link>
               <Link to="/notification" className="text-gray-600 hover:text-gray-400 relative">
               <IoNotifications size={16} />

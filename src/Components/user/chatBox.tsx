@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaUser, FaPaperPlane, FaEllipsisV, FaSmile, FaVideo, FaTimes ,FaImage} from 'react-icons/fa';
-import { getMessages,deleteMessage } from '../../api/user/get';
+import { getMessages,deleteMessage ,makeMessageRead} from '../../api/user/get';
 import { socket } from '../../Socket/socket';
 import VideoCallModal from '../user/vedioCall/createCall'; 
 import { uploadFile } from '../../api/user/post';
@@ -51,6 +51,8 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
         if (conversation?._id) {
           const fetchedMessages = await getMessages(conversation._id);
           setMessages(fetchedMessages);
+
+          await makeMessageRead(conversation._id,  chatPartnerId,  );
         }
       } catch (error) {
         console.error('Failed to fetch messages:', error);
@@ -66,7 +68,9 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
 
   useEffect(() => {
     const handleReceiveMessage = (newMsg: Message) => {
-      setMessages((prevMessages) => [...prevMessages, newMsg]);
+      if (newMsg.sendBy === chatPartnerId) {
+        setMessages((prevMessages) => [...prevMessages, newMsg]);
+      }
     };
 
     socket.on('receiveMessage', handleReceiveMessage);
@@ -75,6 +79,9 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
       socket.off('receiveMessage', handleReceiveMessage);
     };
   }, []);
+
+
+
 
   useEffect(() => {
     if (user && conversation) {
@@ -85,6 +92,12 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
   
    
   }, [conversation, user, chatPartnerId]);  // Dependencies: user and conversation
+  
+  useEffect(() => {
+    if (user && conversation) {
+      socket.emit('getLatestMessageCount', { userId: user._id });
+    }
+  }, ); // Dependencies: user and conversation
   
 
 
@@ -252,6 +265,7 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
   const isMessageFromCurrentUser = (message: Message) => {
     if( message.sendBy === user._id){
       setSelectedMessageId(message._id);
+      console.log('selected mesge id is',selectedMessageId)
       setShowDeleteOption(true);
     }
     else{

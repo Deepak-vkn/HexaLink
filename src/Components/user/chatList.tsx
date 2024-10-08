@@ -1,10 +1,8 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import { FaUser, FaSearch } from 'react-icons/fa';
+import { FaUser, FaSearch, FaImage } from 'react-icons/fa';
 import { fetchFollowDocument, createConversation } from '../../api/user/get';
 import { sendToBackend } from '../../api/user/post';
 import { socket } from '../../Socket/socket';
-
-
 interface Chat {
   _id: string;
   lastMessage: string;
@@ -20,8 +18,8 @@ interface User {
 }
 
 interface ChatListProps {
-  chats: any[];
-  user: any;
+  chats: any[]; // Replace `any[]` with a more specific type if available
+  user: User; // Specify the correct type for user if available
   onConversationSelect: (conversationId: string) => void;
 }
 
@@ -30,24 +28,66 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const [showUsersList, setShowUsersList] = useState<boolean>(false);
+  const [filteredChats, setFilteredChats] = useState<Chat[]>([]);
 
-  // Extract the other user for display in the chat list
-  const enhancedChats = chats.map((chat) => {
-    const otherUser = chat.user1._id === user._id ? chat.user2 : chat.user1;
-    return { ...chat, otherUser };
-  });
+  useEffect(() => {
+    // Update the filtered chats whenever chats or searchTerm change
+    const newFilteredChats = chats.map((chat) => {
+      const otherUser = chat.user1._id === user._id ? chat.user2 : chat.user1;
+      return { ...chat, otherUser };
+    }).filter(chat => {
+      const otherUserName = chat.otherUser?.name?.toLowerCase() || '';
+      return otherUserName.includes(searchTerm.toLowerCase());
+    });
 
-  const filteredChats = enhancedChats.filter(chat => {
-    const otherUserName = chat.otherUser?.name?.toLowerCase() || '';
-    return otherUserName.includes(searchTerm.toLowerCase());
-  });
+    setFilteredChats(newFilteredChats);
+  }, [chats, searchTerm, user._id]);
+
+
+
+  useEffect(() => {
+    const handleReceiveMessage = (newMsg: any) => {
+      const { conversationId, sendBy, content, file, sendTime } = newMsg;
+
+      // Check if the user who sent the message is in the chat list
+      setFilteredChats((prevChats) =>
+        prevChats.map((chat) => {
+          // Check if the chat's other user matches the sender
+          if ( chat.otherUser._id === sendBy) {
+            return {
+              ...chat,
+              lastMessage: content, // Update last message
+              updatedAt: sendTime, // Update the timestamp
+              unreadCount: chat.unreadCount ? chat.unreadCount + 1 : 1 // Increment unread count
+            };
+          }
+          return chat;
+        })
+      );
+
+      console.log('Received message from:', sendBy, 'Content:', content);
+    };
+
+    socket.on('receiveMessage', handleReceiveMessage);
+
+    return () => {
+      socket.off('receiveMessage', handleReceiveMessage);
+    };
+  }, [chats]); // Add chats as a dependency to re-subscribe when it changes
+
+
+
 
   const handleShowUsers = async () => {
     try {
       const usersResponse = await fetchFollowDocument(user._id);
       const approvedUsers = usersResponse.follow.following
         .filter((follow) => follow.status === 'approved')
-        .map((follow) => ({ _id: follow.id._id, name: follow.id.name, image: follow.id.image }));
+        .map((follow) => ({
+          _id: follow.id._id,
+          name: follow.id.name,
+          image: follow.id.image,
+        }));
       setAvailableUsers(approvedUsers);
       setShowUsersList(true);
     } catch (error) {
@@ -89,6 +129,13 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
 
   const handleChatClick = (chat: Chat) => {
     if (chat) {
+      // Reset unread count to zero when the chat is selected
+      setFilteredChats((prevChats) =>
+        prevChats.map((c) =>
+          c._id === chat._id ? { ...c, unreadCount: 0 } : c
+        )
+      );
+      setSelectedChat(chat);
       onConversationSelect(chat);
     }
   };
@@ -113,7 +160,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
         <ul className="overflow-y-auto flex-grow">
           {filteredChats.map((chat) => (
             <li
-              key={chat.conversationId}
+              key={chat._id}
               className={`p-4 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out border-b border-gray-100 ${
                 selectedChat?._id === chat._id ? 'bg-blue-50' : ''
               }`}
@@ -130,46 +177,48 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
                   ) : (
                     <FaUser className="w-12 h-12 rounded-full bg-gray-300 p-2 text-gray-600" />
                   )}
-                  {chat.unreadCount && chat.unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {chat.unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                       {chat.unreadCount}
                     </span>
                   )}
                 </div>
                 <div className="ml-4 flex-grow">
                   <h3 className="font-semibold text-gray-800">{chat.otherUser.name}</h3>
-                  <p className="text-sm text-gray-600 truncate">{chat.lastMessage}</p>
+                  <p className="text-sm text-gray-600 truncate">
+                    {chat.lastMessage.startsWith('https://res.cloudinary.com')
+                      ? <FaImage className="inline text-gray-600" />
+                      : chat.lastMessage}
+                  </p>
                 </div>
                 {chat.updatedAt && (
-  <span className="text-xs text-gray-400">
-    {(() => {
-      const messageDate = new Date(chat.updatedAt);
-      const today = new Date();
+                  <span className="text-xs text-gray-400">
+                    {(() => {
+                      const messageDate = new Date(chat.updatedAt);
+                      const today = new Date();
 
-      // Check if the date is the same day as today
-      const isSameDay =
-        messageDate.getDate() === today.getDate() &&
-        messageDate.getMonth() === today.getMonth() &&
-        messageDate.getFullYear() === today.getFullYear();
+                      const isSameDay =
+                        messageDate.getDate() === today.getDate() &&
+                        messageDate.getMonth() === today.getMonth() &&
+                        messageDate.getFullYear() === today.getFullYear();
 
-      return isSameDay
-        ? messageDate.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-          })
-        : messageDate.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-          });
-    })()}
-  </span>
-)}
-
+                      return isSameDay
+                        ? messageDate.toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true,
+                          })
+                        : messageDate.toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true,
+                          });
+                    })()}
+                  </span>
+                )}
               </div>
             </li>
           ))}
@@ -195,7 +244,15 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
               onClick={() => handleStartChat(user._id)} // Pass the user ID to start a chat
             >
               <div className="flex items-center">
-                <FaUser className="w-12 h-12 rounded-full bg-gray-300 p-2 text-gray-600" />
+                {user.image ? (
+                  <img
+                    src={user.image}
+                    alt={user.name}
+                    className="w-12 h-12 rounded-full"
+                  />
+                ) : (
+                  <FaUser className="w-12 h-12 rounded-full bg-gray-300 p-2 text-gray-600" />
+                )}
                 <div className="ml-4 flex-grow">
                   <h3 className="font-semibold text-gray-800">{user.name}</h3>
                 </div>

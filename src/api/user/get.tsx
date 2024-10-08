@@ -187,3 +187,22 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+
+    
+  export const unreadMessageCount = async (userId:string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/unReadMessage', { params: { userId} });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
+  export const makeMessageRead = async (conversationId:string,userId:string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/makeMessageReadUseCase', { params: { conversationId,userId} });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
