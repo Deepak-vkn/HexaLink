@@ -16,7 +16,7 @@ interface CommentModalProps {
   onClose: () => void;
   comments: Comment[];
   onAddComment: (message: string) => void;
-  onDeleteComment: (index: number) => void; // Add delete handler for the comment
+  onDeleteComment: (index: number) => void; 
 }
 
 const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, comments, onAddComment, onDeleteComment }) => {

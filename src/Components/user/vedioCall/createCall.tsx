@@ -21,7 +21,7 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onClose, to }) => {
   const localStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
-    // Cleanup on unmount
+
     return () => {
       if (isCalling) {
         endVideoCall();
@@ -59,7 +59,6 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onClose, to }) => {
 
     setIsIncomingCall(true); // Set incoming call state
 
-    // Automatically accept the call
     const answerOffer = await peer.createAnswer();
     await peer.setLocalDescription(new RTCSessionDescription(answerOffer));
     socket.emit('call:accepted', { answer: answerOffer, to: data.from });

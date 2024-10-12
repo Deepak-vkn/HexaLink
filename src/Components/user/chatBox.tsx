@@ -91,13 +91,13 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
   
   
    
-  }, [conversation, user, chatPartnerId]);  // Dependencies: user and conversation
+  }, [conversation, user, chatPartnerId]);  
   
   useEffect(() => {
     if (user && conversation) {
       socket.emit('getLatestMessageCount', { userId: user._id });
     }
-  }, ); // Dependencies: user and conversation
+  }, ); 
   
 
 
@@ -118,7 +118,7 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
     return () => {
       socket.off('chatPartnerOnline', chatPartnerOnlineReceive);
     };
-  }, [conversation, chatPartnerId]); // Ensure dependencies are correctly included
+  }, [conversation, chatPartnerId]); 
   
 
   const scrollToBottom = () => {
@@ -287,64 +287,60 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50">
-      {conversation ? (
-        <>
-          <div className="p-4 bg-white shadow-sm flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="relative">
-                {conversation.user1.image ? (
-                  <img
-                    className="w-10 h-10 rounded-full"
-                    src={conversation.user1.image}
-                    alt="User profile"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-lg">
-                    {conversation.user1.name.charAt(0).toUpperCase()}
-                    {chatPartnerOnline && (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="ml-3">
-                <h2 className="text-lg font-semibold text-gray-800">
-                  {conversation.user1._id === user._id ? conversation.user2.name : conversation.user1.name}
-                </h2>
-              
-           
-              </div>
+    <div className="flex flex-col h-full bg-gray-50 md:flex-grow">
+    {conversation ? (
+      <>
+        <div className="p-2 sm:p-4 bg-white shadow-sm flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="relative">
+            {(conversation.user1._id === user._id ? conversation.user2.image : conversation.user1.image) ? (
+                <img
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+                  src={conversation.user1._id === user._id ? conversation.user2.image : conversation.user1.image}
+                  alt="User profile"
+                />
+              ) : (
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold text-sm sm:text-lg">
+                  {conversation.user1.name.charAt(0).toUpperCase()}
+                  {chatPartnerOnline && (
+                    <div className="absolute bottom-0 right-0 w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white" />
+                  )}
+                </div>
+              )}
             </div>
-            <div className="flex items-center space-x-4">
-              <button className="text-gray-500 hover:text-gray-700" onClick={handleOpenCallModal}>
-                <FaVideo className="w-6 h-6" />
-              </button>
-              <button className="text-gray-500 hover:text-gray-700">
-                <FaEllipsisV />
-              </button>
+            <div className="ml-2 sm:ml-3">
+              <h2 className="text-sm sm:text-lg font-semibold text-gray-800">
+                {conversation.user1._id === user._id ? conversation.user2.name : conversation.user1.name}
+              </h2>
             </div>
           </div>
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <button className="text-gray-500 hover:text-gray-700" onClick={handleOpenCallModal}>
+              <FaVideo className="w-4 h-4 sm:w-6 sm:h-6" />
+            </button>
+            <button className="text-gray-500 hover:text-gray-700">
+              <FaEllipsisV className="w-4 h-4 sm:w-6 sm:h-6" />
+            </button>
+          </div>
+        </div>
 
-          {/* Chat messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
           {messages.map((message) => (
             <div key={message._id} className={`flex ${message.sendBy === user._id ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg flex justify-between items-start ${
+                className={`max-w-[75%] sm:max-w-md px-3 py-2 rounded-lg ${
                   message.sendBy === user._id
                     ? 'bg-blue-500 text-white'
                     : 'bg-white text-gray-800 border border-gray-200'
                 }`}
               >
-             <div className="flex-1" onClick={() => isMessageFromCurrentUser(message)}>
+                <div className="flex-1" onClick={() => isMessageFromCurrentUser(message)}>
                   {message.content ? (
-                    <p className="text-sm">{message.content}</p>
+                    <p className="text-xs sm:text-sm">{message.content}</p>
                   ) : message.file ? (
-                    <img src={message.file} alt="Sent file" className="max-w-full max-h-64 rounded-lg" />
+                    <img src={message.file} alt="Sent file" className="max-w-full max-h-48 sm:max-h-64 rounded-lg" />
                   ) : null}
-                  
-                  <p className="text-xs mt-1 text-gray-400">
+                  <p className="text-[10px] sm:text-xs mt-1 text-gray-400">
                     {new Date(message.sendTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -354,116 +350,111 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ 
           <div ref={messagesEndRef} />
         </div>
 
-          {/* Message input */}
-          <div className="p-4 bg-white border-t border-gray-200">
-            <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
-              <button className="text-gray-500 hover:text-gray-700 mr-2">
-                <FaSmile className="w-6 h-6" />
-              </button>
-              <input
-                type="text"
-                placeholder="Type a message..."
-                className="flex-1 bg-transparent outline-none"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              />
-              <input
-                type="file"
-                accept="image/*, video/*"
-                onChange={handleMediaChange}
-                className="ml-2 text-blue-500 hover:text-blue-600 focus:outline-none"
-              />
-              {/* Always display the send button */}
-              <button
-                className="ml-2 text-blue-500 hover:text-blue-600 focus:outline-none"
-                onClick={selectedMedia ? handleSendMedia : handleSendMessage}
-              >
-                <FaPaperPlane className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
-
-          {/* Video Call Modal */}
-          {showVideoCallModal && (
-            <VideoCallModal onClose={handleCloseCallModal}
-            to={chatPartnerId}  />
-          )}
-
-
-
-      {/* Delete Modal */}
-      {showDeleteOption && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-4 rounded-lg max-w-sm w-full">
-            <p className="text-lg text-gray-800">Are you sure you want to delete this message?</p>
-            <div className="mt-4 flex justify-between">
-              <button
-                className="text-gray-500 hover:text-gray-700"
-                onClick={() => setShowDeleteOption(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="text-red-500 hover:text-red-700"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
-            </div>
+        <div className="p-2 sm:p-4 bg-white border-t border-gray-200">
+          <div className="flex items-center bg-gray-100 rounded-full px-3 py-1 sm:px-4 sm:py-2">
+            <button className="text-gray-500 hover:text-gray-700 mr-2">
+              <FaSmile className="w-4 h-4 sm:w-6 sm:h-6" />
+            </button>
+            <input
+              type="text"
+              placeholder="Type a message..."
+              className="flex-1 bg-transparent outline-none text-sm sm:text-base"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            />
+            <label htmlFor="file-upload" className="cursor-pointer mx-1 sm:mx-2">
+              <FaImage className="w-4 h-4 sm:w-6 sm:h-6 text-gray-500 hover:text-gray-700" />
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/*, video/*"
+              onChange={handleMediaChange}
+              className="hidden"
+            />
+            <button
+              className="text-blue-500 hover:text-blue-600 focus:outline-none"
+              onClick={selectedMedia ? handleSendMedia : handleSendMessage}
+            >
+              <FaPaperPlane className="w-4 h-4 sm:w-6 sm:h-6" />
+            </button>
           </div>
         </div>
-      )}
 
-          {/* Media Preview Modal (if applicable) */}
-          {showMediaModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Media Preview</h2>
-                  <button 
-                    onClick={() => {
-                      setShowMediaModal(false);
-                      setSelectedMedia(null);
-                      setMediaPreview(null);
-                    }}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <FaTimes />
-                  </button>
-                </div>
-                {mediaPreview && (
-                  <img src={mediaPreview} alt="Media Preview" className="w-full h-64 object-contain rounded-lg mb-4" />
-                )}
-                <div className="flex justify-end space-x-2">
-                  <button 
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-                    onClick={() => {
-                      setShowMediaModal(false);
-                      setSelectedMedia(null);
-                      setMediaPreview(null);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    onClick={handleSendMedia}
-                  >
-                    Send
-                  </button>
-                </div>
+        {showVideoCallModal && (
+          <VideoCallModal onClose={handleCloseCallModal} to={chatPartnerId} />
+        )}
+
+        {showDeleteOption && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-4 rounded-lg max-w-xs sm:max-w-sm w-full mx-4">
+              <p className="text-base sm:text-lg text-gray-800">Are you sure you want to delete this message?</p>
+              <div className="mt-4 flex justify-between">
+                <button
+                  className="text-sm sm:text-base text-gray-500 hover:text-gray-700"
+                  onClick={() => setShowDeleteOption(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="text-sm sm:text-base text-red-500 hover:text-red-700"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
               </div>
             </div>
-          )}
-        </>
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-gray-500">Select a conversation to start chatting</p>
-        </div>
-      )}
+          </div>
+        )}
 
-    </div>
+        {showMediaModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-xs sm:max-w-md mx-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg sm:text-xl font-semibold">Media Preview</h2>
+                <button 
+                  onClick={() => {
+                    setShowMediaModal(false);
+                    setSelectedMedia(null);
+                    setMediaPreview(null);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <FaTimes className="w-4 h-4 sm:w-6 sm:h-6" />
+                </button>
+              </div>
+              {mediaPreview && (
+                <img src={mediaPreview} alt="Media Preview" className="w-full h-48 sm:h-64 object-contain rounded-lg mb-4" />
+              )}
+              <div className="flex justify-end space-x-2">
+                <button 
+                  className="bg-gray-300 text-gray-700 px-3 py-1 sm:px-4 sm:py-2 rounded text-sm sm:text-base hover:bg-gray-400"
+                  onClick={() => {
+                    setShowMediaModal(false);
+                    setSelectedMedia(null);
+                    setMediaPreview(null);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="bg-blue-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded text-sm sm:text-base hover:bg-blue-600"
+                  onClick={handleSendMedia}
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    ) : (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-sm sm:text-base text-gray-500">Select a conversation to start chatting</p>
+      </div>
+    )}
+  </div>
   );
 };
 

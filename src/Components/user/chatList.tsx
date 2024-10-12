@@ -18,8 +18,8 @@ interface User {
 }
 
 interface ChatListProps {
-  chats: any[]; // Replace `any[]` with a more specific type if available
-  user: User; // Specify the correct type for user if available
+  chats: any[]; 
+  user: User; 
   onConversationSelect: (conversationId: string) => void;
 }
 
@@ -49,16 +49,15 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
     const handleReceiveMessage = (newMsg: any) => {
       const { conversationId, sendBy, content, file, sendTime } = newMsg;
 
-      // Check if the user who sent the message is in the chat list
       setFilteredChats((prevChats) =>
         prevChats.map((chat) => {
-          // Check if the chat's other user matches the sender
+       
           if ( chat.otherUser._id === sendBy) {
             return {
               ...chat,
-              lastMessage: content, // Update last message
-              updatedAt: sendTime, // Update the timestamp
-              unreadCount: chat.unreadCount ? chat.unreadCount + 1 : 1 // Increment unread count
+              lastMessage: content, 
+              updatedAt: sendTime, 
+              unreadCount: chat.unreadCount ? chat.unreadCount + 1 : 1 
             };
           }
           return chat;
@@ -73,7 +72,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
     return () => {
       socket.off('receiveMessage', handleReceiveMessage);
     };
-  }, [chats]); // Add chats as a dependency to re-subscribe when it changes
+  }, [chats]); 
 
 
 
@@ -141,127 +140,127 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
   };
 
   return (
-    <div className="w-full md:w-1/3 border-r border-gray-200 bg-white flex flex-col h-full">
-      <div className="p-4 bg-gray-100 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Chats</h2>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search chats..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <FaSearch className="absolute left-3 top-3 text-gray-400" />
-        </div>
+    <div className="w-full md:w-1/3 lg:w-1/4 border-r border-gray-200 bg-white flex flex-col h-full">
+    <div className="p-2 sm:p-4 bg-gray-100 border-b border-gray-200">
+      <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4">Chats</h2>
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search chats..."
+          className="w-full pl-8 sm:pl-10 pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        <FaSearch className="absolute left-2 sm:left-3 top-2 sm:top-3 text-gray-400" />
       </div>
+    </div>
 
-      {filteredChats.length > 0 ? (
-        <ul className="overflow-y-auto flex-grow">
-          {filteredChats.map((chat) => (
-            <li
-              key={chat._id}
-              className={`p-4 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out border-b border-gray-100 ${
-                selectedChat?._id === chat._id ? 'bg-blue-50' : ''
-              }`}
-              onClick={() => handleChatClick(chat)}
-            >
-              <div className="flex items-center">
-                <div className="relative">
-                  {chat.otherUser.image ? (
-                    <img
-                      src={chat.otherUser.image}
-                      alt={chat.otherUser.name}
-                      className="w-12 h-12 rounded-full"
-                    />
-                  ) : (
-                    <FaUser className="w-12 h-12 rounded-full bg-gray-300 p-2 text-gray-600" />
-                  )}
-                  {chat.unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                      {chat.unreadCount}
-                    </span>
-                  )}
-                </div>
-                <div className="ml-4 flex-grow">
-                  <h3 className="font-semibold text-gray-800">{chat.otherUser.name}</h3>
-                  <p className="text-sm text-gray-600 truncate">
-                    {chat.lastMessage.startsWith('https://res.cloudinary.com')
-                      ? <FaImage className="inline text-gray-600" />
-                      : chat.lastMessage}
-                  </p>
-                </div>
-                {chat.updatedAt && (
-                  <span className="text-xs text-gray-400">
-                    {(() => {
-                      const messageDate = new Date(chat.updatedAt);
-                      const today = new Date();
-
-                      const isSameDay =
-                        messageDate.getDate() === today.getDate() &&
-                        messageDate.getMonth() === today.getMonth() &&
-                        messageDate.getFullYear() === today.getFullYear();
-
-                      return isSameDay
-                        ? messageDate.toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            hour12: true,
-                          })
-                        : messageDate.toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            hour12: true,
-                          });
-                    })()}
+    {filteredChats.length > 0 ? (
+      <ul className="overflow-y-auto flex-grow">
+        {filteredChats.map((chat) => (
+          <li
+            key={chat._id}
+            className={`p-2 sm:p-4 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out border-b border-gray-100 ${
+              selectedChat?._id === chat._id ? 'bg-blue-50' : ''
+            }`}
+            onClick={() => handleChatClick(chat)}
+          >
+            <div className="flex items-center">
+              <div className="relative">
+                {chat.otherUser.image ? (
+                  <img
+                    src={chat.otherUser.image}
+                    alt={chat.otherUser.name}
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
+                  />
+                ) : (
+                  <FaUser className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 p-2 text-gray-600" />
+                )}
+                {chat.unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
+                    {chat.unreadCount}
                   </span>
                 )}
               </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <div className="flex flex-col items-center justify-center flex-grow">
-          <p className="text-gray-600 mb-4">No chats found.</p>
-          <button
-            onClick={handleShowUsers}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-          >
-            Start a New Chat
-          </button>
-        </div>
-      )}
-
-      {showUsersList && (
-        <ul className="overflow-y-auto flex-grow">
-          {availableUsers.map((user) => (
-            <li
-              key={user._id}
-              className="p-4 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out border-b border-gray-100"
-              onClick={() => handleStartChat(user._id)} // Pass the user ID to start a chat
-            >
-              <div className="flex items-center">
-                {user.image ? (
-                  <img
-                    src={user.image}
-                    alt={user.name}
-                    className="w-12 h-12 rounded-full"
-                  />
-                ) : (
-                  <FaUser className="w-12 h-12 rounded-full bg-gray-300 p-2 text-gray-600" />
-                )}
-                <div className="ml-4 flex-grow">
-                  <h3 className="font-semibold text-gray-800">{user.name}</h3>
-                </div>
+              <div className="ml-2 sm:ml-4 flex-grow">
+                <h3 className="font-semibold text-gray-800 text-sm sm:text-base">{chat.otherUser.name}</h3>
+                <p className="text-xs sm:text-sm text-gray-600 truncate">
+                  {chat.lastMessage.startsWith('https://res.cloudinary.com')
+                    ? <FaImage className="inline text-gray-600" />
+                    : chat.lastMessage}
+                </p>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+              {chat.updatedAt && (
+                <span className="text-xs text-gray-400">
+                  {(() => {
+                    const messageDate = new Date(chat.updatedAt);
+                    const today = new Date();
+
+                    const isSameDay =
+                      messageDate.getDate() === today.getDate() &&
+                      messageDate.getMonth() === today.getMonth() &&
+                      messageDate.getFullYear() === today.getFullYear();
+
+                    return isSameDay
+                      ? messageDate.toLocaleTimeString('en-US', {
+                          hour: 'numeric',
+                          minute: 'numeric',
+                          hour12: true,
+                        })
+                      : messageDate.toLocaleString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric',
+                          hour12: true,
+                        });
+                  })()}
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div className="flex flex-col items-center justify-center flex-grow p-4">
+        <p className="text-gray-600 mb-4 text-sm sm:text-base">No chats found.</p>
+        <button
+          onClick={handleShowUsers}
+          className="bg-blue-500 text-white px-4 py-2 rounded text-sm sm:text-base hover:bg-blue-600 transition"
+        >
+          Start a New Chat
+        </button>
+      </div>
+    )}
+
+    {showUsersList && (
+      <ul className="overflow-y-auto flex-grow">
+        {availableUsers.map((user) => (
+          <li
+            key={user._id}
+            className="p-2 sm:p-4 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out border-b border-gray-100"
+            onClick={() => handleStartChat(user._id)}
+          >
+            <div className="flex items-center">
+              {user.image ? (
+                <img
+                  src={user.image}
+                  alt={user.name}
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
+                />
+              ) : (
+                <FaUser className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 p-2 text-gray-600" />
+              )}
+              <div className="ml-2 sm:ml-4 flex-grow">
+                <h3 className="font-semibold text-gray-800 text-sm sm:text-base">{user.name}</h3>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
   );
 };
 

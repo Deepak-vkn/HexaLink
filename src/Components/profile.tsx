@@ -53,6 +53,12 @@ const [modalTitle, setModalTitle] = useState('');
       setIsModalOpen(true);
   };
 
+  const handleUpdateCounts = () => {
+    fetchData()
+  };
+
+
+
   const handleCloseModal = () => {
       setIsModalOpen(false);
   };
@@ -523,7 +529,9 @@ const [modalTitle, setModalTitle] = useState('');
   isOpen={isUserListModalOpen} 
   onClose={() => setIsUserListModalOpen(false)} 
   title={modalTitle}  // e.g., "Likes" or "Followers"
-  users={modalUsers}   // e.g., users from likes or followers/following
+  users={modalUsers} 
+  loggeduser={isCurrentUser}
+  onUpdate={handleUpdateCounts} 
 />
 
     </div>
