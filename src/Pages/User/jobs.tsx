@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import JobList from '../../Components/user/jobList';
 import JobDetails from '../../Components/user/jobDetails';
-import { fetchJobs } from '../../api/user/get';
+import { fetchJobs,fetchSavedItems } from '../../api/user/get';
 import { applyJob } from '../../api/user/post';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
-
+import { useParams } from 'react-router-dom';
 const Jobs: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.userInfo);
 
@@ -16,6 +16,8 @@ const Jobs: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isJobApplyOpen, setIsJobApplyOpen] = useState<boolean>(false);
+   const { jobId } = useParams<{ jobId: string }>();
+ 
   const [applicationData, setApplicationData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -30,6 +32,10 @@ const Jobs: React.FC = () => {
         const response = await fetchJobs();
         if (response.success) {
           setJobs(response.jobs);
+          if (jobId) {
+            const foundJob = response.jobs.find(job => job._id === jobId);
+            setSelectedJob(foundJob || null); // 
+          }
         } else {
           setError(response.message);
         }
@@ -43,8 +49,11 @@ const Jobs: React.FC = () => {
     fetchJobData();
   }, []);
 
+
+
   const handleSelectJob = (job: any) => {
     setSelectedJob(job);
+ 
   };
 
   const handleApplyClick = () => {
@@ -119,7 +128,7 @@ const Jobs: React.FC = () => {
     <div className="flex flex-col h-screen ">
       <div className="flex flex-grow ml-20 mr-20">
   <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user} />
-  <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user} />
+  <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user}  />
 </div>
 
 

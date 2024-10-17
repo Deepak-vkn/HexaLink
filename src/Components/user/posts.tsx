@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaRegComment, FaRegHeart, FaHeart,FaThumbsUp  } from "react-icons/fa";
 import { BsSave2 } from "react-icons/bs";
 import { CiMenuKebab } from "react-icons/ci";
-import { likePost, deletePost,deletePostComments } from '../../api/user/get';
+import { likePost, deletePost,deletePostComments,saveItem,fetchSavedItems } from '../../api/user/get';
 import CreatePostModal from './handlePost';
 import { updatePost, addComment } from '../../api/user/post';
 import CommentModal from './commentModal';
@@ -14,6 +14,8 @@ import LikeModal from './likeModal';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+
+
 
 const sliderSettings = {
   dots: true,
@@ -73,6 +75,7 @@ const Posts: React.FC<PostsProps> = ({ posts, user, isUser = false }) => {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [showMore, setShowMore] = useState(false);
   const [isLikeModalOpen, setIsLikeModalOpen] = useState<boolean>(false);
+  const [savedItems, setSavedItems] = useState<string[]>([]);
   const maxCaptionLength = 100; 
 
 
@@ -93,6 +96,24 @@ const handleCloseLikeModal = () => {
   useEffect(() => {
     setPostsState(posts);
   }, [posts]);
+
+  useEffect(() => {
+    // Fetch saved items when the component mounts
+    const fetchSavedPosts = async () => {
+      try {
+        const response = await fetchSavedItems(user._id,'Posts');
+        console.log()
+        if (response.success) {
+          console.log('saved doc are ',response.savedDoc)
+          setSavedItems(response.savedDoc.map((item:any) => item.originalTargetId));
+        }
+      } catch (error) {
+        console.error('An error occurred while fetching saved posts:', error);
+      }
+    };
+
+    fetchSavedPosts();
+  }, [user._id]);
 
   const handleOpenCommentModal = (postId: string) => {
     setSelectedPostId(postId);
@@ -137,6 +158,28 @@ const handleCloseLikeModal = () => {
       console.error('An error occurred while liking the post:', error);
     }
   };
+
+  const handleSaveClick = async (postId: string) => {
+    try {
+      const response = await saveItem(user._id, postId, 'Posts');
+      if (response.success) {
+        console.log('Post save successful');
+  
+
+        if (savedItems.includes(postId)) {
+         
+          setSavedItems((prevItems) => prevItems.filter((item) => item !== postId));
+          console.log(`Post ${postId} removed from saved items`);
+        } else {
+          setSavedItems((prevItems) => [...prevItems, postId]);
+          console.log(`Post ${postId} added to saved items`);
+        }
+      }
+    } catch (error) {
+      console.error('An error occurred while saving the post:', error);
+    }
+  };
+  
 
   const toggleMenu = (postId: string) => {
     setActivePostMenu(activePostMenu === postId ? null : postId);
@@ -313,10 +356,17 @@ const handleCloseLikeModal = () => {
                 <FaRegComment size={20} />
                 <span>Comment</span>
               </button>
-              <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 transition duration-200">
-                <BsSave2 size={20} />
-                <span>Save</span>
-              </button>
+              <button
+        className={`flex items-center space-x-2 transition duration-200 ${
+          savedItems.includes(post._id) ? 'text-blue-500' : 'text-gray-500'
+        }`}
+        onClick={() => handleSaveClick(post._id)}
+      >
+        <BsSave2 size={20} className={savedItems?.includes(post._id) ? 'text-blue-500' : ''} />
+        <span>{savedItems.includes(post._id) ? 'Saved' : 'Save'}</span>
+      </button>
+  
+       
             </div>
           </div>
         ))

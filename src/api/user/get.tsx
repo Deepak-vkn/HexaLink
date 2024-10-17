@@ -206,3 +206,42 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+  export const saveItem = async (userId: string,targetId:string, type: string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/saveItems', { params: { userId,targetId,type} });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
+  export const fetchSavedItems = async (userId: String,type:string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/fetchsaveItems', { params: { userId,type} });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
+  export const checkSaved = async (userId: string,targetId:string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/checkSaved', { params: { userId,targetId} });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
+  export const fetchSinglePost = async (postId: string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/fetchSinglePost', { params: { postId} });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
+
+
+  

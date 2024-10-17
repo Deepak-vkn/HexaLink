@@ -11,6 +11,9 @@ import { fetchFollowingPosts } from '../../api/user/get';
 import Posts from '../../Components/user/posts';
 import Loading from '../../Components/loading';
 import FollowSuggesion from '../../Components/user/followSuggesion';
+import LeftActivityBar from '../../Components/user/leftBottom';
+import LeftTopBox from '../../Components/user/leftTopBox';
+
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -101,54 +104,8 @@ const Home = () => {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Left Sidebar - Profile and Activity */}
           <div className="md:col-span-1 space-y-4">
-            <div className="bg-white shadow rounded-lg p-4">
-              <div className="flex flex-col items-center">
-                {user?.image ? (
-                  <img
-                    className="w-24 h-24 rounded-full object-cover mb-3"
-                    src={user.image}
-                    alt={`${user?.name}'s profile`}
-                  />
-                ) : (
-                  <FaUserCircle className="w-24 h-24 text-gray-400 mb-3" />
-                )}
-                <h2 className="text-lg font-semibold text-gray-800">{user?.name}</h2>
-                <p className="text-sm text-gray-600 mt-1">{user?.role || 'No role available'}</p>
-                {user?.skill && user.skill.length > 0 ? (
-                  <p className="text-xs text-gray-600 mt-1">
-                    {user.skill.slice(0, 3).join(' || ')}{user.skill.length > 3 ? ' || ...' : ''}
-                  </p>
-                ) : (
-                  <p className="text-xs text-gray-600 mt-1">No skills available</p>
-                )}
-                <Link
-                  to="/profile"
-                  className="mt-3 w-full bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out text-center text-sm"
-                >
-                  View Profile
-                </Link>
-              </div>
-            </div>
-
-            <div className="bg-white shadow rounded-lg p-4">
-              <h3 className="text-md font-semibold text-gray-800 mb-3">Your Activity</h3>
-              <ul className="space-y-2">
-                <li className="flex items-center text-sm text-gray-600">
-                  <FaRegClock className="mr-2" />
-                  <span>Recent Activity</span>
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <FaRegFileAlt className="mr-2" />
-                  <Link to="/posts" className="hover:text-blue-600 transition duration-300">
-                    Your Posts
-                  </Link>
-                </li>
-                <li className="flex items-center text-sm text-gray-600">
-                  <FaRegBookmark className="mr-2" />
-                  <span>Saved Items</span>
-                </li>
-              </ul>
-            </div>
+            <LeftTopBox user={user}/>
+            <LeftActivityBar/>
           </div>
 
           {/* Middle - Posts Feed */}

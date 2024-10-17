@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import { saveItem,fetchSavedItems,checkSaved } from '../../api/user/get';
 interface JobDetailsProps {
   job: any | null;
   onApplyClick: () => void;
@@ -8,10 +8,50 @@ interface JobDetailsProps {
 
 const JobDetails: React.FC<JobDetailsProps> = ({ job, onApplyClick, user }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [savedItems, setSavedItems] = useState<string[]>([]);
+  
+console.log('save status is ',isSaved)
+
+  const handleSaveClick = async () => {
+    if (!user || !job) return; 
+
+    try {
+      const response = await saveItem(user._id, job._id, 'Jobs'); 
+      if (response.success) {
+        console.log('Job saved successfully');
+        setIsSaved(!isSaved); 
+      } else {
+        console.error('Failed to save job:', response.message);
+      }
+    } catch (error) {
+      console.error('An error occurred while saving the job:', error);
+    }
+  };
 
   const handleApplyClick = () => {
     onApplyClick();
   };
+
+  useEffect(() => {
+    const fetchSavedPosts = async () => {
+      try {
+        console.log('use fetch sevd items workid')
+        const response = await checkSaved(user._id,job._id);
+        console.log('job id is ',job._id)
+        if (response.success) {
+          setIsSaved(true);   
+        }
+        else{
+          setIsSaved(false);   
+        }
+      } catch (error) {
+        console.error('An error occurred while fetching saved posts:', error);
+      }
+    };
+    fetchSavedPosts();
+  },);
+
   if (!job) {
     return (
       <div className="w-full max-w-3xl mx-auto p-8 bg-white shadow-lg flex items-center justify-center h-[calc(100vh-80px)] border border-gray-300 rounded-lg">
@@ -115,8 +155,8 @@ const JobDetails: React.FC<JobDetailsProps> = ({ job, onApplyClick, user }) => {
         >
           {isExpired ? 'Expired' : hasApplied ? 'Applied' : 'Apply now'}
         </button>
-        <button className="px-6 py-2 bg-white text-blue-600 font-semibold rounded-full border border-blue-600 hover:bg-blue-50">
-          Save
+        <button className="px-6 py-2 bg-white text-blue-600 font-semibold rounded-full border border-blue-600 hover:bg-blue-50" onClick={handleSaveClick}>
+        {isSaved ? 'Saved' : 'Save'}
         </button>
       </div>
     </div>
