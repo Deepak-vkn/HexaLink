@@ -6,6 +6,11 @@ import AdminLogged from '../middleware/admin/adminLogin';
 import Adminmid from '../middleware/admin/adminHome';
 import AdminUsers from '../Pages/Admin/adminUsers';
 import AdminCompany from '../Pages/Admin/adminCompany';
+
+
+
+
+
 const AdminRoutes: React.FC = () => {
   return (
     <Routes>

@@ -9,7 +9,7 @@ import { socket } from '../../Socket/socket';
 const ChatPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.userInfo);
   const [conversations, setConversations] = useState<any>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<any | null>(null);
   useEffect(() => {
     const loadConversations = async () => {
       try {
@@ -30,8 +30,8 @@ const ChatPage: React.FC = () => {
     socket.on('receiveMessage', (data) => {
       const { conversationId, content, sendTime } = data;
 
-      setConversations((prevConversations) =>
-        prevConversations.map((conversation) => {
+      setConversations((prevConversations:any) =>
+        prevConversations.map((conversation:any) => {
           if (conversation._id === conversationId) {
             return {
               ...conversation,
@@ -57,11 +57,14 @@ const ChatPage: React.FC = () => {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-1 overflow-hidden">
-      <ChatList 
+      {user && (
+  <ChatList 
     chats={conversations}  
     user={user} 
     onConversationSelect={handleConversationSelect} 
-/>
+  />
+)}
+
 
         {selectedConversation && (
           <ChatBox conversation={selectedConversation} user={user}/>

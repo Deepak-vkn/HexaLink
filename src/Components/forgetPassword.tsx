@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 
 interface ForgetPasswordProps {
   isCompany: boolean;
@@ -7,7 +7,7 @@ interface ForgetPasswordProps {
 
 const ForgetPassword: React.FC<ForgetPasswordProps> = ({ isCompany, onSubmit }) => {
   const [email, setEmail] = useState('');
-
+console.log(isCompany)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(email);

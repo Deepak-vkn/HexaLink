@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaUser, FaPaperPlane, FaEllipsisV, FaSmile, FaVideo, FaTimes ,FaImage} from 'react-icons/fa';
+import {  FaPaperPlane, FaEllipsisV, FaSmile, FaVideo, FaTimes ,FaImage} from 'react-icons/fa';
 import { getMessages,deleteMessage ,makeMessageRead} from '../../api/user/get';
 import { socket } from '../../Socket/socket';
 import VideoCallModal from '../user/vedioCall/createCall'; 
@@ -28,21 +28,22 @@ interface Conversation {
   lastMessage?: string;
 }
 
-const ChatBox: React.FC<{ conversation: Conversation | null; user: User }> = ({ conversation, user }) => {
+const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ conversation, user }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [file, setFile] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null); 
   const [showVideoCallModal, setShowVideoCallModal] = useState(false); 
-  const [selectedMedia, setSelectedMedia] = useState<string>( '');
+  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
+
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [showMediaModal, setShowMediaModal] = useState(false); // State to control media modal
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  //const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [showDeleteOption, setShowDeleteOption] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [chatPartnerOnline, setChatPartnerOnline] = useState(false); 
     
-  const chatPartnerId = conversation?.user1._id === user._id ? conversation.user2._id : conversation?.user1._id;
+  const chatPartnerId = conversation?.user1._id === user._id ? conversation?.user2._id : conversation?.user1._id;
 
 
   useEffect(() => {

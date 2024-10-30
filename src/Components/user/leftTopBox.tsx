@@ -1,8 +1,15 @@
-import React from 'react';
+
 import { FaUserCircle } from 'react-icons/fa'; // Ensure this import is added
 import { Link } from 'react-router-dom'; // Import Link if you're using react-router
 
-const LeftTopBox = ({ user }) => {
+
+
+
+interface LeftTopBoxProps {
+  user: any;
+}
+
+const LeftTopBox: React.FC<LeftTopBoxProps> = ({ user }) => {
   return (
     <div className="bg-white shadow rounded-lg p-4">
       <div className="flex flex-col items-center">

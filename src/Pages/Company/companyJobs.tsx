@@ -17,7 +17,7 @@ const CompanyJobs: FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [viewMode, setViewMode] = useState(false);
   const [sortBy, setSortBy] = useState<'active' | 'inactive' | 'all'>('all'); 
-
+console.log(error,loading)
   const handleOpenModal = () => {
     setIsModalOpen(true);
     setViewMode(true);
@@ -114,7 +114,7 @@ const CompanyJobs: FC = () => {
       <div className="flex min-h-screen">
         <CompanyNav title={'Jobs'} />
 
-        <div className="flex-1 ml-64 p-2">
+        <div className="flex-1 ">
           <div className="flex justify-end items-center mt-16 space-x-4">
             <button
               data-modal-hide="static-modal"

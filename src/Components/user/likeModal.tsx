@@ -23,7 +23,7 @@ interface UserListModalProps {
   title: string;
   users: User[];
   loggeduser?:boolean;
-  onUpdate: () => void;
+  onUpdate?: () => void;
 }
 
 const UserListModal: React.FC<UserListModalProps> = ({ isOpen, onClose, title, users,loggeduser,onUpdate  }) => {
@@ -50,7 +50,9 @@ const UserListModal: React.FC<UserListModalProps> = ({ isOpen, onClose, title, u
       const result = await removeFollower(mainUser._id, userId);
       if (result.success) {
         setUserList((prevList) => prevList.filter((user) => (user.id ? user.id._id : user._id) !== userId));
-        onUpdate();
+        if (onUpdate) {
+          onUpdate();
+        }
       }
     }
   };
@@ -60,7 +62,9 @@ const UserListModal: React.FC<UserListModalProps> = ({ isOpen, onClose, title, u
       const result = await unfollowRequest(mainUser._id, userId);
       if (result.success) {
         setUserList((prevList) => prevList.filter((user) => (user.id ? user.id._id : user._id) !== userId));
-        onUpdate();
+        if (onUpdate) {
+          onUpdate();
+        }
       }
     }
   };

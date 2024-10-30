@@ -27,7 +27,7 @@ export const getUserPosts = async (userId: string): Promise<any> => {
     }
   };
 
-  export async function fetchFollowDocument(userId: string): Promise<any> {
+  export async function fetchFollowDocument(userId: string|undefined): Promise<any> {
     try {
       console.log('raeched api fetch follow')
       const response = await axiosInstance.get(`/fetchFollow?userId=${userId}`);
@@ -168,7 +168,7 @@ export const getUserPosts = async (userId: string): Promise<any> => {
     }
   }; 
 
-  export const removeAllNotifications = async (userId:string,type:string): Promise<any> => {
+  export const removeAllNotifications = async (userId:string,type:string|null): Promise<any> => {
     console.log('clear notiftion calld in api')
     try {
       const response = await axiosInstance.get('/removeAllNotifications', { params: { userId ,type} });
@@ -241,6 +241,16 @@ export const getUserPosts = async (userId: string): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+
+  export const userDashBoard = async (userId: string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/userdashBoard', { params: { userId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
+
 
 
 

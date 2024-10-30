@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { initializeSocket, socket } from '../../../Socket/socket';
+import {  socket } from '../../../Socket/socket';
 import { MdCallEnd, MdCall, MdMic, MdMicOff, MdVideocam, MdVideocamOff } from 'react-icons/md';
 
 interface VideoCallModalProps {
   onClose: () => void;
-  to: string;
+  to: string|undefined;
 }
 
 const peer = new RTCPeerConnection({
@@ -36,13 +36,13 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onClose, to }) => {
         video: true,
         audio: true,
       });
-
-      if (localVideoRef.current) {
+  
+      if (localVideoRef.current && localStreamRef.current) {
         localVideoRef.current.srcObject = localStreamRef.current;
       }
-
-      localStreamRef.current.getTracks().forEach((track) => peer.addTrack(track, localStreamRef.current));
-
+  
+      localStreamRef.current?.getTracks().forEach((track) => peer.addTrack(track, localStreamRef.current!));
+  
       const localOffer = await peer.createOffer();
       await peer.setLocalDescription(new RTCSessionDescription(localOffer));
       socket.emit('outgoing:call', { fromOffer: localOffer, to });
@@ -51,6 +51,36 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onClose, to }) => {
       setIsCalling(false);
     }
   };
+  
+  socket.on('incoming:call', async (data) => {
+    console.log('Incoming call received');
+    const { offer } = data;
+    await peer.setRemoteDescription(new RTCSessionDescription(offer));
+  
+    setIsIncomingCall(true); // Set incoming call state
+  
+    const answerOffer = await peer.createAnswer();
+    await peer.setLocalDescription(new RTCSessionDescription(answerOffer));
+    socket.emit('call:accepted', { answer: answerOffer, to: data.from });
+  
+    localStreamRef.current = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
+  
+    if (localVideoRef.current && localStreamRef.current) {
+      localVideoRef.current.srcObject = localStreamRef.current;
+    }
+    localStreamRef.current?.getTracks().forEach((track) => peer.addTrack(track, localStreamRef.current!));
+  });
+  
+  peer.ontrack = ({ streams: [stream] }) => {
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = stream;
+      remoteVideoRef.current.play();
+    }
+  };
+  
 
   socket.on('incoming:call', async (data) => {
     console.log('Incoming call received');

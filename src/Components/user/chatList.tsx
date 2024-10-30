@@ -19,7 +19,7 @@ interface User {
 
 interface ChatListProps {
   chats: any[]; 
-  user: User; 
+  user: any; 
   onConversationSelect: (conversationId: string) => void;
 }
 
@@ -48,6 +48,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
   useEffect(() => {
     const handleReceiveMessage = (newMsg: any) => {
       const { conversationId, sendBy, content, file, sendTime } = newMsg;
+    
 
       setFilteredChats((prevChats) =>
         prevChats.map((chat) => {
@@ -62,7 +63,9 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
           }
           return chat;
         })
-      );
+      );  
+      console.log(conversationId)
+      console.log(file)
 
       console.log('Received message from:', sendBy, 'Content:', content);
     };
@@ -81,8 +84,8 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
     try {
       const usersResponse = await fetchFollowDocument(user._id);
       const approvedUsers = usersResponse.follow.following
-        .filter((follow) => follow.status === 'approved')
-        .map((follow) => ({
+        .filter((follow:any) => follow.status === 'approved')
+        .map((follow:any) => ({
           _id: follow.id._id,
           name: follow.id.name,
           image: follow.id.image,
@@ -126,7 +129,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
     }
   };
 
-  const handleChatClick = (chat: Chat) => {
+  const handleChatClick = (chat: any) => {
     if (chat) {
       // Reset unread count to zero when the chat is selected
       setFilteredChats((prevChats) =>
@@ -176,7 +179,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
                 ) : (
                   <FaUser className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-300 p-2 text-gray-600" />
                 )}
-                {chat.unreadCount > 0 && (
+                {(chat.unreadCount ?? 0) > 0 && (
                   <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
                     {chat.unreadCount}
                   </span>

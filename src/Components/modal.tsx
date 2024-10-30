@@ -225,7 +225,7 @@ const Modal: FC<ModalProps> = ({ isOpen, onClose, user, fields, onSaveChanges })
           <div className="flex flex-shrink-0 items-center justify-end rounded-b-md border-t-2 border-neutral-100 p-4 dark:border-white/10">
           <button
   type="button"
-  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded hover:bg-gray-400"
+  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-400"
   onClick={() => {
     if (fields.includes('skills')) {
       handleAddSkill();

@@ -47,9 +47,9 @@ const AdminUsers: React.FC = () => {
   const headings = ['Profile', 'Name', 'Email', 'Join Date', 'Status', 'Action'];
 
   return (
-    <div className="flex min-h-screen">
+    <div >
       <AdminNav title={'USERS'}/>
-      <div className="flex-1 ml-64 p-2">
+      <div className="flex-1">
         {loading ? (
           <p>Loading...</p>
         ) : error ? (

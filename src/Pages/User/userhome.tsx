@@ -1,10 +1,10 @@
-import { FaUserCircle, FaRegBookmark, FaRegClock, FaRegFileAlt } from 'react-icons/fa';
+
 import Noposts from '../../Components/user/Noposts';
 import { useSelector } from 'react-redux';
 import CreatePostModal from '../../Components/user/handlePost'
 import { useState, useEffect } from 'react';
 import { userPost } from '../../api/user/post';
-import { Link } from 'react-router-dom';
+
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import { fetchFollowingPosts } from '../../api/user/get';
@@ -42,61 +42,61 @@ const Home = () => {
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
-  const handleSavePost = async (files: file[], caption: string) => {
-    console.log('the selcted imaeg is ',files)
+  const handleSavePost = async (files: File[] | null, caption: string) => {
+    if (!files || files.length === 0 || !user?._id) {
+      toastr.error('No files selected or user ID is missing');
+      return;
+    }
+  
     if (files.length > 4) {
-        toastr.error('You can upload up to 4 images only');
-        return;
+      toastr.error('You can upload up to 4 images only');
+      return;
     }
-
-    if (files.length === 0 || !user?._id) {
-        toastr.error('No files selected or user ID is missing');
-        return;
-    }
-
+  
     const formData = new FormData();
     formData.append('caption', caption);
     formData.append('userId', user._id);
-
+  
     const base64Images: string[] = [];
-    const readFilePromises = files.map(file => {
-        return new Promise<void>((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onloadend = () => {
-                const base64String = reader.result as string;
-                base64Images.push(base64String);
-                resolve();
-            };
-
-            reader.onerror = () => {
-                reject(new Error('Failed to read file'));
-            };
-
-            reader.readAsDataURL(file);
-        });
+    const readFilePromises = files.map((file) => {
+      return new Promise<void>((resolve, reject) => {
+        const reader = new FileReader();
+  
+        reader.onloadend = () => {
+          const base64String = reader.result as string;
+          base64Images.push(base64String);
+          resolve();
+        };
+  
+        reader.onerror = () => {
+          reject(new Error('Failed to read file'));
+        };
+  
+        reader.readAsDataURL(file);
+      });
     });
-
+  
     try {
-        await Promise.all(readFilePromises);
-
-        // Append all base64 images to FormData as an array
-        base64Images.forEach(base64String => {
-            formData.append('images', base64String);
-        });
-
-        // Send the request to the backend
-        const response = await userPost(formData);
-
-        if (response.success) {
-            toastr.success(response.message || 'Post created successfully');
-        } else {
-            toastr.error(response.message || 'Failed to create post');
-        }
+      await Promise.all(readFilePromises);
+  
+      // Append all base64 images to FormData as an array
+      base64Images.forEach((base64String) => {
+        formData.append('images', base64String);
+      });
+  
+      // Send the request to the backend
+      const response = await userPost(formData);
+  
+      if (response.success) {
+        toastr.success(response.message || 'Post created successfully');
+      } else {
+        toastr.error(response.message || 'Failed to create post');
+      }
     } catch (error) {
-        toastr.error('Failed to create post');
+      toastr.error('Failed to create post');
     }
-};
+  };
+  
 
   return (
     <div className="bg-gray-100 min-h-screen">

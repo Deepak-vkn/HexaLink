@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FaRegComment, FaRegHeart, FaHeart,FaThumbsUp  } from "react-icons/fa";
+import { FaRegComment,FaThumbsUp  } from "react-icons/fa";
 import { BsSave2 } from "react-icons/bs";
 import { CiMenuKebab } from "react-icons/ci";
 import { likePost, deletePost,deletePostComments,saveItem,fetchSavedItems } from '../../api/user/get';
 import CreatePostModal from './handlePost';
 import { updatePost, addComment } from '../../api/user/post';
 import CommentModal from './commentModal';
-import Loading from '../loading';
+// import Loading from '../loading';
 import LikeModal from './likeModal';
 
 
@@ -28,25 +28,23 @@ const sliderSettings = {
 };
 
 
- // This should be correct for most setups
- // Ensure this path matches the version you're using
-// Define the types for user, post, comment, and like
-interface User {
-  _id: string;
-  name: string;
-  image?: string;
-}
 
-interface Like {
-  userId: User;
-}
+// interface User {
+//   _id: string;
+//   name: string;
+//   image?: string;
+// }
 
-interface Comment {
-  _id: string;
-  userId: User;
-  message: string;
-  time: string;
-}
+// interface Like {
+//   userId: User;
+// }
+
+// interface Comment {
+//   _id: string;
+//   userId: User;
+//   message: string;
+//   time: string;
+// }
 
 interface Post {
   _id: string;
@@ -62,7 +60,7 @@ interface Post {
 
 interface PostsProps {
   posts: Post[];
-  user: { _id: string };
+  user: { _id: string }| null;
   isUser?:boolean
 }
 
@@ -203,7 +201,7 @@ const handleCloseLikeModal = () => {
     }
   };
 
-  const handleSave = async (file: File | null, caption: string, postId?: string) => {
+  const handleSave = async (file: File[] | null, caption: string, postId?: string) => {
     if (postId) {
       const response = await updatePost(caption, postId);
       if (response.success) {
@@ -213,9 +211,12 @@ const handleCloseLikeModal = () => {
             post._id === postId ? updatedPost : post
           )
         );
+      } else {
+        console.log(file); 
       }
     }
   };
+  
 
   const handleDeleteComment = async (commentIndex: number) => {
     if (selectedPostId) {

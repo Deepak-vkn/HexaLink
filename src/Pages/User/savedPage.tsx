@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import  { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { FaUser, FaBookmark, FaClock, FaFileAlt, FaBriefcase, FaCommentAlt, FaThumbsUp } from 'react-icons/fa'
-import { fetchSavedItems,saveItem,fetchSinglePost } from '../../api/user/get'
+import { FaUser, FaClock, FaBriefcase } from 'react-icons/fa'
+import { fetchSavedItems,saveItem } from '../../api/user/get'
 import {  BsFillSaveFill } from 'react-icons/bs';
 import LeftActivityBar from '../../Components/user/leftBottom';
 import LeftTopBox from '../../Components/user/leftTopBox';

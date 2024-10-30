@@ -7,7 +7,7 @@ import UserLogged from '../middleware/user/userlogged';
 import Usermid from '../middleware/user/userhome';
 import UserResetPaaword from '../Pages/User/resetPassword';
 import ForgetPassword from '../Pages/User/forgetPassword';
-import Navbar from '../Components/user/navbar';
+
 import Otp from '../Components/otp';
 import UserProfile from '../Pages/User/userProfile';
 import UserPosts from '../Pages/User/userPosts';
@@ -16,6 +16,8 @@ import UserNotification from '../Pages/User/userNotification';
 import Loading from '../Components/loading';
 import Message from '../Pages/User/chat';
 import SavedItems from '../Pages/User/savedPage';
+import UserDashBoard from '../Pages/User/userDashBoard';
+
 
 const UserRoutes: React.FC = () => {
 
@@ -35,6 +37,7 @@ const UserRoutes: React.FC = () => {
         <Route path="/notification" element={< UserNotification />} />
         <Route path="/message" element={<Message />} />
         <Route path="/saved" element={<SavedItems />} />
+        <Route path="/activity" element={<UserDashBoard />} />
       </Route>
 
       <Route path="/resetPassword" element={<UserResetPaaword />} />

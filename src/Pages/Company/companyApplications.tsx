@@ -90,7 +90,7 @@ const CompanyApplications = () => {
     return (
         <div className="flex min-h-screen">
             <CompanyNav title="Applications" /> 
-            <div className="flex-1 ml-64 p-6">
+            <div className="flex-1 ">
                 <h1 className="text-2xl font-semibold mb-4">Company Applications</h1>
 
                 <div className="flex mb-4 space-x-4">

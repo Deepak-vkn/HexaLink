@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Posts from '../../Components/user/posts';
 import { getUserPosts } from '../../api/user/get';
 import { useSelector } from 'react-redux';

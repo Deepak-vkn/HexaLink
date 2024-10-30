@@ -1,5 +1,5 @@
-import React from 'react'
-import { FaUserCircle, FaRegBookmark, FaRegClock, FaRegFileAlt } from 'react-icons/fa';
+
+import {  FaRegBookmark, FaRegClock, FaRegFileAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom'
 const leftActivityBar = () => {
   return (
@@ -9,7 +9,9 @@ const leftActivityBar = () => {
     <ul className="space-y-2">
       <li className="flex items-center text-sm text-gray-600">
         <FaRegClock className="mr-2" />
-        <span>Recent Activity</span>
+        <Link to="/activity" className="hover:text-blue-600 transition duration-300">
+        Recent Activity
+        </Link>
       </li>
       <li className="flex items-center text-sm text-gray-600">
         <FaRegFileAlt className="mr-2" />

@@ -3,19 +3,19 @@ import { logoutcall, sendToBackend } from '../../api/user/post';
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link,useLocation  } from 'react-router-dom';
 import { logout } from '../../Store/userSlice';
-import { IoPerson, IoNotifications, IoHome, IoBriefcase, IoChatbubbles } from "react-icons/io5";
+import { IoPerson, IoNotifications } from "react-icons/io5";
 import { IoIosSearch, IoMdMenu, IoMdClose } from "react-icons/io";
 import { initializeSocket } from '../../Socket/socket';
 import { socket } from '../../Socket/socket';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../Store/store'
+
 import { fetchNotification,unreadMessageCount } from '../../api/user/get';
-import VideoCallModal from './vedioCall/createCall';
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+// import VideoCallModal from './vedioCall/createCall';
+// interface User {
+//   id: string;
+//   name: string;
+//   email: string;
+// }
 
 interface NavbarProps {
   user?: any | null;
@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   const [notificationCount, setNotificationCount] = useState(0); 
   const location = useLocation(); // To monitor the current route
   const [isCallModalOpen, setIsCallModalOpen] = useState(false);
-  const [callerInfo, setCallerInfo] = useState<any>(null); // S
+ // const [callerInfo, setCallerInfo] = useState<any>(null); // S
   const [unreadMessage, setUnreadMessageCount] = useState(0);
 
   const dispatch = useDispatch();
@@ -105,7 +105,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           const result = await fetchNotification(user._id); 
           if (result.success) {
             // Count unread notifications
-            const unreadNotifications = result.data.filter(notification => !notification.isRead);
+            const unreadNotifications = result.data.filter((notification:any) => !notification.isRead);
             setNotificationCount(unreadNotifications.length); 
           }
         } catch (error) {
@@ -217,7 +217,6 @@ const Navbar: React.FC<NavbarProps> = () => {
   };
 
   const handleCloseCallModal = () => {
-    console.log('Call ended');
     setIsCallModalOpen(false);
   };
 
@@ -357,17 +356,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           </div>
         </div>
       )}
-       {isCallModalOpen && (
-        <VideoCallModal
-        onCall={() => {
-          console.log('Starting video call...');
-         
-        }}
-        onCancel={handleCloseCallModal}
-           to={callerInfo.from} 
-          incomingInfo={callerInfo}
-        />
-      )}
+      
     </nav>
   );
 };

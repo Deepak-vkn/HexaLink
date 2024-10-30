@@ -37,3 +37,13 @@ export const fetchApplications = async (companyId: string): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+
+  
+  export const companyDashBoard = async (companyId: string): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/company/companyDashBoard', { params: { companyId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 

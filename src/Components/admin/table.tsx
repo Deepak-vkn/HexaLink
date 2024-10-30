@@ -8,7 +8,6 @@ interface TableProps {
 
 const Table: React.FC<TableProps> = ({ data, headings, onBlockUser }) => {
   return (
-    <div className='pt-16'>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead>
@@ -68,7 +67,6 @@ const Table: React.FC<TableProps> = ({ data, headings, onBlockUser }) => {
           </tbody>
         </table>
       </div>
-    </div>
   );
 };
 

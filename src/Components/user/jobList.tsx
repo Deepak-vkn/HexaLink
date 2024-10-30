@@ -9,7 +9,7 @@ interface JobListProps {
 
 const JobList: React.FC<JobListProps> = ({ jobs, onSelectJob, user }) => {
   return (
-    <div className="w-full md:w-1/3 bg-white shadow-lg flex flex-col h-[calc(100vh-80px)] border border-gray-300 "> {/* Added border and margin */}
+    <div className="w-full md:w-1/3 bg-white shadow-lg flex flex-col  border border-gray-300 "> {/* Added border and margin */}
       <div className="bg-blue-600 p-3"> {/* Reduced padding */}
         <h2 className="text-lg text-center text-white font-semibold">Available Positions</h2> {/* Adjusted font size */}
       </div>

@@ -1,7 +1,7 @@
 
 import AdminNav from '../../Components/admin/adminNav';
 import Table from '../../Components/admin/table';
-import { fetchUsers,fetchCompany } from '../../api/admin/get';
+import { fetchCompany } from '../../api/admin/get';
 import { blockCompany } from '../../api/admin/post';
 import React, { useState, useEffect } from 'react';
 
@@ -49,9 +49,9 @@ const adminCompany:React.FC = () => {
       const headings = ['Profile', 'Name', 'Email', 'Join Date', 'Status','Action'];
     
   return (
-    <div className="flex min-h-screen">
+    <div >
       <AdminNav title={'COMPANY'}/>
-      <div className="flex-1 ml-64 p-2">
+      <div className="flex-1">
         {loading ? (
           <p>Loading...</p>
         ) : error ? (

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { verifyToken } from '../../api/user/get'; 
 import { RootState } from '../../Store/store';
-import { logout } from '../../Store/userSlice'; 
+
 import Navabar from '../../Components/user/navbar'
 import { useDispatch } from 'react-redux';
 

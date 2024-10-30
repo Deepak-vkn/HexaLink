@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store'
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
+import PostModal from './user/postModal'
 
 import UserListModal from './user/likeModal'
 interface UserProfileProps {
@@ -32,6 +33,8 @@ const Profile: React.FC<UserProfileProps> = ({ user ,isCurrentUser}) => {
   const [isUserListModalOpen, setIsUserListModalOpen] = useState(false);
 const [modalUsers, setModalUsers] = useState([]);
 const [modalTitle, setModalTitle] = useState('');
+const [isviewPostModalOpen, setIsviewPostModalOpen] = useState(false); 
+const [selectedPost, setSelectedPost] = useState(''); 
 
   const handleShowFollowers = () => {
    
@@ -56,6 +59,17 @@ const [modalTitle, setModalTitle] = useState('');
   const handleUpdateCounts = () => {
     fetchData()
   };
+
+  const viewPost = async (postId: string) => {
+    setSelectedPost(postId)
+    setIsviewPostModalOpen(true);
+};
+const closeviewPostModal = () => {
+  setIsviewPostModalOpen(false); 
+  setSelectedPost('null'); 
+};
+
+
 
 
 
@@ -230,7 +244,7 @@ const [modalTitle, setModalTitle] = useState('');
         console.error('Invalid user IDs for unfollow action');
         return;
       }
-      const result = await unfollowRequest(mainUser._id, user._id); 
+       await unfollowRequest(mainUser._id, user._id); 
        fetchData(); 
       // if (result && result.success) {
       //   await fetchData(); 
@@ -509,7 +523,7 @@ const [modalTitle, setModalTitle] = useState('');
     <p className="text-center text-gray-500">You need to follow this user to see their posts.</p>
   ) : (
     posts.map((post) => (
-      <div key={post._id} className="bg-white p-3 shadow-sm rounded-lg mb-4 max-w-xs w-full">
+      <div key={post._id} className="bg-white p-3 shadow-sm rounded-lg mb-4 max-w-xs w-full"  onClick={() => viewPost(post._id)}>
         <img src={post.images[0]} alt="Post Image" className="w-full h-32 object-cover mb-2 rounded"/>
         <span className="text-gray-400 text-xs">{new Date(post.postAt).toLocaleString()}</span>
         <p className="text-gray-600 text-sm mt-2">
@@ -523,6 +537,9 @@ const [modalTitle, setModalTitle] = useState('');
     </div>
 
    {/* <!--*************** My posts ends Here ***************--> */}
+   {isviewPostModalOpen && selectedPost && (
+        <PostModal postId={selectedPost} onClose={closeviewPostModal} user={user}/>
+      )}
 
 
    <UserListModal 

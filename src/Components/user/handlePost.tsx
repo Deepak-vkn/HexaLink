@@ -36,14 +36,14 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onSa
 
     setFiles([...files, ...selectedFiles]);
     
-    const newPreviews = selectedFiles.map((file) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        setFilePreviews((prev) => [...prev, reader.result as string]);
-      };
-      return reader.result as string;
-    });
+    // const newPreviews = selectedFiles.map((file) => {
+    //   const reader = new FileReader();
+    //   reader.readAsDataURL(file);
+    //   reader.onloadend = () => {
+    //     setFilePreviews((prev) => [...prev, reader.result as string]);
+    //   };
+    //   return reader.result as string;
+    // });
   };
 
   const handleSave = () => {

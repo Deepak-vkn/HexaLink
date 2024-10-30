@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import JobList from '../../Components/user/jobList';
 import JobDetails from '../../Components/user/jobDetails';
-import { fetchJobs,fetchSavedItems } from '../../api/user/get';
+import { fetchJobs } from '../../api/user/get';
 import { applyJob } from '../../api/user/post';
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
@@ -33,7 +33,7 @@ const Jobs: React.FC = () => {
         if (response.success) {
           setJobs(response.jobs);
           if (jobId) {
-            const foundJob = response.jobs.find(job => job._id === jobId);
+            const foundJob = response.jobs.find((job:any) => job._id === jobId);
             setSelectedJob(foundJob || null); // 
           }
         } else {
@@ -126,7 +126,7 @@ const Jobs: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen ">
-      <div className="flex flex-grow ml-20 mr-20">
+  <div className="flex flex-grow h-screen">
   <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user} />
   <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user}  />
 </div>

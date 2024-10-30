@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import { fetchNotification, resetNotificationCount, removeAllNotifications } from '../../api/user/get'; 
@@ -6,8 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaHeart, FaUserPlus, FaUserCheck, FaCommentDots, FaEllipsisV } from 'react-icons/fa';
 import NoContent  from '../../Components/user/Noposts';
 import Loading from '../../Components/loading';
-import LeftBanner from '../../Components/user/leftBanner';
-import RightBanner from '../../Components/user/rightBanner';
+// import LeftBanner from '../../Components/user/leftBanner';
+// import RightBanner from '../../Components/user/rightBanner';
+
+import FollowSuggesion from '../../Components/user/followSuggesion';
+// import LeftActivityBar from '../../Components/user/leftBottom';
+import LeftTopBox from '../../Components/user/leftTopBox';
+
 const UserNotification = () => {
   const user = useSelector((state: RootState) => state.user.userInfo);
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -52,14 +57,17 @@ const UserNotification = () => {
   }
   const handleClearNotifications = async () => {
     try {
-      const result = await removeAllNotifications(user._id, selectedType);
-      if (result.success) {
-        setNotifications((prev) => prev.filter((notification) => notification.type !== selectedType)); 
-        setShowClearDropdown(null);
-        setSelectedType(null); 
-      } else {
-        setError(result.message);
+      if(user){
+        const result = await removeAllNotifications(user._id, selectedType);
+        if (result.success) {
+          setNotifications((prev) => prev.filter((notification) => notification.type !== selectedType)); 
+          setShowClearDropdown(null);
+          setSelectedType(null); 
+        } else {
+          setError(result.message);
+        }
       }
+     
     } catch (err) {
       setError('An error occurred while clearing notifications.');
     }
@@ -88,7 +96,9 @@ const UserNotification = () => {
     <div className="max-w-7xl mx-auto px-8 py-8 sm:px-12 lg:px-16">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
         {/* Left Sidebar with Banner Image */}
-        <LeftBanner/>
+        <div className='h-50'>
+        <LeftTopBox user={user}/>
+        </div>
 
         {/* Middle - Notifications Feed */}
         <div className="md:col-span-2 space-y-4">
@@ -155,7 +165,7 @@ const UserNotification = () => {
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      {notificationsOfType.map((notification, index) => (
+                      {notificationsOfType.map((notification:any, index:number) => (
                         <div key={index} className="flex items-center mb-2">
                           <img
                             className="w-10 h-10 rounded-full object-cover"
@@ -192,7 +202,7 @@ const UserNotification = () => {
         </div>
 
         {/* Right Sidebar with Banner Image */}
-      <RightBanner/>
+     <div> <FollowSuggesion/></div>
       </div>
     </div>
   </div>

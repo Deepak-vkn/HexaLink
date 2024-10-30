@@ -4,17 +4,16 @@ import { IoClose } from 'react-icons/io5';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+
+
 import {
-  likePost,
-  deletePost,
-  deletePostComments,
-  saveItem,
+  
   fetchSavedItems,
 } from '../../api/user/get';
-import { updatePost, addComment } from '../../api/user/post';
-import CommentModal from './commentModal';
+// import { updatePost, addComment } from '../../api/user/post';
+// import CommentModal from './commentModal';
 import Loading from '../loading';
-import LikeModal from './likeModal';
+// import LikeModal from './likeModal';
 
 interface User {
   _id: string;
@@ -57,9 +56,9 @@ const PostModal: React.FC<PostModalProps> = ({ postId, onClose, user }) => {
   const [showMore, setShowMore] = useState(false);
   const maxCaptionLength = 100;
   const [savedItems, setSavedItems] = useState<string[]>([]);
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
+  //const [isCommentModalOpen, setIsCommentModalOpen] = useState<boolean>(false);
   const [isLikeModalOpen, setIsLikeModalOpen] = useState<boolean>(false);
-
+console.log(isLikeModalOpen)
   useEffect(() => {
     const fetchPostData = async () => {
       setIsLoading(true);
@@ -90,6 +89,7 @@ const PostModal: React.FC<PostModalProps> = ({ postId, onClose, user }) => {
         const response = await fetchSavedItems(user._id, 'Posts');
         if (response.success) {
           setSavedItems(response.savedDoc.map((item: any) => item.originalTargetId));
+          console.log(savedItems)
         }
       } catch (error) {
         console.error('An error occurred while fetching saved posts:', error);
@@ -99,42 +99,42 @@ const PostModal: React.FC<PostModalProps> = ({ postId, onClose, user }) => {
     fetchSavedPosts();
   }, [user._id]);
 
-  const handleLikeClick = async () => {
-    if (post) {
-      try {
-        const response = await likePost(post._id, user._id);
-        if (response.success) {
-          setPost(response.postDoc);
-        }
-      } catch (error) {
-        console.error('An error occurred while liking the post:', error);
-      }
-    }
-  };
+  // const handleLikeClick = async () => {
+  //   if (post) {
+  //     try {
+  //       const response = await likePost(post._id, user._id);
+  //       if (response.success) {
+  //         setPost(response.postDoc);
+  //       }
+  //     } catch (error) {
+  //       console.error('An error occurred while liking the post:', error);
+  //     }
+  //   }
+  // };
 
-  const handleSaveClick = async () => {
-    if (post) {
-      try {
-        const response = await saveItem(user._id, post._id, 'Posts');
-        if (response.success) {
-          setSavedItems(prevItems =>
-            prevItems.includes(post._id)
-              ? prevItems.filter(item => item !== post._id)
-              : [...prevItems, post._id]
-          );
-        }
-      } catch (error) {
-        console.error('An error occurred while saving the post:', error);
-      }
-    }
-  };
+  // const handleSaveClick = async () => {
+  //   if (post) {
+  //     try {
+  //       const response = await saveItem(user._id, post._id, 'Posts');
+  //       if (response.success) {
+  //         setSavedItems(prevItems =>
+  //           prevItems.includes(post._id)
+  //             ? prevItems.filter(item => item !== post._id)
+  //             : [...prevItems, post._id]
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error('An error occurred while saving the post:', error);
+  //     }
+  //   }
+  // };
 
   const toggleShowMore = () => {
     setShowMore(!showMore);
   };
 
   if (isLoading) {
-    return <Loading />; // Replace with a loading spinner component
+    return <Loading />; 
   }
 
   if (error) {

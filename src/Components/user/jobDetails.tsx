@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { saveItem,fetchSavedItems,checkSaved } from '../../api/user/get';
+import { saveItem,checkSaved } from '../../api/user/get';
 interface JobDetailsProps {
   job: any | null;
   onApplyClick: () => void;
@@ -9,7 +9,7 @@ interface JobDetailsProps {
 const JobDetails: React.FC<JobDetailsProps> = ({ job, onApplyClick, user }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
-  const [savedItems, setSavedItems] = useState<string[]>([]);
+  // const [savedItems, setSavedItems] = useState<string[]>([]);
   
 console.log('save status is ',isSaved)
 
@@ -54,7 +54,7 @@ console.log('save status is ',isSaved)
 
   if (!job) {
     return (
-      <div className="w-full max-w-3xl mx-auto p-8 bg-white shadow-lg flex items-center justify-center h-[calc(100vh-80px)] border border-gray-300 rounded-lg">
+      <div className="w-full  mx-auto p-8 bg-white shadow-lg flex items-center justify-center  border border-gray-300 rounded-lg">
         <h2 className="text-2xl font-bold text-gray-800">Select a job to view details</h2>
       </div>
     );
@@ -65,7 +65,7 @@ console.log('save status is ',isSaved)
   const isValidDate = expiresDate && !isNaN(expiresDate.getTime());
   const isExpired = expiresDate && expiresDate < new Date();
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white shadow-lg border border-gray-300 rounded-lg overflow-hidden">
+    <div className="w-full  mx-auto bg-white shadow-lg border border-gray-300 rounded-lg overflow-hidden">
       <div className="p-8">
         <h2 className="text-2xl font-bold mb-2 text-gray-900">Position :  {job.title}</h2>
         <p className="text-lg text-blue-600 mb-4">{job.location}</p>

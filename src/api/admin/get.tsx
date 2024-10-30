@@ -39,3 +39,13 @@ export const verifyToken = async (): Promise<any> => {
       console.error('Error liking the post:', error);
     }
   }; 
+
+
+  export const adminDashBoard = async (): Promise<any> => {
+    try {
+      const response = await axiosInstance.get('/admin/dashBoard');
+      return response.data;
+    } catch (error) {
+      console.error('Error liking the post:', error);
+    }
+  }; 
