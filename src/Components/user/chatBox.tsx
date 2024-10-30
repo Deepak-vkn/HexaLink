@@ -52,8 +52,10 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
         if (conversation?._id) {
           const fetchedMessages = await getMessages(conversation._id);
           setMessages(fetchedMessages);
-
-          await makeMessageRead(conversation._id,  chatPartnerId,  );
+          if(chatPartnerId){
+            await makeMessageRead(conversation._id,  chatPartnerId,  );
+          }
+         
         }
       } catch (error) {
         console.error('Failed to fetch messages:', error);
@@ -241,7 +243,7 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
           setMessages((prevMessages) => [...prevMessages, newMsg]);
   
           // Emit the message with the file
-          socket.emit('sendMessage', messagePayload, (error) => {
+          socket.emit('sendMessage', messagePayload, (error:any) => {
             if (error) {
               console.error('Error sending message:', error);
             } else {

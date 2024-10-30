@@ -8,7 +8,7 @@ import { userDashBoard } from '../../api/user/get'
 
 export default function UserDashboard() {
   const user = useSelector((state: any) => state.user.userInfo)
-  const [dashboardData, setDashboardData] = useState({
+  const [dashboardData, setDashboardData] =  useState<any>({
     totalApplicationsCount: 0,
     totalPostsCount: 0,
     totalFollowersCount: 0,
@@ -33,7 +33,7 @@ export default function UserDashboard() {
     getDashboardData()
   }, [user._id])
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status:any) => {
     switch (status) {
       case 'Shortlisted':
         return 'bg-green-500 text-white'
@@ -60,7 +60,7 @@ export default function UserDashboard() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-semibold mb-4">Recent Followers</h2>
             <div className="flex space-x-4">
-              {dashboardData.top5RecentFollowers.map((follower) => (
+              {dashboardData.top5RecentFollowers.map((follower:any) => (
                 <div key={follower.id} className="flex flex-col items-center">
                   <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
                     {follower.id.image ? (
@@ -138,7 +138,7 @@ export default function UserDashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {dashboardData.applications.map((application) => (
+                {dashboardData.applications.map((application:any) => (
                   <tr key={application._id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {application.jobId.title}
@@ -165,7 +165,12 @@ export default function UserDashboard() {
   )
 }
 
-function StatsCard({ icon: Icon, title, value, className = '' }) {
+function StatsCard({ icon: Icon, title, value, className = '' }: { 
+  icon: any; 
+  title: any; 
+  value: any; 
+  className?: any; 
+}) {
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
       <div className="flex items-center justify-between">

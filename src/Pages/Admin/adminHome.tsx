@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import  { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Users, Building2, Briefcase, TrendingUp } from 'lucide-react'
+import { Users, Building2, Briefcase } from 'lucide-react'
 import { adminDashBoard } from '../../api/admin/get'
 import AdminNav from "../../Components/admin/adminNav"
 
@@ -77,12 +77,17 @@ export default function AdminDashboard() {
   )
 }
 
-function StatsCard({ icon: Icon, title, value, color }) {
-  const colorClasses = {
+function StatsCard({ icon: Icon, title, value, color }: { 
+  icon: any; 
+  title: any; 
+  value: any; 
+  color: any; 
+}) {
+  const colorClasses: { [key: string]: string } = {
     blue: 'bg-blue-100 text-blue-600',
     green: 'bg-green-100 text-green-600',
     purple: 'bg-purple-100 text-purple-600',
-  }
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
@@ -99,7 +104,17 @@ function StatsCard({ icon: Icon, title, value, color }) {
   )
 }
 
-function DataList({ title, data, valueKey = 'joinedAt', valuePrefix = '' }) {
+function DataList({
+  title,
+  data,
+  valueKey = 'joinedAt',
+  valuePrefix = '',
+}: {
+  title: any;          // Accepts any type for title
+  data: any[];        // Accepts an array of any type for data
+  valueKey?: any;     // Accepts any type for valueKey (optional)
+  valuePrefix?: any;  // Accepts any type for valuePrefix (optional)
+}) {
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="p-6 border-b border-gray-200">
@@ -107,7 +122,7 @@ function DataList({ title, data, valueKey = 'joinedAt', valuePrefix = '' }) {
       </div>
       <div className="p-6">
         <div className="space-y-4">
-          {data.map((item) => (
+          {data.map((item:any) => (
             <div key={item.id} className="flex justify-between items-center">
               <div>
                 <p className="font-medium text-gray-900">{item.name?item.name:item.company?.name}</p>

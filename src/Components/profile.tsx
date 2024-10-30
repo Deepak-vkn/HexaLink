@@ -219,8 +219,10 @@ const closeviewPostModal = () => {
       if (followButtonText === 'Follow') {
 
         result = await followRequest(mainUser._id, user._id);
+        console.log(result)
       } else if (followButtonText === 'Accept') {
         result = await followRequest(user._id, mainUser._id);
+        console.log(result)
       }
       else if (followButtonText === 'Unfollow') {
         await handleUnfollowClick();

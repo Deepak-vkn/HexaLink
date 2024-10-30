@@ -99,19 +99,22 @@ const handleCloseLikeModal = () => {
     // Fetch saved items when the component mounts
     const fetchSavedPosts = async () => {
       try {
-        const response = await fetchSavedItems(user._id,'Posts');
-        console.log()
-        if (response.success) {
-          console.log('saved doc are ',response.savedDoc)
-          setSavedItems(response.savedDoc.map((item:any) => item.originalTargetId));
+        if(user){
+          const response = await fetchSavedItems(user?._id,'Posts');
+          console.log()
+          if (response.success) {
+            console.log('saved doc are ',response.savedDoc)
+            setSavedItems(response.savedDoc.map((item:any) => item.originalTargetId));
+          }
         }
+       
       } catch (error) {
         console.error('An error occurred while fetching saved posts:', error);
       }
     };
 
     fetchSavedPosts();
-  }, [user._id]);
+  }, [user?._id]);
 
   const handleOpenCommentModal = (postId: string) => {
     setSelectedPostId(postId);
@@ -126,15 +129,18 @@ const handleCloseLikeModal = () => {
   const handleAddComment = async (message: string) => {
     if (selectedPostId) {
       try {
-        const response = await addComment(selectedPostId, user._id, message);
-        if (response.success) {
-          const updatedPost = response.postDoc;
-          setPostsState(prevPosts =>
-            prevPosts.map(post =>
-              post._id === selectedPostId ? updatedPost : post
-            )
-          );
+        if(user){
+          const response = await addComment(selectedPostId, user._id, message);
+          if (response.success) {
+            const updatedPost = response.postDoc;
+            setPostsState(prevPosts =>
+              prevPosts.map(post =>
+                post._id === selectedPostId ? updatedPost : post
+              )
+            );
+          }
         }
+        
       } catch (error) {
         console.error('An error occurred while adding the comment:', error);
       }
@@ -143,15 +149,18 @@ const handleCloseLikeModal = () => {
 
   const handleLikeClick = async (postId: string) => {
     try {
-      const response = await likePost(postId, user._id);
-      if (response.success) {
-        const updatedPost = response.postDoc;
-        setPostsState(prevPosts =>
-          prevPosts.map(post =>
-            post._id === postId ? updatedPost : post
-          )
-        );
+      if(user){
+        const response = await likePost(postId, user._id);
+        if (response.success) {
+          const updatedPost = response.postDoc;
+          setPostsState(prevPosts =>
+            prevPosts.map(post =>
+              post._id === postId ? updatedPost : post
+            )
+          );
+        }
       }
+     
     } catch (error) {
       console.error('An error occurred while liking the post:', error);
     }
@@ -159,20 +168,23 @@ const handleCloseLikeModal = () => {
 
   const handleSaveClick = async (postId: string) => {
     try {
-      const response = await saveItem(user._id, postId, 'Posts');
-      if (response.success) {
-        console.log('Post save successful');
+      if(user){
+        const response = await saveItem(user._id, postId, 'Posts');
+        if (response.success) {
+          console.log('Post save successful');
+    
   
-
-        if (savedItems.includes(postId)) {
-         
-          setSavedItems((prevItems) => prevItems.filter((item) => item !== postId));
-          console.log(`Post ${postId} removed from saved items`);
-        } else {
-          setSavedItems((prevItems) => [...prevItems, postId]);
-          console.log(`Post ${postId} added to saved items`);
+          if (savedItems.includes(postId)) {
+           
+            setSavedItems((prevItems) => prevItems.filter((item) => item !== postId));
+            console.log(`Post ${postId} removed from saved items`);
+          } else {
+            setSavedItems((prevItems) => [...prevItems, postId]);
+            console.log(`Post ${postId} added to saved items`);
+          }
         }
       }
+   
     } catch (error) {
       console.error('An error occurred while saving the post:', error);
     }
@@ -343,7 +355,7 @@ const handleCloseLikeModal = () => {
                 className="flex items-center space-x-2 text-gray-500  transition duration-200"
                 onClick={() => handleLikeClick(post._id)}
               >
-                {post.likes.some((like :any)=> like.userId._id === user._id) ? (
+                {post.likes.some((like :any)=> like.userId._id === user?._id) ? (
                   <FaThumbsUp  className="text-blue-500" size={18} />
                 ) : (
                   <FaThumbsUp  size={18} />

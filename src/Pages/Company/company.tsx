@@ -99,12 +99,23 @@ export default function Company() {
   )
 }
 
-function StatsCard({ icon: Icon, title, value, color }) {
-  const colorClasses = {
+function StatsCard({
+  icon: Icon,
+  title,
+  value,
+  color,
+}: {
+  icon: any;   // Accepts any type for icon
+  title: any;  // Accepts any type for title
+  value: any;  // Accepts any type for value
+  color: any;  // Accepts any type for color
+}) {
+  const colorClasses: { [key: string]: string } = { // Define colorClasses with index signature
     blue: 'bg-blue-100 text-blue-600',
     green: 'bg-green-100 text-green-600',
     purple: 'bg-purple-100 text-purple-600',
-  }
+  };
+
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
@@ -121,7 +132,17 @@ function StatsCard({ icon: Icon, title, value, color }) {
   )
 }
 
-function DataList({ title, data, renderItem, emptyMessage }) {
+function DataList({
+  title,
+  data,
+  renderItem,
+  emptyMessage,
+}: {
+  title: any;            // Accepts any type for title
+  data: any[];          // Accepts an array of any type for data
+  renderItem: (item: any) => React.ReactNode; // Function that takes an item of any type and returns a React node
+  emptyMessage: any;     // Accepts any type for emptyMessage
+}) {
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="p-6 border-b border-gray-200">
@@ -130,7 +151,7 @@ function DataList({ title, data, renderItem, emptyMessage }) {
       <div className="p-6">
         {data.length > 0 ? (
           <div className="space-y-4">
-            {data.map((item, index) => (
+            {data.map((item:any, index:number) => (
               <div key={item._id || index} className="flex justify-between items-center">
                 {renderItem(item)}
               </div>

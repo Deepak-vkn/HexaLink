@@ -1,4 +1,4 @@
-import React from 'react';
+
 import ForgetPassword from '../../Components/forgetPassword';
 import { forgetPassword } from '../../api/user/post';
 import toastr from 'toastr';

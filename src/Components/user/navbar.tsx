@@ -35,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0); 
   const location = useLocation(); // To monitor the current route
-  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  //const [isCallModalOpen, setIsCallModalOpen] = useState(false);
  // const [callerInfo, setCallerInfo] = useState<any>(null); // S
   const [unreadMessage, setUnreadMessageCount] = useState(0);
 
@@ -52,6 +52,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   const toggleMenu = () => {
     setIsMenuOpen((prevState) => !prevState);
   };
+
 
   const handleLogout = async () => {
     try {
@@ -216,9 +217,9 @@ const Navbar: React.FC<NavbarProps> = () => {
 
   };
 
-  const handleCloseCallModal = () => {
-    setIsCallModalOpen(false);
-  };
+  // const handleCloseCallModal = () => {
+  //   setIsCallModalOpen(false);
+  // };
 
 
   return (

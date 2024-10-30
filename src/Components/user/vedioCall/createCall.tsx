@@ -101,7 +101,10 @@ const VideoCallModal: React.FC<VideoCallModalProps> = ({ onClose, to }) => {
     if (localVideoRef.current) {
       localVideoRef.current.srcObject = localStreamRef.current;
     }
-    localStreamRef.current.getTracks().forEach((track) => peer.addTrack(track, localStreamRef.current));
+    localStreamRef.current?.getTracks().forEach((track) => {
+      peer.addTrack(track, localStreamRef.current!);
+    });
+    
   });
 
   socket.on('incoming:answer', async (data) => {
