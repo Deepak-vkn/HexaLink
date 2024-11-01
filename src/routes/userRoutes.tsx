@@ -18,7 +18,6 @@ import Message from '../Pages/User/chat';
 import SavedItems from '../Pages/User/savedPage';
 import UserDashBoard from '../Pages/User/userDashBoard';
 
-
 const UserRoutes: React.FC = () => {
 
   return (
@@ -26,6 +25,7 @@ const UserRoutes: React.FC = () => {
       <Route element={<UserLogged />}>
         <Route path="/" element={<UserLogin />} />
         <Route path="/register" element={<UserRegister />} />
+        
       </Route>
 
       <Route element={<Usermid />}>
