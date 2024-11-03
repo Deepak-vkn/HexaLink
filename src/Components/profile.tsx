@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Store/store'
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
+import { MdModeEdit,MdDeleteOutline  } from "react-icons/md";
+import { IoMdAdd } from "react-icons/io";
 import PostModal from './user/postModal'
 
 import UserListModal from './user/likeModal'
@@ -267,7 +269,7 @@ const closeviewPostModal = () => {
       {/* COVER IMAGE SATRT */}
       <div className="relative h-screen w-full">
         <img
-          src="\src\Public\bg.jpg"
+          src="https://res.cloudinary.com/dypbfowiu/image/upload/v1730647262/bg_zt4tg2.jpg"
           alt="Background"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -336,11 +338,7 @@ const closeviewPostModal = () => {
             className="text-white p-2 rounded-full shadow"
             onClick={() => handleOpenModal(['name', 'role'])}
           >
-            <img
-              src="/src/Public/edit-editor-pen-pencil-write-icon--4.png"
-              alt="Edit"
-              className="w-6 h-6"
-            />
+          <MdModeEdit />
           </button>
         </div>
       )}
@@ -360,7 +358,7 @@ const closeviewPostModal = () => {
       <div className="md:w-3/12 w-full mb-6 md:mb-0">
       <img
             src={user.image ? user.image : '/src/Public/about.jpg'}
-            alt="User Profile"
+            alt="Add User Profile"
             className="rounded-lg shadow-xl"
         />
       </div>
@@ -381,11 +379,7 @@ const closeviewPostModal = () => {
       className="p-2 rounded-full shadow hover:cursor-pointer"
       onClick={() => handleOpenModal(['about', 'image'])}
     >
-      <img
-        src="/src/Public/edit-editor-pen-pencil-write-icon--4.png"
-        alt="Edit"
-        className="w-6 h-6"
-      />
+      <MdModeEdit/>
     </button>
   </div>
 )}
@@ -395,7 +389,7 @@ const closeviewPostModal = () => {
 
      {/* ABOUT END */}
 
-     {/* <!--*************** My Services Starts Here ***************--> */}
+     {/* <!--*************** My Education Starts Here ***************--> */}
 
      <section id="services" className="features container-fluid bg-white py-12">
       <div className="container mx-auto">
@@ -410,11 +404,7 @@ const closeviewPostModal = () => {
       className="p-2 rounded-full shadow hover:cursor-pointer"
       onClick={() => handleOpenModal(['education'])}
     >
-      <img
-        src="/src/Public/add.png"
-        alt="Add"
-        className="w-6 h-6"
-      />
+     <IoMdAdd />
     </button>
   </div>
 )}
@@ -435,11 +425,7 @@ const closeviewPostModal = () => {
       className="p-2 rounded-full shadow hover:bg-gray-100"
       onClick={() => handleDelete(index, 'education')}
     >
-      <img
-        src="/src/Public/delete.png"
-        alt="Delete"
-        className="w-4 h-4"
-      />
+  <MdDeleteOutline/> 
     </button>
   </div>
 )}
@@ -470,11 +456,7 @@ const closeviewPostModal = () => {
       className="p-2 rounded-full shadow hover:cursor-pointer"
       onClick={() => handleOpenModal(['skills'])}
     >
-      <img
-        src="/src/Public/add.png"
-        alt="Add"
-        className="w-6 h-6"
-      />
+    <IoMdAdd />
     </button>
   </div>
 )}
@@ -491,11 +473,7 @@ const closeviewPostModal = () => {
       className="p-2 rounded-full shadow"
       onClick={() => handleDelete(index, 'skill')}
     >
-      <img
-        src="/src/Public/delete.png"
-        alt="Delete"
-        className="w-4 h-4"
-      />
+      <MdDeleteOutline/> 
     </button>
   </div>
 )}
