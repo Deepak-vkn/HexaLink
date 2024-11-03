@@ -7,10 +7,9 @@ import {  adminLogout } from '../Store/adminSlice';
 const axiosInstance = axios.create({
  // baseURL:'https://gsnj8j5b-5001.inc1.devtunnels.ms/',
   //  baseURL: 'http://localhost:3000',
-  baseURL: 'api.hexalink.depk.shop',
+  baseURL: 'https://api.hexalink.depk.shop/',
   withCredentials:true
 });
-
 
 axiosInstance.interceptors.response.use(
   (response) => {
