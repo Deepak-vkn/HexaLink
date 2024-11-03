@@ -47,7 +47,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
   return (
     <div className="py-16">
       <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
-        <div className="hidden lg:block lg:w-1/2 bg-cover bg-gray-800" style={{backgroundImage: "url('/src/Public/hexalinklogo.png')"}}></div>
+        <div className="hidden lg:block lg:w-1/2 bg-cover bg-gray-800" style={{backgroundImage: "url('https://res.cloudinary.com/dypbfowiu/image/upload/v1730649351/hexalinklogo_uaspwu.png')"}}></div>
         <div className="w-full p-8 lg:w-1/2">
           <h2 className="text-2xl font-semibold text-gray-700 text-center">HexaLink</h2>
           <p className="text-xl text-gray-600 text-center">{isCompany ? 'Register Your Company' : 'Register Now'}</p>
