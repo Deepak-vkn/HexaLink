@@ -10,6 +10,8 @@ const ChatPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.user.userInfo);
   const [conversations, setConversations] = useState<any>([]);
   const [selectedConversation, setSelectedConversation] = useState<any | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     const loadConversations = async () => {
       try {
@@ -30,13 +32,13 @@ const ChatPage: React.FC = () => {
     socket.on('receiveMessage', (data) => {
       const { conversationId, content, sendTime } = data;
 
-      setConversations((prevConversations:any) =>
-        prevConversations.map((conversation:any) => {
+      setConversations((prevConversations: any) =>
+        prevConversations.map((conversation: any) => {
           if (conversation._id === conversationId) {
             return {
               ...conversation,
               lastMessage: content,
-              updatedAt:sendTime ,
+              updatedAt: sendTime,
             };
           }
           return conversation;
@@ -44,30 +46,54 @@ const ChatPage: React.FC = () => {
       );
     });
 
- 
     return () => {
       socket.off('receiveMessage');
     };
   }, []);
 
+  useEffect(() => {
+    // Function to check if the screen is in mobile view
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Add the event listener for resizing
+    window.addEventListener('resize', handleResize);
+
+    // Initial check
+    handleResize();
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const handleConversationSelect = (conversation: any) => {
     setSelectedConversation(conversation);
   };
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-1 overflow-hidden">
-      {user && (
-  <ChatList 
-    chats={conversations}  
-    user={user} 
-    onConversationSelect={handleConversationSelect} 
-  />
-)}
+        {user && !isMobile && (
+          <ChatList 
+            chats={conversations}  
+            user={user} 
+            onConversationSelect={handleConversationSelect} 
+          />
+        )}
 
-
-        {selectedConversation && (
-          <ChatBox conversation={selectedConversation} user={user}/>
+        {selectedConversation ? (
+          <ChatBox conversation={selectedConversation} user={user} />
+        ) : (
+          isMobile && user && (
+            <ChatList 
+              chats={conversations}  
+              user={user} 
+              onConversationSelect={handleConversationSelect} 
+            />
+          )
         )}
       </div>
     </div>

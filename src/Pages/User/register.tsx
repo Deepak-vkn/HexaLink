@@ -4,7 +4,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import { registerUser } from '../../api/user/post';
 import RegistrationForm from '../../Components/register';
-
+import Loading  from '../../Components/loading';
 const UserRegister = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -12,6 +12,7 @@ const UserRegister = () => {
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [address, setAddress] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -21,6 +22,7 @@ const UserRegister = () => {
       toastr.error('Passwords do not match');
       return;
     }
+    setIsLoading(true);
 
     try {
       const data = await registerUser(name, number, email, password);
@@ -34,10 +36,17 @@ const UserRegister = () => {
       toastr.error('Error registering user');
       console.error('Error registering user:', error);
     }
+    finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <RegistrationForm
+    <>
+    {isLoading ? (
+      <Loading /> 
+    ) : (
+      <RegistrationForm
       name={name}
       setName={setName}
       email={email}
@@ -52,6 +61,10 @@ const UserRegister = () => {
       setAddress={setAddress}
       onSubmit={handleRegister}
     />
+    )
+  }
+    </>
+   
   );
 };
 

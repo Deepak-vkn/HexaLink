@@ -187,40 +187,65 @@ const ChatList: React.FC<ChatListProps> = ({ chats = [], user, onConversationSel
               </div>
               <div className="ml-2 sm:ml-4 flex-grow">
                 <h3 className="font-semibold text-gray-800 text-sm sm:text-base">{chat.otherUser.name}</h3>
-                <p className="text-xs sm:text-sm text-gray-600 truncate">
-                  {chat.lastMessage.startsWith('https://res.cloudinary.com')
-                    ? <FaImage className="inline text-gray-600" />
-                    : chat.lastMessage}
-                </p>
+                <p className="text-xs sm:text-sm text-gray-600">
+                {chat.lastMessage.startsWith('https://res.cloudinary.com')
+                  ? <FaImage className="inline text-gray-600" />
+                  : chat.lastMessage.length > 13
+                  ? `${chat.lastMessage.slice(0, 12)}...`
+                  : chat.lastMessage}
+              </p>
+
               </div>
               {chat.updatedAt && (
-                <span className="text-xs text-gray-400">
-                  {(() => {
-                    const messageDate = new Date(chat.updatedAt);
-                    const today = new Date();
+  <span className="text-xs text-gray-400">
+    {(() => {
+      const messageDate = new Date(chat.updatedAt);
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
 
-                    const isSameDay =
-                      messageDate.getDate() === today.getDate() &&
-                      messageDate.getMonth() === today.getMonth() &&
-                      messageDate.getFullYear() === today.getFullYear();
+      // Check if it's today
+      const isSameDay =
+        messageDate.getDate() === today.getDate() &&
+        messageDate.getMonth() === today.getMonth() &&
+        messageDate.getFullYear() === today.getFullYear();
 
-                    return isSameDay
-                      ? messageDate.toLocaleTimeString('en-US', {
-                          hour: 'numeric',
-                          minute: 'numeric',
-                          hour12: true,
-                        })
-                      : messageDate.toLocaleString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                          hour: 'numeric',
-                          minute: 'numeric',
-                          hour12: true,
-                        });
-                  })()}
-                </span>
-              )}
+      // Check if it's yesterday
+      const isYesterday =
+        messageDate.getDate() === yesterday.getDate() &&
+        messageDate.getMonth() === yesterday.getMonth() &&
+        messageDate.getFullYear() === yesterday.getFullYear();
+
+      // Check if it's this week (same week)
+      const isThisWeek =
+        messageDate.getFullYear() === today.getFullYear() &&
+        messageDate.getMonth() === today.getMonth() &&
+        Math.floor((today.getDate() - messageDate.getDate()) / 7) === 0;
+
+      if (isSameDay) {
+        return messageDate.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+        });
+      } else if (isYesterday) {
+        return 'Yesterday';
+      } else if (isThisWeek) {
+        return messageDate.toLocaleString('en-US', {
+          weekday: 'short',
+        });
+      } else {
+        // For more than a week ago, show only the month and date
+        return messageDate.toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+        });
+      }
+    })()}
+  </span>
+)}
+
+
             </div>
           </li>
         ))}

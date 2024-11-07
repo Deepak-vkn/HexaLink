@@ -42,6 +42,7 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
   const [showDeleteOption, setShowDeleteOption] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [chatPartnerOnline, setChatPartnerOnline] = useState(false); 
+  const [loading, setLoading] = useState(false);
     
   const chatPartnerId = conversation?.user1._id === user._id ? conversation?.user2._id : conversation?.user1._id;
 
@@ -206,7 +207,7 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
   const handleSendMedia = async () => {
     if (selectedMedia && conversation) {
       const formData = new FormData();
-      
+      setLoading(true)
       // Check if the selected media is a file or a Base64 string
       if (typeof selectedMedia === 'string') { // If selectedMedia is a Base64 string
         formData.append('image', selectedMedia); // Append Base64 image string
@@ -257,7 +258,10 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
           setShowMediaModal(false);
         }
       } catch (error) {
-        console.error('Upload failed:', error); // Handle the error
+        console.error('Upload failed:', error); 
+      }
+      finally {
+        setLoading(false); 
       }
     } else {
       console.log('No media selected or conversation not found.');
@@ -290,7 +294,7 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 md:flex-grow">
+    <div className="w-full flex flex-col h-full bg-gray-50 md:flex-grow">
     {conversation ? (
       <>
         <div className="p-2 sm:p-4 bg-white shadow-sm flex items-center justify-between">
@@ -338,11 +342,12 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
                 }`}
               >
                 <div className="flex-1" onClick={() => isMessageFromCurrentUser(message)}>
-                  {message.content ? (
-                    <p className="text-xs sm:text-sm">{message.content}</p>
-                  ) : message.file ? (
-                    <img src={message.file} alt="Sent file" className="max-w-full max-h-48 sm:max-h-64 rounded-lg" />
-                  ) : null}
+                {message.content ? (
+                  <p className="text-xs sm:text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                ) : message.file ? (
+                  <img src={message.file} alt="Sent file" className="max-w-full max-h-48 sm:max-h-64 rounded-lg" />
+                ) : null}
+
                   <p className="text-[10px] sm:text-xs mt-1 text-gray-400">
                     {new Date(message.sendTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
@@ -444,8 +449,9 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
                 <button 
                   className="bg-blue-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded text-sm sm:text-base hover:bg-blue-600"
                   onClick={handleSendMedia}
+                  disabled={loading}
                 >
-                  Send
+                  {loading?'Sending..':'Send'}
                 </button>
               </div>
             </div>
