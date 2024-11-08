@@ -4,12 +4,12 @@ import { useSelector } from 'react-redux';
 import CreatePostModal from '../../Components/user/handlePost'
 import { useState, useEffect } from 'react';
 import { userPost } from '../../api/user/post';
-
+import { UserCircle } from 'lucide-react'
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import { fetchFollowingPosts } from '../../api/user/get';
 import Posts from '../../Components/user/posts';
-import Loading from '../../Components/loading';
+import Loading from '../../Components/Loading';
 import FollowSuggesion from '../../Components/user/followSuggesion';
 import LeftActivityBar from '../../Components/user/leftBottom';
 import LeftTopBox from '../../Components/user/leftTopBox';
@@ -100,49 +100,75 @@ const Home = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="max-w-7xl mx-auto px-8 py-8 sm:px-12 lg:px-16">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          {/* Left Sidebar - Profile and Activity */}
-          <div className="md:col-span-1 space-y-4">
-            <LeftTopBox user={user}/>
-            <LeftActivityBar/>
-          </div>
+    <div className="max-w-7xl mx-auto px-8 py-8 sm:px-12 lg:px-16">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+        
+        {/* Left Sidebar - Profile and Activity */}
+        <div className="md:col-span-1 space-y-4 hidden md:block">
+          <LeftTopBox user={user} />
+          <LeftActivityBar />
+        </div>
+  
+        {/* Middle - Posts Feed */}
+        <div className="md:col-span-2 h-[calc(100vh-120px)] overflow-y-auto pr-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
 
-          {/* Middle - Posts Feed */}
-          <div className="md:col-span-2 h-[calc(100vh-120px)] overflow-y-auto pr-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            <div className="space-y-4">
-              {isLoading ? (
-                <Loading />
-              ) : posts.length > 0 ? (
-                <Posts user={user} posts={posts} isUser={false} />
-              ) : (
-                <Noposts title='No posts yet'/>
-              )}
+        {/* Create Post Section */}
+        <div className="bg-white rounded-lg shadow-md p-4 mb-4 block md:hidden">
+              <div className="flex items-center space-x-4 mb-4">
+              {user?.image ? (
+          <img
+            className="w-10 h-10 rounded-full object-cover mb-3"
+            src={user.image}
+            alt={`${user?.name}'s profile`}
+          />
+        ) : (
+          <UserCircle className="w-10 h-10 text-gray-400" />
+        )}    
+         <div 
+              className="flex-grow bg-gray-100 rounded-full py-2 px-4 cursor-text"
+              onClick={toggleModal}
+                >
+                  <p className="text-gray-500">Start a post</p>
+                </div>
+              </div>
             </div>
-          </div>
-          {/* Right Sidebar - Create Post and User Suggestions */}
-          <div className="md:col-span-1 space-y-4">
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <textarea
-                className="w-full p-2 mb-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                rows={3}
-                placeholder="What's on your mind?"
-              />
-              <button
-                className="w-full bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out text-sm"
-                onClick={toggleModal}
-              >
-                Create Post
-              </button>
-            </div>
-            <FollowSuggesion/>
-           
+
+
+
+          <div className="space-y-4">
+            {isLoading ? (
+              <Loading />
+            ) : posts.length > 0 ? (
+              <Posts user={user} posts={posts} isUser={false} />
+            ) : (
+              <Noposts title="No posts yet" />
+            )}
           </div>
         </div>
+  
+        {/* Right Sidebar - Create Post and User Suggestions */}
+        <div className="md:col-span-1 space-y-4 hidden md:block">
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <textarea
+              className="w-full p-2 mb-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              rows={3}
+              placeholder="What's on your mind?"
+            />
+            <button
+              className="w-full bg-blue-500 text-white py-1.5 px-3 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out text-sm"
+              onClick={toggleModal}
+            >
+              Create Post
+            </button>
+          </div>
+          <FollowSuggesion />
+        </div>
       </div>
-
-      <CreatePostModal isOpen={isModalOpen} onClose={toggleModal} onSave={handleSavePost} />
     </div>
+  
+    <CreatePostModal isOpen={isModalOpen} onClose={toggleModal} onSave={handleSavePost} />
+  </div>
+  
   );
 };
 

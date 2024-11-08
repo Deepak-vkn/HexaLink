@@ -4,7 +4,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import { registerCompany } from '../../api/company/post'
 import RegistrationForm from '../../Components/register';
-import Loading  from '../../Components/loading';
+import Loading  from '../../Components/Loading';
 const CompanyRegister = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');

@@ -5,7 +5,7 @@ import { fetchNotification, resetNotificationCount, removeAllNotifications } fro
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaHeart, FaUserPlus, FaUserCheck, FaCommentDots, FaEllipsisV } from 'react-icons/fa';
 import NoContent  from '../../Components/user/Noposts';
-import Loading from '../../Components/loading';
+import Loading from '../../Components/Loading';
 // import LeftBanner from '../../Components/user/leftBanner';
 // import RightBanner from '../../Components/user/rightBanner';
 

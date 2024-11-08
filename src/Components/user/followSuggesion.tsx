@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import { followSuggestion } from '../../api/user/get'; 
 import { followRequest } from '../../api/user/post'; 
-
+import Loading from '../Loading';
 interface SuggestedUser {
   _id: string; 
   name: string;
@@ -87,7 +87,7 @@ const FollowSuggestion: React.FC = () => {
   return (
     <div className="bg-white shadow rounded-lg p-4">
       <h3 className="text-md font-semibold text-gray-800 mb-3">Suggested Connections</h3>
-      {loading && <p>Loading...</p>}
+      {loading &&<Loading/>}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && (
         <ul className="space-y-3">

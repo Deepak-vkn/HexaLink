@@ -13,7 +13,7 @@ import UserProfile from '../Pages/User/userProfile';
 import UserPosts from '../Pages/User/userPosts';
 import UserJobs from '../Pages/User/jobs';
 import UserNotification from '../Pages/User/userNotification';
-import Loading from '../Components/loading';
+import Loading from '../Components/Loading';
 import Message from '../Pages/User/chat';
 import SavedItems from '../Pages/User/savedPage';
 import UserDashBoard from '../Pages/User/userDashBoard';

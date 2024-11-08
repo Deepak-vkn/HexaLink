@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import JobList from '../../Components/user/jobList';
 import JobDetails from '../../Components/user/jobDetails';
+import Loading from '../../Components/Loading';
 import { fetchJobs } from '../../api/user/get';
 import { applyJob } from '../../api/user/post';
 import toastr from 'toastr';
@@ -140,7 +141,7 @@ const Jobs: React.FC = () => {
     }));
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading/>;
   if (error) return <div>Error: {error}</div>;
 
   return (

@@ -7,7 +7,7 @@ import {  BsFillSaveFill } from 'react-icons/bs';
 import LeftActivityBar from '../../Components/user/leftBottom';
 import LeftTopBox from '../../Components/user/leftTopBox';
 import PostModal from '../../Components/user/postModal'
-
+import Loading from '../../Components/Loading'
 export default function SavedItems() {
   const user = useSelector((state: any) => state.user.userInfo)
   const [isLoading, setIsLoading] = useState(false)
@@ -81,7 +81,7 @@ export default function SavedItems() {
               <h2 className="text-xl font-semibold mb-4">Saved Items</h2>
               
               {isLoading ? (
-                <div className="text-center py-4">Loading...</div>
+                <div className="text-center py-4"><Loading/></div>
               ) : filteredItems.length > 0 ? (
                 <div className="space-y-4">
                   {activeCategory === 'Posts' ? (

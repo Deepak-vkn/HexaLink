@@ -5,7 +5,7 @@ import { fetchApplications, updateApplicationStatus } from '../../api/company/ge
 import { fetchJobs } from '../../api/company/post';
 import Table from '../../Components/company/table';
 import CompanyNav from '../../Components/company/companyNav'; 
-import Loading from '../../Components/loading';
+import Loading from '../../Components/Loading';
 
 const CompanyApplications = () => {
     const company = useSelector((state: RootState) => state.company.companyInfo);

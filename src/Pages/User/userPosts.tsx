@@ -3,7 +3,7 @@ import Posts from '../../Components/user/posts';
 import { getUserPosts } from '../../api/user/get';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
-import Loading from '../../Components/loading';
+import Loading from '../../Components/Loading';
 
 const UserPosts = () => {
   const [posts, setPosts] = useState([]);

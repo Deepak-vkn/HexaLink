@@ -5,7 +5,7 @@ import UserProfile from '../../Components/profile';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Store/store';
 import { getUser } from '../../api/user/get'; 
-import Loading from '../../Components/loading';
+import Loading from '../../Components/Loading';
 const UserProfilePage = () => {
   const { userId } = useParams<{ userId: string }>();
   console.log('user id is ',userId) 
@@ -42,7 +42,7 @@ const UserProfilePage = () => {
 
   if (!profileUser) {
    
-    return <div>Loading...</div>;
+    return <Loading/>;
   }
   console.log('profiler is ',profileUser)
 

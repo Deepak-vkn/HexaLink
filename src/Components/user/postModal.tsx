@@ -12,7 +12,7 @@ import {
 } from '../../api/user/get';
 // import { updatePost, addComment } from '../../api/user/post';
 // import CommentModal from './commentModal';
-import Loading from '../loading';
+import Loading from '../Loading';
 // import LikeModal from './likeModal';
 
 interface User {
