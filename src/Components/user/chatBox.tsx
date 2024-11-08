@@ -43,9 +43,22 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [chatPartnerOnline, setChatPartnerOnline] = useState(false); 
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
     
   const chatPartnerId = conversation?.user1._id === user._id ? conversation?.user2._id : conversation?.user1._id;
 
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -299,6 +312,19 @@ const ChatBox: React.FC<{ conversation: Conversation | null; user: any }> = ({ c
       <>
         <div className="p-2 sm:p-4 bg-white shadow-sm flex items-center justify-between">
           <div className="flex items-center">
+          {isMobile && (
+        <div className="p-4  flex items-center">
+          <button
+            onClick={() =>   window.location.href = '/message'}
+            className="text-blue-600 hover:text-blue-800 font-semibold flex items-center"
+          >
+            <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a1 1 0 01-.707-.293l-7-7a1 1 0 010-1.414l7-7a1 1 0 111.414 1.414L4.414 10l6.293 6.293A1 1 0 0110 18z" clipRule="evenodd" />
+            </svg>
+         
+          </button>
+        </div>
+      )}
             <div className="relative">
             {(conversation.user1._id === user._id ? conversation.user2.image : conversation.user1.image) ? (
                 <img

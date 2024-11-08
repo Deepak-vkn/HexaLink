@@ -9,9 +9,28 @@ interface JobDetailsProps {
 const JobDetails: React.FC<JobDetailsProps> = ({ job, onApplyClick, user }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState(false);
+
   // const [savedItems, setSavedItems] = useState<string[]>([]);
   
 console.log('save status is ',isSaved)
+useEffect(() => {
+  // Function to check if the screen is in mobile view
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  // Add the event listener for resizing
+  window.addEventListener('resize', handleResize);
+
+  // Initial check
+  handleResize();
+
+  // Clean up the event listener on component unmount
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, []);
 
   const handleSaveClick = async () => {
     if (!user || !job) return; 
@@ -66,6 +85,19 @@ console.log('save status is ',isSaved)
   const isExpired = expiresDate && expiresDate < new Date();
   return (
     <div className="w-full  mx-auto bg-white shadow-lg border border-gray-300 rounded-lg overflow-hidden">
+{isMobile && (
+        <div className="p-4 bg-gray-50 border-b border-gray-200 flex items-center">
+          <button
+            onClick={() =>   window.location.href = '/jobs'}
+            className="text-blue-600 hover:text-blue-800 font-semibold flex items-center"
+          >
+            <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a1 1 0 01-.707-.293l-7-7a1 1 0 010-1.414l7-7a1 1 0 111.414 1.414L4.414 10l6.293 6.293A1 1 0 0110 18z" clipRule="evenodd" />
+            </svg>
+            Back to Jobs
+          </button>
+        </div>
+      )}
       <div className="p-8">
         <h2 className="text-2xl font-bold mb-2 text-gray-900">Position :  {job.title}</h2>
         <p className="text-lg text-blue-600 mb-4">{job.location}</p>

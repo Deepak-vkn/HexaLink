@@ -17,6 +17,7 @@ const Jobs: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isJobApplyOpen, setIsJobApplyOpen] = useState<boolean>(false);
    const { jobId } = useParams<{ jobId: string }>();
+   const [isMobile, setIsMobile] = useState(false);
  
   const [applicationData, setApplicationData] = useState({
     name: user?.name || '',
@@ -24,6 +25,24 @@ const Jobs: React.FC = () => {
     resume: null as File | null,
     experience: '' 
   });
+
+  useEffect(() => {
+    // Function to check if the screen is in mobile view
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Add the event listener for resizing
+    window.addEventListener('resize', handleResize);
+
+    // Initial check
+    handleResize();
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchJobData = async () => {
@@ -126,10 +145,26 @@ const Jobs: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen ">
-  <div className="flex flex-grow h-screen">
-  <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user} />
-  <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user}  />
+ <div className="flex flex-grow h-screen">
+  {/* Show only JobList if no job is selected and we are on mobile */}
+  {isMobile && !selectedJob && (
+    <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user} />
+  )}
+
+  {/* Show only JobDetails if a job is selected and we are on mobile */}
+  {isMobile && selectedJob && (
+    <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user} />
+  )}
+
+  {/* Show both JobList and JobDetails if not on mobile */}
+  {!isMobile && (
+    <>
+      <JobList jobs={jobs} onSelectJob={handleSelectJob} user={user} />
+      <JobDetails job={selectedJob} onApplyClick={handleApplyClick} user={user} />
+    </>
+  )}
 </div>
+
 
 
       {/* Modal */}
